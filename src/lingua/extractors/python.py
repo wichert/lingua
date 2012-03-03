@@ -1,6 +1,8 @@
 import tokenize
 from babel.util import parse_encoding
 
+KEYWORDS_PLURAL = ['ngettext', 'ungettext', ]
+
 
 def safe_eval(s, encoding='ascii'):
     if encoding != 'ascii':
@@ -23,7 +25,7 @@ class PythonExtractor(object):
     def stateWaiting(self, ttype, tstring, lineno):
         if ttype == tokenize.NAME and tstring in self.keywords:
             self.state = self.stateKeywordSeen
-            self.msg = dict(lineno=lineno)
+            self.msg = dict(lineno=lineno, keyword=tstring)
 
     def stateKeywordSeen(self, ttype, tstring, lineno):
         # We have seen _, now check if this is a _( .. ) call
@@ -37,6 +39,9 @@ class PythonExtractor(object):
         if ttype == tokenize.STRING:
             self.msg.setdefault('label', []).append(
                     safe_eval(tstring, self.encoding))
+        elif ttype == tokenize.OP and tstring == ',' and \
+            self.msg.get('keyword', '') in KEYWORDS_PLURAL:
+            self.state = self.stateWaitForPlural
         elif ttype == tokenize.OP and tstring == ',':
             self.state = self.stateWaitForDefault
         elif ttype == tokenize.OP and tstring == ')':
@@ -53,7 +58,7 @@ class PythonExtractor(object):
             self.state = self.stateWaiting
 
     def stateWaitForDefault(self, ttype, tstring, lineno):
-        # We saw _('label', now wait for a default translation
+        # We saw _('label' or 'plural', now wait for a default translation
         if ttype == tokenize.STRING:
             self.msg.setdefault('default', []).append(
                     safe_eval(tstring, self.encoding))
@@ -62,6 +67,22 @@ class PythonExtractor(object):
             self.state = self.stateInFactoryParameter
         elif ttype == tokenize.OP and tstring == ',':
             self.state = self.stateInFactoryWaitForParameter
+        elif ttype == tokenize.OP and tstring == ')':
+            self.addMessage(self.msg)
+            self.state = self.stateWaiting
+        # We ignore anything else (ie whitespace, comments, syntax errors,
+        # etc.)
+
+    def stateWaitForPlural(self, ttype, tstring, lineno):
+        # We saw _('label', now wait for a plural message
+        if ttype == tokenize.STRING:
+            self.msg.setdefault('plural', []).append(
+                    safe_eval(tstring, self.encoding))
+        elif ttype == tokenize.NAME:
+            self._parameter = tstring
+            self.state = self.stateInFactoryParameter
+        elif ttype == tokenize.OP and tstring == ',':
+            self.state = self.stateWaitForDefault
         elif ttype == tokenize.OP and tstring == ')':
             self.addMessage(self.msg)
             self.state = self.stateWaiting
@@ -90,13 +111,22 @@ class PythonExtractor(object):
     def addMessage(self, msg):
         if not msg.get('label'):
             return
+
         default = msg.get('default', None)
         if default:
             comments = [u'Default: %s' % u''.join(default)]
         else:
             comments = []
-        self.messages.append(
-                (msg['lineno'], None, u''.join(msg['label']), comments))
+
+        plural = msg.get('plural', None)
+        if plural:
+            msgid = (u''.join(msg['label']), u''.join(plural))
+        else:
+            msgid = u''.join(msg['label'])
+
+        funcname = msg.get('keyword', None)
+
+        self.messages.append((msg['lineno'], funcname, msgid, comments))
 
 
 extract_python = PythonExtractor()
