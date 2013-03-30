@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import collections
 import re
+import sys
 from StringIO import StringIO
 from xml.parsers import expat
 
@@ -66,8 +67,9 @@ class XmlExtractor(object):
 
         try:
             self.parser.ParseFile(fileobj)
-        except expat.ExpatError:
-            pass
+        except expat.ExpatError as err:
+            print >> sys.stderr, ('ERROR in %s: %s' % (fileobj.name, err))
+
         return self.messages
 
     def addMessage(self, message, comments=[]):
