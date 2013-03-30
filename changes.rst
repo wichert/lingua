@@ -4,7 +4,8 @@ Changelog
 1.5 - Unreleased
 -----------------------
 
-- ...
+- Output some logging to sys.stderr if ``ExpatError`` occurs to give
+  user feedback which file contains errors.  [saily]
 
 
 1.4 - February 11, 2013
