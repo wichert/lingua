@@ -68,8 +68,7 @@ class XmlExtractor(object):
         try:
             self.parser.ParseFile(fileobj)
         except expat.ExpatError as err:
-            print >> sys.stderr, 'Error while parsing {0}: {1}'.format(
-                fileobj.name, err)
+            print >> sys.stderr, ('ERROR in %s: %s' % (fileobj.name, err))
 
         return self.messages
 
