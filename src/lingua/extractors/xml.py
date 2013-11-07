@@ -9,7 +9,7 @@ from lingua.extractors.python import PythonExtractor
 
 
 class TranslateContext(object):
-    WHITESPACE = re.compile(u"\s{2,}")
+    WHITESPACE = re.compile(u"\s+")
     EXPRESSION = re.compile(u"\s*\${[^}]*}\s*")
 
     def __init__(self, msgid, lineno, i18n_prefix):
