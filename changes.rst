@@ -4,8 +4,9 @@ Changelog
 1.7 - Unreleased
 ----------------------
 
-- ...
-
+- Use the same whitespace regex as chameleon, i.e. \s+
+  This meant that msgids did not match when a single non-space newline
+  character was in a msgid.
 
 1.6 - December 9, 2013
 ----------------------
