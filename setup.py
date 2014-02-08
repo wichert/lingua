@@ -1,12 +1,10 @@
 from setuptools import setup, find_packages
 import sys
 
-version = '1.7dev'
+version = '2.0.0dev'
 
 install_requires=[
         "polib",
-        "xlrd",
-        "xlwt",
         ]
 if sys.version_info<(2,7):
     install_requires.append("argparse")
@@ -38,8 +36,6 @@ setup(name="lingua",
       install_requires=install_requires,
       entry_points="""
       [console_scripts]
-      po-to-xls = lingua.xlsconvert:ConvertPoXls
-      xls-to-po = lingua.xlsconvert:ConvertXlsPo
       polint = lingua.polint:main
 
       [babel.extractors]

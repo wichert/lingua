@@ -1,10 +1,11 @@
 Changelog
 =========
 
-1.7 - Unreleased
+2.0.0 - Unreleased
 ----------------------
 
-- ...
+- The po-xls conversion tools have been moved to a new `po-xls
+  <https://github.com/wichert/po-xls>`_ package.
 
 
 1.6 - December 9, 2013
