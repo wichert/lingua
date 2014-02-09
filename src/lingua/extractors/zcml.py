@@ -1,31 +1,26 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import collections
 import sys
 from xml.parsers import expat
+from . import register_extractor
 
 
 class ZcmlExtractor(object):
     ATTRIBUTES = set(['title', 'description'])
 
-    def __call__(self, fileobj, keywords, comment_tags, options):
-        self.keywords = keywords
-        self.comment_tags = comment_tags
-        self.options = options
+    def __call__(self, filename, options):
+        self.target_domain = options.domain
         self.messages = []
         self.parser = expat.ParserCreate()
         self.parser.StartElementHandler = self.StartElementHandler
         self.parser.EndElementHandler = self.EndElementHandler
         self.domainstack = collections.deque()
         try:
-            self.parser.ParseFile(fileobj)
+            self.parser.ParseFile(open(filename, 'rb'))
         except expat.ExpatError as e:
-            if getattr(fileobj, 'name', None):
-                print >> sys.stderr, \
-                        ('Aborting due to parse error in %s: %s' %
-                                (fileobj.name, e.message))
-            else:
-                print >> sys.stderr, \
-                        ('Aborting due to parse error: %s' % e.message)
+            print('Aborting due to parse error in %s: %s' %
+                            (filename, e.message), file=sys.stderr)
             sys.exit(1)
         return self.messages
 
@@ -42,15 +37,17 @@ class ZcmlExtractor(object):
         if not self.domainstack:
             return
 
-        for (key, value) in attributes.items():
-            if key in self.ATTRIBUTES:
-                self.addMessage(value)
+        if self.target_domain in [None, self.domainstack[-1]]:
+            for (key, value) in attributes.items():
+                if key in self.ATTRIBUTES:
+                    self.addMessage(value)
 
     def EndElementHandler(self, name):
         if self.domainstack:
             self.domainstack.pop()
 
 
-def extract_zcml(fileobj, keywords, comment_tags, options):
+@register_extractor('zcml', ['.zcml'])
+def extract_zcml(filename, options):
     extractor = ZcmlExtractor()
-    return extractor(fileobj, keywords, comment_tags, options)
+    return extractor(filename, options)

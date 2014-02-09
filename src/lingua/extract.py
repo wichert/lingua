@@ -8,6 +8,7 @@ import sys
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
 import lingua.extractors.xml
+import lingua.extractors.zcml
 
 
 def no_duplicates(iterator):
