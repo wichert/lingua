@@ -1,17 +1,20 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import collections
 import re
 import sys
 from io import BytesIO
 from xml.parsers import expat
-from lingua.extractors.python import extract_python
+from .python import extract_python
+from . import register_extractor
 
 
 class TranslateContext(object):
     WHITESPACE = re.compile(u"\s{2,}")
     EXPRESSION = re.compile(u"\s*\${[^}]*}\s*")
 
-    def __init__(self, msgid, lineno, i18n_prefix):
+    def __init__(self, domain, msgid, lineno, i18n_prefix):
+        self.domain = domain
         self.msgid = msgid
         self.text = []
         self.lineno = lineno
@@ -46,13 +49,13 @@ class XmlExtractor(object):
     ENTITY = re.compile(r"&([A-Za-z]+|#[0-9]+);")
     UNDERSCORE_CALL = re.compile("_\(")
 
-    def __call__(self, fileobj, keywords, comment_tags, options):
-        self.keywords = keywords
-        self.comment_tags = comment_tags
+    def __call__(self, filename, options):
+        self.target_domain = options.domain
         self.options = options
         self.messages = []
         self.parser = expat.ParserCreate()
-        self.parser.returns_unicode = True
+        if hasattr(self.parser, 'returns_unicode'):  # Not present in Py3
+            self.parser.returns_unicode = True
         self.parser.UseForeignDTD()
         self.parser.SetParamEntityParsing(
             expat.XML_PARAM_ENTITY_PARSING_ALWAYS)
@@ -65,15 +68,10 @@ class XmlExtractor(object):
         self.prefix_stack = collections.deque(['i18n'])
 
         try:
-            self.parser.ParseFile(fileobj)
+            self.parser.ParseFile(open(filename, 'rb'))
         except expat.ExpatError as e:
-            if getattr(fileobj, 'name', None):
-                print >> sys.stderr, \
-                        ('Aborting due to parse error in %s: %s' %
-                                (fileobj.name, e.message))
-            else:
-                print >> sys.stderr, \
-                        ('Aborting due to parse error: %s' % e.message)
+            print('Aborting due to parse error in %s: %s' %
+                            (filename, e.message), file=sys.stderr)
             sys.exit(1)
         return self.messages
 
@@ -109,6 +107,7 @@ class XmlExtractor(object):
         i18n_translate = attributes.get('%s:translate' % i18n_prefix)
         if i18n_prefix and i18n_translate is not None:
             self.translatestack.append(TranslateContext(
+                self.domainstack[-1] if self.domainstack else None,
                 i18n_translate, self.parser.CurrentLineNumber, i18n_prefix))
         else:
             self.translatestack.append(None)
@@ -148,23 +147,25 @@ class XmlExtractor(object):
         if not self.translatestack[-1]:
             return
 
-        data_length = len(data)
-        context = self.parser.GetInputContext()
-
-        while data:
-            m = self.ENTITY.search(context)
-            if m is None or m.start() >= data_length:
-                self.translatestack[-1].addText(data)
-                break
-
-            n = self.ENTITY.match(data)
-            if n is not None:
-                length = n.end()
-            else:
-                length = 1
-
-            self.translatestack[-1].addText(context[0: m.end()])
-            data = data[m.start() + length:]
+        self.translatestack[-1].addText(data)
+        return
+#        data_length = len(data)
+#        context = self.parser.GetInputContext()
+#
+#        while data:
+#            m = self.ENTITY.search(context)
+#            if m is None or m.start() >= data_length:
+#                self.translatestack[-1].addText(data)
+#                break
+#
+#            n = self.ENTITY.match(data)
+#            if n is not None:
+#                length = n.end()
+#            else:
+#                length = 1
+#
+#            self.translatestack[-1].addText(context[0: m.end()])
+#            data = data[m.start() + length:]
 
     def EndElementHandler(self, name):
         if self.prefix_stack:
@@ -172,10 +173,12 @@ class XmlExtractor(object):
         if self.domainstack:
             self.domainstack.pop()
         translate = self.translatestack.pop()
-        if translate and not translate.ignore():
+        if translate and not translate.ignore() and  \
+                (self.target_domain in [None, translate.domain]):
             self.messages.append(translate.message())
 
 
-def extract_xml(fileobj, keywords, comment_tags, options):
+@register_extractor('xml', ['.pt', '.zpt'])
+def extract_xml(filename, options):
     extractor = XmlExtractor()
-    return extractor(fileobj, keywords, comment_tags, options)
+    return extractor(filename, options)

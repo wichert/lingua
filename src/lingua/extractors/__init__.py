@@ -6,7 +6,7 @@ def register_extractor(identifier, extensions):
         EXTRACTORS[identifier] = func
         for extension in extensions:
             EXTENSIONS[extension] = func
-        return func(*a, **kw)
+        return func
     return wrapper
 
 

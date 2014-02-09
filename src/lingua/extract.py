@@ -7,6 +7,7 @@ import polib
 import sys
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
+import lingua.extractors.xml
 
 
 def no_duplicates(iterator):
@@ -82,7 +83,7 @@ def main():
             default=79,
             help='Output width')
     # Extraction configuration
-    parser.add_argument('-d', '--domain', default='messages',
+    parser.add_argument('-d', '--domain',
             help='Domain to extract')
     # POT metadata
     parser.add_argument('--copyright-holder', metavar='STRING',
