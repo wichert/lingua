@@ -37,6 +37,7 @@ setup(name="lingua",
       entry_points="""
       [console_scripts]
       polint = lingua.polint:main
+      pot-create = lingua.extract:main
 
       [babel.extractors]
       lingua_python = lingua.extractors.python:extract_python
