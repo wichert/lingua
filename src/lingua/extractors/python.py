@@ -1,119 +1,30 @@
-import tokenize
-from babel.util import parse_encoding
+import ast
 
 
-def safe_eval(s, encoding='ascii'):
-    if encoding != 'ascii':
-        s = s.decode(encoding)
-    return eval(s, {'__builtins__': {}}, {})
-
-
-class PythonExtractor(object):
-    def __call__(self, fileobj, keywords, comment_tags, options):
-        if not isinstance(keywords, dict):
-            keywords = dict.fromkeys(keywords)
-            if 'ngettext' in keywords:
-                keywords['ngettext'] = (1, 2)
-                keywords['pluralize'] = (1, 2)
-        self.state = self.stateWaiting
-        self.msg = None
-        self.keywords = keywords
-        self.messages = []
-        self.encoding = parse_encoding(fileobj) or "ascii"
-        tokens = tokenize.generate_tokens(fileobj.readline)
-        for (ttype, tstring, stup, etup, line) in tokens:
-            self.state(ttype, tstring, stup[0])
-        return self.messages
-
-    def stateWaiting(self, ttype, tstring, lineno):
-        if ttype == tokenize.NAME:
-            if tstring in self.keywords:
-                self.state = self.stateKeywordSeen
-                self.msg = dict(lineno=lineno)
-                if self.keywords[tstring] is None:
-                    self.msg['type'] = 'singular'
-                else:
-                    self.msg['type'] = 'plural'
-    
-    def stateKeywordSeen(self, ttype, tstring, lineno):
-        # We have seen _, now check if this is a _( .. ) call
-        if ttype == tokenize.OP and tstring == '(':
-            self.state = self.stateWaitForLabel
-        else:
-            self.state = self.stateWaiting
-
-    def stateWaitForLabel(self, ttype, tstring, lineno):
-        # We saw _(, wait for the message label
-        if ttype == tokenize.STRING:
-            self.msg.setdefault('label', []).append(
-                    safe_eval(tstring, self.encoding))
-        elif ttype == tokenize.OP and tstring == ',':
-            self.state = self.stateWaitForDefault
-        elif ttype == tokenize.OP and tstring == ')':
-            self.addMessage(self.msg)
-            self.state = self.stateWaiting
-        elif ttype == tokenize.NAME:
-            self._parameter = tstring
-            self.state = self.stateInFactoryParameter
-        elif ttype == tokenize.NL:
-            pass
-        else:
-            # Effectively a syntax error, but ignore and reset state
-            self.msg = None
-            self.state = self.stateWaiting
-
-    def stateWaitForDefault(self, ttype, tstring, lineno):
-        # We saw _('label', now wait for a default translation
-        if ttype == tokenize.STRING:
-            self.msg.setdefault('default', []).append(
-                    safe_eval(tstring, self.encoding))
-        elif ttype == tokenize.NAME:
-            self._parameter = tstring
-            self.state = self.stateInFactoryParameter
-        elif ttype == tokenize.OP and tstring == ',':
-            self.state = self.stateInFactoryWaitForParameter
-        elif ttype == tokenize.OP and tstring == ')':
-            self.addMessage(self.msg)
-            self.state = self.stateWaiting
-        # We ignore anything else (ie whitespace, comments, syntax errors,
-        # etc.)
-
-    def stateInFactoryWaitForParameter(self, ttype, tstring, lineno):
-        if ttype == tokenize.OP and tstring == ')':
-            self.addMessage(self.msg)
-            self.msg = None
-            self.state = self.stateWaiting
-        elif ttype == tokenize.NAME:
-            self._parameter = tstring
-            self.state = self.stateInFactoryParameter
-
-    def stateInFactoryParameter(self, ttype, tstring, lineno):
-        if ttype == tokenize.STRING:
-            self.msg.setdefault(self._parameter, []).append(
-                    safe_eval(tstring, self.encoding))
-        elif ttype == tokenize.OP and tstring == ',':
-            self.state = self.stateInFactoryWaitForParameter
-        elif ttype == tokenize.OP and tstring == ')':
-            self.addMessage(self.msg)
-            self.state = self.stateWaiting
-
-    def addMessage(self, msg):
-        if not msg.get('label'):
-            return
-        default = msg.get('default', None)
-        if default:
-            comments = [u'Default: %s' % u''.join(default)]
-        else:
-            comments = []
-        label = msg['label']
-        if (msg['type'] == 'singular'):
-            label = u''.join(msg['label'])
-            positions = '_'
-        else:
-            label += default
-            positions = 'ngettext'
-        self.messages.append(
-                (msg['lineno'], positions, label, comments))
-
-
-extract_python = PythonExtractor()
+def extract_python(fileobj, keywords, comment_tags, options):
+    tree = ast.parse(fileobj.read(), fileobj.name)
+    messages = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if not isinstance(node.func, ast.Name):
+            continue
+        if node.func.id not in keywords:
+            continue
+        if node.args:
+            msg_id = msg_default = None
+            if isinstance(node.args[0], ast.Str):
+                msg_id = node.args[0].s
+            if len(node.args) > 2 and isinstance(node.args[2], ast.Str):
+                msg_default = node.args[2].s
+            for keyword in node.keywords:
+                if not isinstance(keyword.value, ast.Str):
+                    continue
+                if keyword.arg == 'msgid':
+                    msg_id = keyword.value.s
+                elif keyword.arg == 'default':
+                    msg_id = keyword.value.s
+            if msg_id:
+                comments = [u'Default: %s' % msg_default] if msg_default else []
+                messages.append((node.lineno, node.func.id, msg_id, comments))
+    return messages

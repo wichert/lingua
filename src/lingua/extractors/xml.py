@@ -4,8 +4,7 @@ import re
 import sys
 from io import BytesIO
 from xml.parsers import expat
-
-from lingua.extractors.python import PythonExtractor
+from lingua.extractors.python import extract_python
 
 
 class TranslateContext(object):
@@ -86,8 +85,7 @@ class XmlExtractor(object):
         msg = message
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
-        py_extractor = PythonExtractor()
-        py_messages = py_extractor(BytesIO(msg), {'_':None}, None, None)
+        py_messages = extract_python(BytesIO(msg), {'_':None}, None, None)
         for (line, _, py_message, comments) in py_messages:
             self.addMessage(py_message, comments)
 
