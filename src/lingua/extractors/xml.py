@@ -81,11 +81,11 @@ class XmlExtractor(object):
         self.messages.append(
                 (self.parser.CurrentLineNumber, None, message, comments))
 
-    def addUndercoreCalls(self, message):
+    def addUnderscoreCalls(self, message):
         msg = message
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
-        py_messages = extract_python(BytesIO(msg), {'_':None}, None, None)
+        py_messages = extract_python(BytesIO(msg), {'_': None}, None, None)
         for (line, _, py_message, comments) in py_messages:
             self.addMessage(py_message, comments)
 
@@ -135,7 +135,7 @@ class XmlExtractor(object):
 
         for (attr, value) in attributes.items():
             if self.UNDERSCORE_CALL.search(value):
-                self.addUndercoreCalls(value)
+                self.addUnderscoreCalls(value)
 
     def DefaultHandler(self, data):
         if data.startswith(u'&') and self.translatestack[-1]:
@@ -144,7 +144,7 @@ class XmlExtractor(object):
     def CharacterDataHandler(self, data):
         if TranslateContext.EXPRESSION.search(data) and \
                 self.UNDERSCORE_CALL.search(data):
-            self.addUndercoreCalls(data)
+            self.addUnderscoreCalls(data)
         if not self.translatestack[-1]:
             return
 
