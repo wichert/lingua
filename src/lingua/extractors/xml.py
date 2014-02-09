@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import collections
 import re
 import sys
-from StringIO import StringIO
+from io import BytesIO
 from xml.parsers import expat
 
 from lingua.extractors.python import PythonExtractor
@@ -87,7 +87,7 @@ class XmlExtractor(object):
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
         py_extractor = PythonExtractor()
-        py_messages = py_extractor(StringIO(msg), {'_':None}, None, None)
+        py_messages = py_extractor(BytesIO(msg), {'_':None}, None, None)
         for (line, _, py_message, comments) in py_messages:
             self.addMessage(py_message, comments)
 
