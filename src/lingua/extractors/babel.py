@@ -30,4 +30,3 @@ def register_babel_plugins():
     for entry_point in working_set.iter_entry_points('babel.extractors'):
         extractor = babel_wrapper(entry_point.load(require=True))
         EXTRACTORS['babel-%s' % entry_point.name] = extractor
-    EXTENSIONS['.py'] = EXTRACTORS['babel-lingua_python']

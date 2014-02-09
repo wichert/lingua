@@ -38,10 +38,5 @@ setup(name="lingua",
       [console_scripts]
       polint = lingua.polint:main
       pot-create = lingua.extract:main
-
-      [babel.extractors]
-      lingua_python = lingua.extractors.python:extract_python
-      lingua_xml = lingua.extractors.xml:extract_xml
-      lingua_zcml = lingua.extractors.zcml:extract_zcml
       """
       )

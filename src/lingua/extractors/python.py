@@ -1,15 +1,29 @@
 import ast
+from . import register_extractor
 
 
-def extract_python(fileobj, keywords, comment_tags, options):
-    tree = ast.parse(fileobj.read(), fileobj.name)
+KEYWORDS = {
+        '_', 
+        'gettext',
+        'ngettext',
+        'ugettext',
+        'ungettext',
+        'dgettext',
+        'dngettext',
+        'N_',
+        'pgettext',
+        }
+
+@register_extractor('python', ['.py'])
+def extract_python(filename, options):
+    tree = ast.parse(open(filename, 'rb').read(), filename)
     messages = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         if not isinstance(node.func, ast.Name):
             continue
-        if node.func.id not in keywords:
+        if node.func.id not in KEYWORDS:
             continue
         if node.args:
             msg_id = msg_default = None
