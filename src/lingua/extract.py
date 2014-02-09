@@ -11,6 +11,10 @@ import lingua.extractors.python
 import lingua.extractors.xml
 import lingua.extractors.zcml
 
+lingua.extractors.python  # Keep PyFlakes happy
+lingua.extractors.xml
+lingua.extractors.zcml
+
 
 def no_duplicates(iterator):
     seen = set()
@@ -26,7 +30,16 @@ def list_files(options):
         for filename in open(options.files_from, 'r'):
             yield filename
     for file in options.file:
-        yield file
+        if os.path.isfile(file):
+            yield file
+        elif os.path.isdir(file):
+            for (dirpath, dirnames, filenames) in os.walk(file):
+                for file in filenames:
+                    if get_extractor(file) is not None:
+                        yield os.path.join(dirpath, file)
+        else:
+            print('Invalid file type for %s' % file, file=sys.stderr)
+            sys.exit(1)
 
 
 def find_file(filename, search_path=[]):
