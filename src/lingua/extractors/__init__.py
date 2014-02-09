@@ -1,3 +1,6 @@
+import os
+
+
 EXTRACTORS = {}
 EXTENSIONS = {}
 
@@ -11,6 +14,5 @@ def register_extractor(identifier, extensions):
 
 
 def get_extractor(filename):
-    for (extension, extractor) in EXTENSIONS.items():
-        if filename.endswith(extension):
-            return extractor
+    ext = os.path.splitext(filename)[1]
+    return EXTRACTORS.get(ext)
