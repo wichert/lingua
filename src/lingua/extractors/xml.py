@@ -80,7 +80,7 @@ class XmlExtractor(object):
             sys.exit(1)
         return self.messages
 
-    def add_message(self, msgid, comment):
+    def add_message(self, msgid, comment=u''):
         self.messages.append(Message(None, msgid, u'', [], comment, u'',
             (self.filename, (self.parser.CurrentLineNumber))))
 
@@ -136,7 +136,7 @@ class XmlExtractor(object):
                         continue
                     if attr not in attributes:
                         continue
-                    self.add_message(msgid, [u'Default: %s' % attributes[attr]])
+                    self.add_message(msgid, u'Default: %s' % attributes[attr])
 
         for (attr, value) in attributes.items():
             if self.UNDERSCORE_CALL.search(value):
