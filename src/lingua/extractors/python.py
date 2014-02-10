@@ -10,12 +10,13 @@ from . import update_keywords
 KEYWORDS = {
         'gettext': Keyword('gettext'),
         'ugettext': Keyword('ugettext'),
-        'dgettext': Keyword('dgettext', 2),
+        'dgettext': Keyword('dgettext', 2, domain_param=1),
+        'ldgettext': Keyword('ldgettext', 2, domain_param=1),
         'ngettext': Keyword('ngettext', 1, 2),
         'lngettext': Keyword('ngettext', 1, 2),
         'ungettext': Keyword('ungettext', 1, 2),
-        'dngettext': Keyword('dngettext', 2, 3),
-        'ldngettext': Keyword('dngettext', 2, 3),
+        'dngettext': Keyword('dngettext', 2, 3, domain_param=1),
+        'ldngettext': Keyword('dngettext', 2, 3, domain_param=1),
         'N_': Keyword('N_', 1),
         }
 
@@ -24,6 +25,8 @@ def parse_keyword(node, keyword):
     if keyword.required_arguments and len(node.args) != keyword.required_arguments:
         return None
     try:
+        domain = node.args[keyword.domain_param - 1].s \
+                if keyword.domain_param else None
         msgid = node.args[keyword.msgid_param - 1].s
         msgid_plural = node.args[keyword.msgid_plural_param - 1].s \
                 if keyword.msgid_plural_param else None
@@ -32,7 +35,7 @@ def parse_keyword(node, keyword):
         comment = keyword.comment
     except IndexError:
         return None
-    return (msgctxt, msgid, msgid_plural, comment)
+    return (domain, msgctxt, msgid, msgid_plural, comment)
 
 
 def parse_translationstring(node):
@@ -56,7 +59,7 @@ def parse_translationstring(node):
         return None
 
     comment = u'Default: %s' % default if default else u''
-    return (None, msgid, None, comment)
+    return (None, None, msgid, None, comment)
 
 
 @register_extractor('python', ['.py'])
@@ -76,7 +79,10 @@ def extract_python(filename, options):
         if msg is None:
             continue
 
+        if options.domain is not None and msg[0] and msg[0] != options.domain:
+            continue
+
         flags = []
-        check_c_format(msg[1], flags)
-        check_python_format(msg[1], flags)
-        yield Message(msg[0], msg[1], msg[2], flags, msg[3], u'', (filename, node.lineno))
+        check_c_format(msg[2], flags)
+        check_python_format(msg[2], flags)
+        yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, node.lineno))

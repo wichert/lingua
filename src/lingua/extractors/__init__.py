@@ -62,15 +62,17 @@ check_python_format = _create_checker(_PYTHON_FORMAT, 'python-format')
 
 class Keyword(object):
     msgctxt_param = None
+    domain_param = None
     comment = u''
     required_arguments = None
 
     _comment_arg = re.compile(r'^"(.*)"$')
 
-    def __init__(self, function, msgid_param=1, msgid_plural_param=None):
+    def __init__(self, function, msgid_param=1, msgid_plural_param=None, domain_param=None):
         self.function = function
         self.msgid_param = msgid_param
         self.msgid_plural_param = msgid_plural_param
+        self.domain_param = domain_param
 
     @classmethod
     def from_spec(cls, spec):
@@ -86,6 +88,9 @@ class Keyword(object):
                 (param, args) = args.split(',', 1)
                 if param.endswith('c'):
                     key = 'msgctxt_param'
+                    param = param[:-1]
+                elif param.endswidth('d'):
+                    key = 'domain'
                     param = param[:-1]
                 elif param.endswidth('t'):
                     key = 'required_arguments'
