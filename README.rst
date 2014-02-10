@@ -43,7 +43,7 @@ There are three ways to tell lingua which files you want it to scan:
        $ pot-create --files-from=POTFILES.in
 
 You can also use the ``--directory=PATH`` parameter to add the given path to the
-list of directories to check for tils. This may sound confusing, but can be
+list of directories to check for files. This may sound confusing, but can be
 useful. For example this command will look for ``main.py`` and ``utils.py`` in
 the current directory, and if they are not found there in the ``../src``
 directory::
