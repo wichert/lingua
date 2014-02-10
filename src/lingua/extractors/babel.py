@@ -1,6 +1,8 @@
-from . import EXTENSIONS
 from . import EXTRACTORS
 from . import Message
+from . import check_c_format
+from . import check_python_format
+
 
 DEFAULT_KEYWORDS = {
         '_': None,
@@ -19,7 +21,10 @@ def babel_wrapper(extractor):
     def wrapper(filename, options):
         fileobj = open(filename, 'rb')
         for (lineno, _, msgid, comment) in extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), None):
-            yield Message(None, msgid, u'', [], comment, None, (filename, linno))
+            flags = []
+            check_c_format(msgid, flags)
+            check_python_format(msgid, flags)
+            yield Message(None, msgid, u'', flags, comment, None, (filename, lineno))
     wrapper.__doc__ = extractor.__doc__
     return wrapper
 
