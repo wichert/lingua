@@ -11,7 +11,7 @@ from . import Message
 
 
 class TranslateContext(object):
-    WHITESPACE = re.compile(u"\s{2,}")
+    WHITESPACE = re.compile(u"\s+")
     EXPRESSION = re.compile(u"\s*\${[^}]*}\s*")
 
     def __init__(self, domain, msgid, filename, lineno, i18n_prefix):
