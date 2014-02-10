@@ -35,11 +35,6 @@ _C_FORMAT = re.compile(r'''
         ''', re.VERBOSE)
 
 
-def check_c_format(buf, flags):
-    if _C_FORMAT.search(buf) is not None:
-        flags.append('c-format')
-
-
 # Based on http://docs.python.org/2/library/string.html#format-string-syntax
 _PYTHON_FORMAT = re.compile(r'''
         \{
@@ -50,6 +45,14 @@ _PYTHON_FORMAT = re.compile(r'''
         ''', re.IGNORECASE | re.VERBOSE)
 
 
-def check_python_format(buf, flags):
-    if _PYTHON_FORMAT.search(buf) is not None:
-        flags.append('python-format')
+def _create_checker(format, flag):
+    def check(buf, flags):
+        if 'no-%s' % flag in flags:
+            return
+        if format.search(buf) is not None:
+            flags.append(flag)
+    return check
+
+
+check_c_format = _create_checker(_C_FORMAT, 'c-format')
+check_python_format = _create_checker(_PYTHON_FORMAT, 'python-format')
