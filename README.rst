@@ -112,7 +112,7 @@ distinguish them from lingua extractors.
 Comparison to other tools
 -------------------------
 
-Differences compared to GNU gettext:
+Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 
 * Support for file formats such as Zope Page Templates (popular in
   `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_),
@@ -124,7 +124,7 @@ Differences compared to GNU gettext:
   langauges can be added via plugins.
 
 
-Differences compared to Babel:
+Differences compared to `Babel`_:
 
 * More reliable detection of Python format strings.
 * Lingua inludes Plural support.
