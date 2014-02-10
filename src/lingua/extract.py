@@ -156,6 +156,7 @@ def main():
     register_babel_plugins()
     catalog = create_catalog(options)
 
+    scanned = 0
     for filename in no_duplicates(list_files(options)):
         real_filename = find_file(filename, options.directory)
         if real_filename is None:
@@ -172,7 +173,14 @@ def main():
                 entry = POEntry(msgctxt=message.msgctxt, msgid=message.msgid)
                 catalog.append(entry)
             entry.update(message)
-        catalog.save('messages.pot')
+        scanned += 1
+    if not scanned:
+        print('No files scanned, aborting', file=sys.stderr)
+        sys.exit(1)
+    if not catalog:
+        print('No translatable strings found, aborting', file=sys.stderr)
+        sys.exit(2)
+    catalog.save(options.output)
 
 
 if __name__ == '__main__':
