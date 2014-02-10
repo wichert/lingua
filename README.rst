@@ -115,11 +115,13 @@ Comparison to other tools
 Differences compared to GNU gettext:
 
 * Support for file formats such as Zope Page Templates (popular in
-  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`),
-  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_
+  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_),
+  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_ and
   `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
-* No direct support for C, C++, Perl, and many other languages.
+* No direct support for C, C++, Perl, and many other languages. Lingua focues
+  on languages commonly used in Python projects, although support for other
+  langauges can be added via plugins.
 
 
 Differences compared to Babel:
