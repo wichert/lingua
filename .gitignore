@@ -1,6 +1,11 @@
 /src/lingua.egg-info
-/dist
+/bin/
 /build
+/dist
+/lib
+/man
+/pyvenv.cfg
 *.pyo
 *.pyc
 *.egg
+*.swp
