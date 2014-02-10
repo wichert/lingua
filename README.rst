@@ -1,8 +1,121 @@
-Introduction
-============
+What is lingua?
+===============
 
-This package contains a set of tools to help manage translations
-in Python software. 
+Lingua is a package with tools to extract translateable texts from
+your code, and to check existing translations. It replaces the use
+of the `xgettext` command from gettext, or `pybabel` from Babel.
+
+
+Message extraction
+==================
+
+The simplest way to extract all translateable messages is to point the
+`pot-extract` tool at the root of your source tree.
+
+::
+     $ pot-create src
+
+This will create a `messages.pot` file which contains all found messages.
+
+
+Specifying input files
+----------------------
+
+There are three ways to tell lingua which files you want it to scan:
+
+1. Specify filenames directly on the command line.
+2. Specify a directory directly on the command line. Lingua will recursively
+   scan that directory for all files it knows how to handle.
+3. Use the `--files-from`` parameter to point to a file with a list of
+   files to scan.
+
+You can also use the `--directory`` parameter a list of directories. This
+may sound confusing, but can be useful. Take this command:
+
+::
+
+    $ pot-create --directory=../src main.py utils.py
+
+This will look for ``main.py`` and ``utils.py`` in the current directory, and
+if they are not found there in the ``../src`` directory.
+
+
+Domain filtering
+----------------
+
+When working with large systems you may use multiple translation domains
+in a single source tree. Lingua can support that by filtering messages by
+domain when scanning sources. To enable domain filtering use the `-d` option:
+
+::
+    $ pot-create -d mydomain src
+
+Lingua will always include messages for which it can not determine the domain.
+For example, take this Python code:
+
+::
+     print(gettext(u'Hello, World'))
+     print(dgettext('mydomain', u'Bye bye'))
+
+The first hello-message does not specify its domain and will always be
+included. The second line uses `dgettext
+<http://docs.python.org/2/library/gettext#gettext.dgettext>`_ to explicitly
+specify the domain. Lingua will use this information when filtering domains.
+
+
+Specifying keywords
+-------------------
+
+When looking for messages a lingua parser uses a default list of keywords
+to identify translation calls. You can add extra keywords via the ``--keyword``
+option. If you have your own ``mygettext`` function which takes a string
+to translate as its first parameter you can use this:
+
+::
+    $ pot-create --keyword=mygettext
+
+If your function takes more parameters you will need to tell lingua about them.
+This can be done in several ways:
+
+* If the translatable text is not the first parameter you can specify the
+  parameter number with ``<keyword>:<parameter number>``. For example if
+  you use ``i18n_log(level, msg)`` the keyword specifier would be ``i18nlog:2``
+* If you support plurals you can specify the parameter used for the plural message
+  by specifying tne parameter number for both the singular and plural text. For
+  example if your function is ``show_result(single, plural)`` the keyword
+  specifier is ``show_result:1,2``
+* If you use message contexts you can specify the parameter used for the context
+  by adding a ``c`` to the parameter number. For example the keyword specifier for
+  `pgettext` is ``pgettext:1c,2``.
+* If your function takes the domain as a parameter you can specify which parameter
+  is used for the domain by adding an ``d`` to the parameter number. For example
+  the keyword specier for ``dgettext`` is ``dgettext:1d,2`` . This is a
+  lingua-specified extension.
+* You can specify the exact number of parameters a function call must have
+  using the ``t`` postfix. For example if a funtion *must* have four parameters
+  to be a valid call the specifier could be ``myfunc:1,5t``
+
+
+Comparison to other tools
+-------------------------
+
+Differences compared to GNU gettext:
+
+* Support for file formats such as Zope Page Templates (popular in
+  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`,
+  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_
+  `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`).
+* Better support for detecting format strings used in Python.
+* No direct support for C, C++, Perl, and many other languages.
+
+
+Differences compared to Babel:
+
+* More reliable detection of Python format strings.
+* Lingua inludes Plural support.
+* Support for only extracting texts for a given translation domain. This is
+  often useful for extensible software where you use multiple translations
+  domains in a single application.
 
 
 Babel extraction plugins
@@ -23,46 +136,9 @@ Detailed information on using Babel extraction plugins can be found in the
 <http://babel.edgewall.org/wiki/Documentation/setup.html#method-mapping>`_.
 
 
-Translating via spreadsheets
-============================
 
-Not all translators are comfortable with using PO-editors such as `Poedit
-<http://www.poedit.net/>`_ or translation tools like `Transifex
-<http://trac.transifex.org/>`_. For them lingua has simple tools to convert
-PO-files to `xls`-files and back again. This also has another benefit: it is
-possible to include multiple languages in a single spreadsheet, which is
-helpful when translating to multiple similar languages at the same time (for
-example simplified and traditional chinese).
-
-The format for spreadsheets is simple: the first column lists the canonical
-text, and all further columns contain a translation for the text, with the
-language code on the first row. Fuzzy translations are marked in italic.
-
-Converting one or more PO-files to an xls file is done with the `po-to-xls`
-command::
-
-    po-to-xls -p nl nl.po texts.xls
-
-This will create a new file `texts.xls` with the Dutch translations. The `-p`
-parameter can be given multiple times to include more languages::
-
-    po-to-xls -p zh_CN zh_CN.po -p zh_TW zh_TW.po -p nl nl.po texts.xls
-
-This will generate a file with all simplified chinese, traditional chinese and
-Dutch translations.
-
-
-Translations can be merged back from a spreadsheet into a PO-file using the
-`xls-to-po` command::
-
-    xls-to-po nl texts.xls nl.po
-
-This will take the Dutch (`nl`) translations from `texts.xls` and use those to
-upgrade the `nl.po` file.
-
-
-Sanity checking
-===============
+Validating translations
+=======================
 
 Lingua includes a simple `polint` tool which performs a few basic checks on PO
 files. Currently implemented tests are:
@@ -77,7 +153,7 @@ files. Currently implemented tests are:
 
 To check a po file simply run `polint` with the po file as argument::
 
-    polint nl.po
+    $ polint nl.po
 
     Translation:
         ${val} ist keine Zeichenkette
