@@ -57,6 +57,24 @@ class POEntry(polib.POEntry):
             self._tcomments.append(message.tcomment)
 
 
+class POFile(polib.POFile):
+    copyright = None
+    package_name = None
+
+    def metadata_as_entry(self):
+        entry = polib.POFile.metadata_as_entry(self)
+        year = time.localtime().tm_year
+        header = [u'SOME DESCRIPTIVE TITLE']
+        if self.copyright_holder:
+            header.append(u'Copyright (C) %d %s' %  (year, self.copyright_holder))
+        header.append(
+                u'This file is distributed under the same license as the %s package' %
+                self.package_name)
+        header.append(u'FIRST AUTHOR <EMAIL@ADDRESS>, %d.' % year)
+        entry.tcomment = u'\n'.join(header)
+        return entry
+
+
 def no_duplicates(iterator):
     seen = set()
     for item in iterator:
@@ -95,7 +113,9 @@ def find_file(filename, search_path=[]):
 
 
 def create_catalog(options):
-    catalog = polib.POFile(wrapwidth=options.width)
+    catalog = POFile(wrapwidth=options.width)
+    catalog.copyright_holder = options.copyright_holder
+    catalog.package_name = options.package_name
     catalog.metadata_is_fuzzy = True
     catalog.metadata = collections.OrderedDict()
     catalog.metadata['Project-Id-Version'] = ' '.join(filter(
@@ -145,6 +165,7 @@ def main():
     parser.add_argument('--copyright-holder', metavar='STRING',
             help='Specifies the copyright holder for the texts')
     parser.add_argument('--package-name', metavar='NAME',
+            default=u'PACKAGE',
             help='Package name to use in the generated POT file')
     parser.add_argument('--package-version', metavar='Version',
             default='1.0',
