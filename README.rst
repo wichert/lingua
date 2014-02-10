@@ -139,7 +139,7 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 Differences compared to `Babel`_:
 
 * More reliable detection of Python format strings.
-* Lingua inludes plural support.
+* Lingua includes plural support.
 * Support for only extracting texts for a given translation domain. This is
   often useful for extensible software where you use multiple translation
   domains in a single application.
