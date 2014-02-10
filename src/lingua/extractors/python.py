@@ -1,6 +1,8 @@
 import ast
 from . import register_extractor
 from . import Message
+from . import check_c_format
+from . import check_python_format
 
 
 KEYWORDS = {
@@ -42,4 +44,7 @@ def extract_python(filename, options):
                     msg_default = keyword.value.s
             if msg_id:
                 comment = u'Default: %s' % msg_default if msg_default else u''
-                yield Message(None, msg_id, u'', [], comment, u'', (filename, node.lineno))
+                flags = []
+                check_c_format(msg_id, flags)
+                check_python_format(msg_id, flags)
+                yield Message(None, msg_id, u'', flags, comment, u'', (filename, node.lineno))
