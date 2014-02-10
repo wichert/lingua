@@ -24,21 +24,24 @@ Specifying input files
 
 There are three ways to tell lingua which files you want it to scan:
 
-1. Specify filenames directly on the command line.
-2. Specify a directory directly on the command line. Lingua will recursively
-   scan that directory for all files it knows how to handle.
+1. Specify filenames directly on the command line. For example::
+
+   $ pot-create main.py utils.py
+
+2. Specify a directory on the command line. Lingua will recursively scan that
+   directory for all files it knows how to handle.
 3. Use the `--files-from`` parameter to point to a file with a list of
    files to scan.
 
-You can also use the `--directory`` parameter a list of directories. This
-may sound confusing, but can be useful. Take this command:
+You can also use the `--directory=PATH`` parameter to add the given path to the
+list of directories to check for tils. This may sound confusing, but can be
+useful. For example this command will look for ``main.py`` and ``utils.py`` in
+the current directory, and if they are not found there in the ``../src``
+directory::
 
-::
 
     $ pot-create --directory=../src main.py utils.py
 
-This will look for ``main.py`` and ``utils.py`` in the current directory, and
-if they are not found there in the ``../src`` directory.
 
 
 Domain filtering
@@ -68,6 +71,10 @@ specify the domain. Lingua will use this information when filtering domains.
 
 Specifying keywords
 -------------------
+
+.. note::
+
+   This is an advanced feature that is almost never needed.
 
 When looking for messages a lingua parser uses a default list of keywords
 to identify translation calls. You can add extra keywords via the ``--keyword``
