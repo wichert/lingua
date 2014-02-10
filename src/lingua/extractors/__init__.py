@@ -15,4 +15,4 @@ def register_extractor(identifier, extensions):
 
 def get_extractor(filename):
     ext = os.path.splitext(filename)[1]
-    return EXTRACTORS.get(ext)
+    return EXTENSIONS.get(ext)
