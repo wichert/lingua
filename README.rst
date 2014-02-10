@@ -3,7 +3,7 @@ What is lingua?
 
 Lingua is a package with tools to extract translateable texts from
 your code, and to check existing translations. It replaces the use
-of the `xgettext` command from gettext, or `pybabel` from Babel.
+of the ``xgettext`` command from gettext, or ``pybabel`` from Babel.
 
 
 Message extraction
