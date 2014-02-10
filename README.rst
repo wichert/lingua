@@ -30,8 +30,17 @@ There are three ways to tell lingua which files you want it to scan:
 
 2. Specify a directory on the command line. Lingua will recursively scan that
    directory for all files it knows how to handle.
+
+   ::
+
+       $ pot-create src
+
 3. Use the `--files-from`` parameter to point to a file with a list of
-   files to scan.
+   files to scan. Lines starting with ``#`` and empty lines will be ignored.
+
+   ::
+   
+       $ pot-create --files-from='POTFILES.in'
 
 You can also use the `--directory=PATH`` parameter to add the given path to the
 list of directories to check for tils. This may sound confusing, but can be
@@ -99,12 +108,12 @@ This can be done in several ways:
   by adding a ``c`` to the parameter number. For example the keyword specifier for
   `pgettext` is ``pgettext:1c,2``.
 * If your function takes the domain as a parameter you can specify which parameter
-  is used for the domain by adding an ``d`` to the parameter number. For example
-  the keyword specier for ``dgettext`` is ``dgettext:1d,2`` . This is a
+  is used for the domain by adding a ``d`` to the parameter number. For example
+  the keyword specier for ``dgettext`` is ``dgettext:1d,2``. This is a
   lingua-specified extension.
 * You can specify the exact number of parameters a function call must have
   using the ``t`` postfix. For example if a funtion *must* have four parameters
-  to be a valid call the specifier could be ``myfunc:1,5t``
+  to be a valid call, the specifier could be ``myfunc:1,5t``.
 
 
 Babel plugin support
@@ -123,7 +132,7 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 
 * Support for file formats such as Zope Page Templates (popular in
   `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_),
-  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_ and
+  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_,
   `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
 * No direct support for C, C++, Perl, and many other languages. Lingua focues
