@@ -68,7 +68,7 @@ class POFile(polib.POFile):
         if self.copyright_holder:
             header.append(u'Copyright (C) %d %s' %  (year, self.copyright_holder))
         header.append(
-                u'This file is distributed under the same license as the %s package' %
+                u'This file is distributed under the same license as the %s package.' %
                 self.package_name)
         header.append(u'FIRST AUTHOR <EMAIL@ADDRESS>, %d.' % year)
         entry.tcomment = u'\n'.join(header)
