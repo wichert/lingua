@@ -3,8 +3,9 @@ import argparse
 import collections
 import datetime
 import os
-import polib
 import sys
+import time
+import polib
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
 import lingua.extractors.python
@@ -14,6 +15,15 @@ import lingua.extractors.zcml
 lingua.extractors.python  # Keep PyFlakes happy
 lingua.extractors.xml
 lingua.extractors.zcml
+
+
+def po_timestamp():
+    local = time.localtime()
+    offset = -(time.altzone if local.tm_isdst else time.timezone)
+    return '%s%s%s' % (
+        time.strftime('%Y-%m-%d %H:%M:%S', local),
+        '-' if offset < 0 else '+',
+        time.strftime('%H:%M', time.gmtime(abs(offset))))
 
 
 class POEntry(polib.POEntry):
@@ -92,7 +102,7 @@ def create_catalog(options):
         None, [options.package_name, options.package_version]))
     if options.msgid_bugs_address:
         catalog.metadata['Report-Msgid-Bugs-To'] = options.msgid_bugs_address
-    catalog.metadata['POT-Creation-Date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    catalog.metadata['POT-Creation-Date'] = po_timestamp()
     catalog.metadata['PO-Revision-Date'] = 'YEAR-MO-DA HO:MI+ZONE'
     catalog.metadata['Last-Translator'] = 'FULL NAME <EMAIL@ADDRESS'
     catalog.metadata['Language-Team'] = 'LANGUAGE <LL@li.org>'
