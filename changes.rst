@@ -4,6 +4,27 @@ Changelog
 2.0.0 - Unreleased
 ----------------------
 
+- Lingua is now fully Python 3 compatible.
+
+- Add a new `pot-create` command to extract translateable texts. This is
+  (almost) a drop-in replacement for GNU gettext's `xgettext` command and
+  replaces the use of Babel's extraction tools. For backwards compatibility
+  this tool can use existing Babel extraction plugins.
+
+- Define a new extraction plugin API which enables several improvements to
+  be made:
+
+  - You can now select which domain to extract from files. This is currently
+    only supported by the XML and ZCML extractors.
+  - Format strings checks are now handled by the extraction plugin instead of
+    applied globally. This prevents false positives.
+  - Message contexts are fully supported.
+
+- Format string detection has been improved: both C and Python format strings
+  are now handled correctly.
+
+- Whitespace handling in XML extractor has been improved..
+
 - The po-xls conversion tools have been moved to a new `po-xls
   <https://github.com/wichert/po-xls>`_ package.
 
