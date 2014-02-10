@@ -4,12 +4,14 @@ import collections
 import sys
 from xml.parsers import expat
 from . import register_extractor
+from . import Message
 
 
 class ZcmlExtractor(object):
     ATTRIBUTES = set(['title', 'description'])
 
     def __call__(self, filename, options):
+        self.filename = filename
         self.target_domain = options.domain
         self.messages = []
         self.parser = expat.ParserCreate()
@@ -24,9 +26,10 @@ class ZcmlExtractor(object):
             sys.exit(1)
         return self.messages
 
-    def addMessage(self, message, comments=[]):
+    def add_message(self, msgid):
         self.messages.append(
-                (self.parser.CurrentLineNumber, None, message, comments))
+                Message(None, msgid, u'', [], u'', u'',
+                    (self.filename, (self.parser.CurrentLineNumber))))
 
     def StartElementHandler(self, name, attributes):
         if 'i18n_domain' in attributes:
@@ -40,7 +43,7 @@ class ZcmlExtractor(object):
         if self.target_domain in [None, self.domainstack[-1]]:
             for (key, value) in attributes.items():
                 if key in self.ATTRIBUTES:
-                    self.addMessage(value)
+                    self.add_message(value)
 
     def EndElementHandler(self, name):
         if self.domainstack:

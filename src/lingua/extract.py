@@ -16,6 +16,37 @@ lingua.extractors.xml
 lingua.extractors.zcml
 
 
+class POEntry(polib.POEntry):
+    def __init__(self, *a, **kw):
+        polib.POEntry.__init__(self, *a, **kw)
+        self._comments = []
+        self._tcomments = []
+
+    @property
+    def comment(self):
+        return u'\n'.join(self._comments)
+
+    @comment.setter
+    def comment(self, value):
+        pass
+
+    @property
+    def tcomment(self):
+        return u'\n'.join(self._tcomments)
+
+    @tcomment.setter
+    def tcomment(self, value):
+        pass
+
+    def update(self, message):
+        self.occurrences.append(message.location)
+        self.flags.extend(f for f in message.flags if f not in self.flags)
+        if message.comment not in self._comments:
+            self._comments.append(message.comment)
+        if message.tcomment not in self._tcomments:
+            self._tcomments.append(message.tcomment)
+
+
 def no_duplicates(iterator):
     seen = set()
     for item in iterator:
@@ -125,17 +156,12 @@ def main():
             print('No extractor available for file %s' % filename, file=sys.stderr)
             sys.exit(1)
 
-        for (lineno, function, msg_id, comments) in extractor(real_filename, options):
-            msg = catalog.find(msg_id)
-            if msg is None:
-                msg = polib.POEntry(msgid=msg_id)
-                catalog.append(msg)
-            if options.location:
-                msg.occurrences.append((filename, lineno))
-            if comments:
-                if msg.comment:
-                    msg.comment += '\n'
-                msg.comment += '\n'.join(comments)
+        for message in extractor(real_filename, options):
+            entry = catalog.find(message.msgid, msgctxt=message.msgctxt)
+            if entry is None:
+                entry = POEntry(msgctxt=message.msgctxt, msgid=message.msgid)
+                catalog.append(entry)
+            entry.update(message)
         catalog.save('messages.pot')
 
 

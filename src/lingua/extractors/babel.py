@@ -1,5 +1,6 @@
 from . import EXTENSIONS
 from . import EXTRACTORS
+from . import Message
 
 DEFAULT_KEYWORDS = {
         '_': None,
@@ -17,7 +18,8 @@ DEFAULT_KEYWORDS = {
 def babel_wrapper(extractor):
     def wrapper(filename, options):
         fileobj = open(filename, 'rb')
-        return extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), None)
+        for (lineno, _, msgid, comment) in extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), None):
+            yield Message(None, msgid, u'', [], comment, None, (filename, linno))
     wrapper.__doc__ = extractor.__doc__
     return wrapper
 

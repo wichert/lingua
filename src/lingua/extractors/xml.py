@@ -7,16 +7,18 @@ from io import BytesIO
 from xml.parsers import expat
 from .python import extract_python
 from . import register_extractor
+from . import Message
 
 
 class TranslateContext(object):
     WHITESPACE = re.compile(u"\s{2,}")
     EXPRESSION = re.compile(u"\s*\${[^}]*}\s*")
 
-    def __init__(self, domain, msgid, lineno, i18n_prefix):
+    def __init__(self, domain, msgid, filename, lineno, i18n_prefix):
         self.domain = domain
         self.msgid = msgid
         self.text = []
+        self.filename = filename
         self.lineno = lineno
         self.i18n_prefix = i18n_prefix
 
@@ -39,10 +41,12 @@ class TranslateContext(object):
     def message(self):
         text = u''.join(self.text).strip()
         text = self.WHITESPACE.sub(u' ', text)
-        if self.msgid:
-            return (self.lineno, None, self.msgid, [u'Default: %s' % text])
-        else:
-            return (self.lineno, None, text, [])
+        if not self.msgid:
+            self.msgid = text
+            text = u''
+        comment = u'Default: %s' % text if text else u''
+        return Message(None, self.msgid, u'', [], comment, u'',
+                (self.filename, self.lineno))
 
 
 class XmlExtractor(object):
@@ -50,6 +54,7 @@ class XmlExtractor(object):
     UNDERSCORE_CALL = re.compile("_\(")
 
     def __call__(self, filename, options):
+        self.filename = filename
         self.target_domain = options.domain
         self.options = options
         self.messages = []
@@ -75,17 +80,17 @@ class XmlExtractor(object):
             sys.exit(1)
         return self.messages
 
-    def addMessage(self, message, comments=[]):
-        self.messages.append(
-                (self.parser.CurrentLineNumber, None, message, comments))
+    def add_message(self, msgid, comment):
+        self.messages.append(Message(None, msgid, u'', [], comment, u'',
+            (self.filename, (self.parser.CurrentLineNumber))))
 
     def addUnderscoreCalls(self, message):
         msg = message
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
-        py_messages = extract_python(BytesIO(msg), {'_': None}, None, None)
-        for (line, _, py_message, comments) in py_messages:
-            self.addMessage(py_message, comments)
+        for message in extract_python(BytesIO(msg), {'_': None}, None, None):
+            self.messages.append(Message(message[:6],
+                (self.filename, self.parser.CurrentLineNumber)))
 
     def StartElementHandler(self, name, attributes):
         i18n_prefix = self.prefix_stack[-1]
@@ -108,7 +113,8 @@ class XmlExtractor(object):
         if i18n_prefix and i18n_translate is not None:
             self.translatestack.append(TranslateContext(
                 self.domainstack[-1] if self.domainstack else None,
-                i18n_translate, self.parser.CurrentLineNumber, i18n_prefix))
+                i18n_translate, self.filename, self.parser.CurrentLineNumber,
+                i18n_prefix))
         else:
             self.translatestack.append(None)
 
@@ -122,7 +128,7 @@ class XmlExtractor(object):
                 if ' ' not in msgid:
                     if msgid not in attributes:
                         continue
-                    self.addMessage(attributes[msgid])
+                    self.add_message(attributes[msgid])
                 else:
                     try:
                         (attr, msgid) = msgid.split()
@@ -130,7 +136,7 @@ class XmlExtractor(object):
                         continue
                     if attr not in attributes:
                         continue
-                    self.addMessage(msgid, [u'Default: %s' % attributes[attr]])
+                    self.add_message(msgid, [u'Default: %s' % attributes[attr]])
 
         for (attr, value) in attributes.items():
             if self.UNDERSCORE_CALL.search(value):

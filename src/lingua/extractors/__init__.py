@@ -1,5 +1,9 @@
+import collections
 import os
 
+
+Message = collections.namedtuple('Message',
+        'msgctxt msgid msgstr flags comment tcomment location')
 
 EXTRACTORS = {}
 EXTENSIONS = {}
