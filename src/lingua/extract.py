@@ -161,6 +161,9 @@ def main():
     # Extraction configuration
     parser.add_argument('-d', '--domain',
             help='Domain to extract')
+    parser.add_argument('-k', '--keyword', metavar='WORD',
+            dest='keywords', action='append', default=[], nargs='?',
+            help='Look for WORD as additional keyword')
     # POT metadata
     parser.add_argument('--copyright-holder', metavar='STRING',
             help='Specifies the copyright holder for the texts')
@@ -191,7 +194,9 @@ def main():
         for message in extractor(real_filename, options):
             entry = catalog.find(message.msgid, msgctxt=message.msgctxt)
             if entry is None:
-                entry = POEntry(msgctxt=message.msgctxt, msgid=message.msgid)
+                entry = POEntry(msgctxt=message.msgctxt,
+                                msgid=message.msgid,
+                                msgid_plural=message.msgid_plural)
                 catalog.append(entry)
             entry.update(message)
         scanned += 1

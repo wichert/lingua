@@ -28,7 +28,7 @@ class ZcmlExtractor(object):
 
     def add_message(self, msgid):
         self.messages.append(
-                Message(None, msgid, u'', [], u'', u'',
+                Message(None, msgid, None, [], u'', u'',
                     (self.filename, (self.parser.CurrentLineNumber))))
 
     def StartElementHandler(self, name, attributes):

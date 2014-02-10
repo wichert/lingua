@@ -45,7 +45,7 @@ class TranslateContext(object):
             self.msgid = text
             text = u''
         comment = u'Default: %s' % text if text else u''
-        return Message(None, self.msgid, u'', [], comment, u'',
+        return Message(None, self.msgid, None, [], comment, u'',
                 (self.filename, self.lineno))
 
 
@@ -81,7 +81,7 @@ class XmlExtractor(object):
         return self.messages
 
     def add_message(self, msgid, comment=u''):
-        self.messages.append(Message(None, msgid, u'', [], comment, u'',
+        self.messages.append(Message(None, msgid, None, [], comment, u'',
             (self.filename, (self.parser.CurrentLineNumber))))
 
     def addUnderscoreCalls(self, message):
