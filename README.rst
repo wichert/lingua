@@ -13,9 +13,10 @@ The simplest way to extract all translateable messages is to point the
 `pot-extract` tool at the root of your source tree.
 
 ::
+
      $ pot-create src
 
-This will create a `messages.pot` file which contains all found messages.
+This will create a ``messages.pot`` file containing all found messages.
 
 
 Specifying input files
@@ -48,12 +49,14 @@ in a single source tree. Lingua can support that by filtering messages by
 domain when scanning sources. To enable domain filtering use the `-d` option:
 
 ::
+
     $ pot-create -d mydomain src
 
 Lingua will always include messages for which it can not determine the domain.
 For example, take this Python code:
 
 ::
+
      print(gettext(u'Hello, World'))
      print(dgettext('mydomain', u'Bye bye'))
 
@@ -72,6 +75,7 @@ option. If you have your own ``mygettext`` function which takes a string
 to translate as its first parameter you can use this:
 
 ::
+
     $ pot-create --keyword=mygettext
 
 If your function takes more parameters you will need to tell lingua about them.
@@ -96,15 +100,24 @@ This can be done in several ways:
   to be a valid call the specifier could be ``myfunc:1,5t``
 
 
+Babel plugin support
+--------------------
+
+There are several packages with plugins for `Babel
+<http://babel.edgewall.org/>`_'s message extraction tool. Lingua can use those
+plugins as well. The plugin names will be prefixed with ``babel-`` to
+distinguish them from lingua extractors.
+
+
 Comparison to other tools
 -------------------------
 
 Differences compared to GNU gettext:
 
 * Support for file formats such as Zope Page Templates (popular in
-  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`,
+  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`),
   `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_
-  `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`).
+  `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
 * No direct support for C, C++, Perl, and many other languages.
 
@@ -116,24 +129,6 @@ Differences compared to Babel:
 * Support for only extracting texts for a given translation domain. This is
   often useful for extensible software where you use multiple translations
   domains in a single application.
-
-
-Babel extraction plugins
-========================
-
-lingua contains two extraction plugins for `Babel
-<http://babel.edgewall.org/>`_:
-
-* ``lingua_python``, which supports translation strings as used in `Pyramid
-  <http://pylonsproject.org>`_ (via `translationstring
-  <http://pypi.python.org/pypi/translationstring>`_) and Zope2/ZTK (via
-  `zope.i18nmessageid <http://pypi.python.org/pypi/zope.i18nmessageid>`_).
-* ``lingua_xml``, which supports the i18n syntax as used by `Chameleon
-  <http://pagetemplates.org/>`_ and Zope PageTempaltes,
-
-Detailed information on using Babel extraction plugins can be found in the
-`Babel documentation
-<http://babel.edgewall.org/wiki/Documentation/setup.html#method-mapping>`_.
 
 
 
