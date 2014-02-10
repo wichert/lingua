@@ -40,9 +40,9 @@ There are three ways to tell lingua which files you want it to scan:
 
    ::
    
-       $ pot-create --files-from='POTFILES.in'
+       $ pot-create --files-from=POTFILES.in
 
-You can also use the `--directory=PATH`` parameter to add the given path to the
+You can also use the ``--directory=PATH`` parameter to add the given path to the
 list of directories to check for tils. This may sound confusing, but can be
 useful. For example this command will look for ``main.py`` and ``utils.py`` in
 the current directory, and if they are not found there in the ``../src``
@@ -80,10 +80,6 @@ specify the domain. Lingua will use this information when filtering domains.
 
 Specifying keywords
 -------------------
-
-.. note::
-
-   This is an advanced feature that is almost never needed.
 
 When looking for messages a lingua parser uses a default list of keywords
 to identify translation calls. You can add extra keywords via the ``--keyword``
@@ -143,9 +139,9 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 Differences compared to `Babel`_:
 
 * More reliable detection of Python format strings.
-* Lingua inludes Plural support.
+* Lingua inludes plural support.
 * Support for only extracting texts for a given translation domain. This is
-  often useful for extensible software where you use multiple translations
+  often useful for extensible software where you use multiple translation
   domains in a single application.
 
 
@@ -153,12 +149,12 @@ Differences compared to `Babel`_:
 Validating translations
 =======================
 
-Lingua includes a simple `polint` tool which performs a few basic checks on PO
-files. Currently implemented tests are:
+Lingua includes a simple ``polint`` tool which performs a few basic checks on
+PO files. Currently implemented tests are:
 
-* duplicated message ids (can also be checked with `msgfmt`). These should
-  never happen and are usually a result of a bug in the message extraction
-  logic.
+* duplicated message ids (can also be checked with GNU gettext's ``msgfmt``).
+  These should never happen and are usually a result of a bug in the message
+  extraction logic.
 
 * identical translations used for multiple canonical texts. This can happen
   for valid reasons, for example when the original text is not spelled
