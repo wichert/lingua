@@ -87,6 +87,8 @@ def no_duplicates(iterator):
 def list_files(options):
     if options.files_from:
         for filename in open(options.files_from, 'r'):
+            if filename.startswith('#') or not filename.strip():
+                continue
             yield filename
     for file in options.file:
         if os.path.isfile(file):
