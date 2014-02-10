@@ -1,4 +1,6 @@
+from __future__ import print_function
 import ast
+import sys
 from . import register_extractor
 from . import Message
 from . import check_c_format
@@ -62,10 +64,20 @@ def parse_translationstring(node):
     return (None, None, msgid, None, comment)
 
 
-@register_extractor('python', ['.py'])
-def extract_python(filename, options):
+def _read(filename):
+    """Injection point for tests."""
+    return open(filename, 'rb').read()
+
+
+def _extract_python(filename, source, options):
     update_keywords(KEYWORDS, options.keywords)
-    tree = ast.parse(open(filename, 'rb').read(), filename)
+    try:
+        tree = ast.parse(source, filename)
+    except SyntaxError as e:
+        print('Aborting due to parse error in %s[%d]: %s' %
+                        (filename, e.lineno, e.text), file=sys.stderr)
+        sys.exit(1)
+
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
@@ -86,3 +98,8 @@ def extract_python(filename, options):
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
         yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, node.lineno))
+
+
+@register_extractor('python', ['.py'])
+def extract_python(filename, options):
+    return _extract_python(filename, _read(filename), options)

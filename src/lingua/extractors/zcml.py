@@ -7,6 +7,11 @@ from . import register_extractor
 from . import Message
 
 
+def _open(filename):
+    """Injection point for tests."""
+    return open(filename, 'rb')
+
+
 class ZcmlExtractor(object):
     ATTRIBUTES = set(['title', 'description'])
 
@@ -19,7 +24,7 @@ class ZcmlExtractor(object):
         self.parser.EndElementHandler = self.EndElementHandler
         self.domainstack = collections.deque()
         try:
-            self.parser.ParseFile(open(filename, 'rb'))
+            self.parser.ParseFile(_open(filename))
         except expat.ExpatError as e:
             print('Aborting due to parse error in %s: %s' %
                             (filename, e.message), file=sys.stderr)
