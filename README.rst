@@ -52,6 +52,37 @@ directory::
     $ pot-create --directory=../src main.py utils.py
 
 
+Configuration
+-------------
+
+In its default configuration lingua will use its python extractor for `.py`
+files, its XML extractor for ``.pt`` and ``.zpt`` files and its ZCML extractor
+for ``.zcml`` files. If you use different extensions you setup a configuration
+file which tells lingua how to process files. This file uses a simple ini-style
+format.
+
+This minimal configuration tells lingua to use its XML extractor for files with
+the ``.html`` extension::
+
+    [extension:.html]
+    plugin = xml
+
+Use the ``--config`` option to point lingua to your configuration file.
+
+::
+
+    $ pot-create -c lingua.cfg src
+
+This also allows you to use Babel extraction plugins available on your system.
+To prevent naming conflicts you need to prefix the name of a babel plugin with
+``babel-``. This file can be used to extract messages fromm JSON files if you
+have the `PyBabel-json <https://pypi.python.org/pypi/PyBabel-json>`_ package
+installed::
+
+     [extension:.json]
+     plugin = babel-json
+
+
 
 Domain filtering
 ----------------

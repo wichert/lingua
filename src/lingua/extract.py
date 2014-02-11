@@ -5,10 +5,12 @@ import datetime
 import os
 import sys
 import time
+import ConfigParser
 import polib
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
 from lingua.extractors import EXTRACTORS
+from lingua.extractors import EXTENSIONS
 import lingua.extractors.python
 import lingua.extractors.xml
 import lingua.extractors.zcml
@@ -136,10 +138,31 @@ def create_catalog(options):
     return catalog
 
 
+def read_config(options):
+    config = ConfigParser.SafeConfigParser()
+    config.readfp(open(options.config))
+    for section in config.sections():
+        if section.startswith('extension:'):
+            extension = section[10:]
+        plugin = config.get(section, 'plugin')
+        if not plugin:
+            print('No plugin defined for extension %s' % extension,
+                    file=sys.stderr)
+            sys.exit(1)
+        try:
+            EXTENSIONS[extension] = EXTRACTORS[plugin]
+        except KeyError:
+            print('Unknown plugin %s. Check --list-plugins for available options' % plugin,
+                    file=sys.stderr)
+            sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='Extract translateable strings.')
 
+    parser.add_argument('-c', '--config', metavar='CONFIG',
+            help='Read plugin configuration from CONFIG file')
     # Input options
     parser.add_argument('-f', '--files-from', metavar='FILE',
             help='Get list of files to process from FILE')
@@ -189,6 +212,8 @@ def main():
             print(plugin)
         return
 
+    if options.config:
+        read_config(options)
     catalog = create_catalog(options)
 
     scanned = 0
