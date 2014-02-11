@@ -29,11 +29,11 @@ def get_extractor(filename):
 # Based on http://www.cplusplus.com/reference/cstdio/printf/
 _C_FORMAT = re.compile(r'''
         %
-        [+ #0-]?               # flags
-        (\d+|\*)?              # width
-        (\.(\d+|\*))?           # precision
-        (hh?|ll?|j|z|t|L)?     # length
-        [diuoxXfFeEgGaAcspn%]  # specifier
+        [+ #0-]?              # flags
+        (\d+|\*)?             # width
+        (\.(\d+|\*))?         # precision
+        (hh?|ll?|j|z|t|L)?    # length
+        [diuoxXfFeEgGaAcspn%] # specifier
         ''', re.VERBOSE)
 
 
