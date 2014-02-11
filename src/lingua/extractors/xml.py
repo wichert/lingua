@@ -3,8 +3,7 @@ from __future__ import print_function
 import collections
 import re
 import sys
-from io import BytesIO
-from xml.parsers import expat
+from lxml import etree
 from .python import _extract_python
 from . import register_extractor
 from . import Message
@@ -33,11 +32,11 @@ class TranslateContext(object):
         self.lineno = lineno
         self.ns_map = ns_map
 
-    def addText(self, text):
+    def add_text(self, text):
         self.text.append(text)
 
-    def addNode(self, name, attributes):
-        name = attributes.get('%s:name' % self.ns_map[I18N_NS])
+    def add_element(self, element):
+        name = element.attrib.get('%s:name' % self.ns_map[I18N_NS])
         if name:
             self.text.append(u'${%s}' % name)
         else:
@@ -60,39 +59,34 @@ class TranslateContext(object):
                 (self.filename, self.lineno))
 
 
-class XmlExtractor(object):
-    ENTITY = re.compile(r"&([A-Za-z]+|#[0-9]+);")
-
-    def __call__(self, filename, options):
+class Extractor(object):
+    def __init__(self, filename, options):
+        self.options = options
         self.filename = filename
         self.target_domain = options.domain
-        self.options = options
         self.messages = []
-        self.parser = expat.ParserCreate()
-        if hasattr(self.parser, 'returns_unicode'):  # Not present in Py3
-            self.parser.returns_unicode = True
-        self.parser.UseForeignDTD()
-        self.parser.SetParamEntityParsing(
-            expat.XML_PARAM_ENTITY_PARSING_ALWAYS)
-        self.parser.StartElementHandler = self.StartElementHandler
-        self.parser.CharacterDataHandler = self.CharacterDataHandler
-        self.parser.EndElementHandler = self.EndElementHandler
-        self.parser.DefaultHandler = self.DefaultHandler
-        self.domainstack = collections.deque()
+        self.domainstack = collections.deque([None])
         self.translatestack = collections.deque([None])
         self.ns_stack = collections.deque([DEFAULT_NSMAP])
 
+    def __call__(self):
+        parser = etree.HTMLParser(encoding='utf-8')
         try:
-            self.parser.ParseFile(_open(filename))
-        except expat.ExpatError as e:
+            tree = etree.parse(_open(self.filename), parser)
+            for (action, element) in etree.iterwalk(tree, events=['start', 'end']):
+                if action == 'start':
+                    self.start(element)
+                elif action == 'end':
+                    self.end(element)
+        except UnicodeError as e:
             print('Aborting due to parse error in %s: %s' %
-                            (filename, e.message), file=sys.stderr)
+                            (self.filename, e.message), file=sys.stderr)
             sys.exit(1)
         return self.messages
 
-    def add_message(self, msgid, comment=u''):
+    def add_message(self, element, msgid, comment=u''):
         self.messages.append(Message(None, msgid, None, [], comment, u'',
-            (self.filename, (self.parser.CurrentLineNumber))))
+            (self.filename, element.sourceline)))
 
     def get_code_for_attribute(self, attribute, value, ns_map):
         if attribute.startswith('%s:' % ns_map[TAL_NS]):
@@ -105,35 +99,35 @@ class XmlExtractor(object):
             for source in EXPRESSION.findall(value):
                 yield source
 
-    def addUnderscoreCalls(self, message):
+    def parse_python(self, element, message):
         msg = message
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
         for message in _extract_python(self.filename, msg, self.options):
             self.messages.append(Message(*message[:6],
-                location=(self.filename, self.parser.CurrentLineNumber)))
+                location=(self.filename, element.sourceline)))
 
-    def StartElementHandler(self, name, attributes):
+    def start(self, element):
         ns_map = self.ns_stack[-1].copy()
-        for (attr, value) in attributes.items():
+        for (attr, value) in element.attrib.items():
             if attr.startswith('xmlns:'):
                 ns_map[value] = attr[6:]
         self.ns_stack.append(ns_map)
 
-        new_domain = attributes.get('%s:domain' % ns_map[I18N_NS])
+        new_domain = element.attrib.get('%s:domain' % ns_map[I18N_NS])
         if new_domain:
             self.domainstack.append(new_domain)
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])
 
         if self.translatestack[-1]:
-            self.translatestack[-1].addNode(name, attributes)
+            self.translatestack[-1].add_element(element)
 
-        i18n_translate = attributes.get('%s:translate' % ns_map[I18N_NS])
+        i18n_translate = element.attrib.get('%s:translate' % ns_map[I18N_NS])
         if i18n_translate is not None:
             self.translatestack.append(TranslateContext(
                 self.domainstack[-1] if self.domainstack else None,
-                i18n_translate, self.filename, self.parser.CurrentLineNumber,
+                i18n_translate, self.filename, element.sourceline,
                 ns_map))
         else:
             self.translatestack.append(None)
@@ -141,72 +135,52 @@ class XmlExtractor(object):
         if not self.domainstack:
             return
 
-        i18n_attributes = attributes.get('%s:attributes' % ns_map[I18N_NS])
+        i18n_attributes = element.attrib.get('%s:attributes' % ns_map[I18N_NS])
         if i18n_attributes:
             parts = [p.strip() for p in i18n_attributes.split(';')]
             for msgid in parts:
                 if ' ' not in msgid:
-                    if msgid not in attributes:
+                    if msgid not in element.attrib:
                         continue
-                    self.add_message(attributes[msgid])
+                    self.add_message(element, element.attrib[msgid])
                 else:
                     try:
                         (attr, msgid) = msgid.split()
                     except ValueError:
                         continue
-                    if attr not in attributes:
+                    if attr not in element.attrib:
                         continue
-                    self.add_message(msgid, u'Default: %s' % attributes[attr])
+                    self.add_message(element, msgid, u'Default: %s' % element.attrib[attr])
 
-        for (attribute, value) in attributes.items():
+        for (attribute, value) in element.attrib.items():
             for source in self.get_code_for_attribute(attribute, value, ns_map):
-                self.addUnderscoreCalls(source)
+                self.parse_python(element, source)
 
-    def DefaultHandler(self, data):
-        print('DATA: %r' % data)
-        if data.startswith(u'&') and self.translatestack[-1]:
-            self.translatestack[-1].addText(data)
+        if element.text:
+            self.data(element, element.text)
 
-    def CharacterDataHandler(self, data):
-        print('DATA: %r' % data)
+    def data(self, element, data):
         for source in EXPRESSION.findall(data):
             if UNDERSCORE_CALL.search(source):
-                self.addUnderscoreCalls(source)
+                self.parse_python(element, source)
         if not self.translatestack[-1]:
             return
+        self.translatestack[-1].add_text(data)
 
-        self.translatestack[-1].addText(data)
-        return
-#        data_length = len(data)
-#        context = self.parser.GetInputContext()
-#
-#        while data:
-#            m = self.ENTITY.search(context)
-#            if m is None or m.start() >= data_length:
-#                self.translatestack[-1].addText(data)
-#                break
-#
-#            n = self.ENTITY.match(data)
-#            if n is not None:
-#                length = n.end()
-#            else:
-#                length = 1
-#
-#            self.translatestack[-1].addText(context[0: m.end()])
-#            data = data[m.start() + length:]
-
-    def EndElementHandler(self, name):
+    def end(self, tag):
         if self.ns_stack:
             self.ns_stack.pop()
         if self.domainstack:
             self.domainstack.pop()
         translate = self.translatestack.pop()
-        if translate and not translate.ignore() and \
-                (None in [translate.domain, self.target_domain] or translate.domain == self.target_domain):
+        if translate and not translate.ignore() and translate.domain and \
+                (self.target_domain is None or translate.domain == self.target_domain):
             self.messages.append(translate.message())
+        if tag.tail:
+            self.data(tag, tag.tail)
 
 
 @register_extractor('xml', ['.pt', '.zpt'])
 def extract_xml(filename, options):
-    extractor = XmlExtractor()
-    return extractor(filename, options)
+    extractor = Extractor(filename, options)
+    return extractor()

@@ -27,7 +27,7 @@ def fake_source(request):
 @pytest.mark.usefixtures('fake_source')
 def test_abort_on_syntax_error():
     global source
-    source = b'''<html>'''
+    source = b'''\xff\xff\xff'''
     with pytest.raises(SystemExit):
         list(extract_xml('filename', _options()))
 
@@ -53,12 +53,12 @@ def test_attributes_plain():
 
 
 @pytest.mark.usefixtures('fake_source')
-def test_attributes_without_ns():
+def test_custom_i18n_namespace():
     global source
-    source = b'''<html>
+    source = b'''<html i18n:domain="other">
                    <dummy i18n:translate="">Foo</dummy>
                    <other xmlns:i="http://xml.zope.org/namespaces/i18n"
-                          i18n:domain="lingua">
+                          i:domain="lingua">
                      <dummy i:translate="">Foo</dummy>
                    </other>
                    <dummy i18n:translate="">Foo</dummy>
@@ -71,7 +71,7 @@ def test_attributes_without_ns():
 
 
 @pytest.mark.usefixtures('fake_source')
-def test_attributes_explici_tMessageId():
+def test_attributes_explicit_MessageId():
     global source
     source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                        i18n:domain="lingua">
@@ -85,13 +85,13 @@ def test_attributes_explici_tMessageId():
 
 
 @pytest.mark.usefixtures('fake_source')
-def test_attributes_no_domain():
+def test_attributes_no_domain_without_domain_filter():
     global source
     source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n">
                    <dummy i18n:attributes="title" title="test title"/>
                   </html>'''
     messages = list(extract_xml('filename', _options()))
-    assert messages == []
+    assert len(messages) == 1
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -232,16 +232,16 @@ def test_strip_trailing_and_leading_whitespace():
 
 
 @pytest.mark.usefixtures('fake_source')
-def Xtest_html_entities():
+def test_html_entities():
     global source
     source = b'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
-                  <button i18n:translate="">lock &amp; load&nbsp;</button>
+                  <button i18n:translate="">Lock &amp; load&nbsp;</button>
                 </html>
                 '''
     messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'Lock &amp; load&nbsp;'
+    assert messages[0].msgid == u'Lock & load'
 
 
 @pytest.mark.usefixtures('fake_source')

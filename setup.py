@@ -5,6 +5,7 @@ import sys
 version = '2.0.0dev'
 
 install_requires = [
+        'lxml',
         'polib',
         ]
 if sys.version_info < (2, 7):

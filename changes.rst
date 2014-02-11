@@ -23,6 +23,10 @@ Changelog
 - Format string detection has been improved: both C and Python format strings
   are now handled correctly.
 
+- The XML/HTML extractor has been rewritten to use HTML parser from `lxml
+  <http://lxml.de/>`_. This allows lingua to handle HTML files that are not
+  valid XML.
+
 - Whitespace handling in XML extractor has been improved..
 
 - The po-xls conversion tools have been moved to a new `po-xls
