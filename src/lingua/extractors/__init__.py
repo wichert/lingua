@@ -84,24 +84,24 @@ class Keyword(object):
         try:
             (function, args) = spec.split(':', 1)
             kw = cls(function)
+            seen_msgid_param = False
             while args:
-                if args.match(kw._comment_arg) is not None:
+                if cls._comment_arg.match(args) is not None:
                     kw.comment = args[1:-1]
                     break
-                (param, args) = args.split(',', 1)
+                (param, args) = args.split(',', 1) if ',' in args else (args, '')
                 if param.endswith('c'):
-                    key = 'msgctxt_param'
-                    param = param[:-1]
-                elif param.endswidth('d'):
-                    key = 'domain'
-                    param = param[:-1]
-                elif param.endswidth('t'):
-                    key = 'required_arguments'
-                    param = param[:-1]
+                    kw.msgctxt_param = int(param[:-1])
+                elif param.endswith('d'):
+                    kw.domain_param = int(param[:-1])
+                elif param.endswith('t'):
+                    kw.required_arguments = int(param[:-1])
+                elif not seen_msgid_param:
+                    kw.msgid_param = int(param)
+                    seen_msgid_param = True
                 else:
-                    key = 'msgid_plural_param' if kw.msgid_param else kw.msgid_param
-                setattr(kw, key, int(param))
-        except ValueError:
+                    kw.msgid_plural_param = int(param)
+        except SyntaxError:
             raise ValueError('Invalid keyword spec: %s' % spec)
         return kw
 
