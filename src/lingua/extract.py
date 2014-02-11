@@ -8,6 +8,7 @@ import time
 import polib
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
+from lingua.extractors import EXTRACTORS
 import lingua.extractors.python
 import lingua.extractors.xml
 import lingua.extractors.zcml
@@ -147,6 +148,8 @@ def main():
             help='Add DIRECTORY to list of paths to check for input files')
     parser.add_argument('file', nargs='*',
             help='Source file to process')
+    parser.add_argument('--list-plugins', action='store_true',
+            help='List all known extraction plugins')
     # Output options
     parser.add_argument('-o', '--output', metavar='FILE',
             default='messages.pot',
@@ -180,6 +183,12 @@ def main():
 
     options = parser.parse_args()
     register_babel_plugins()
+
+    if options.list_plugins:
+        for plugin in sorted(EXTRACTORS):
+            print(plugin)
+        return
+
     catalog = create_catalog(options)
 
     scanned = 0
