@@ -82,7 +82,15 @@ installed::
      [extension:.json]
      plugin = babel-json
 
+To find out which plugins are available use the ``-list-plugins`` option.
 
+::
+
+    $ bin/pot-create --list-plugins
+    python
+    xml
+    zcml
+    
 
 Domain filtering
 ----------------
