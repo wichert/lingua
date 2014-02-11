@@ -2,6 +2,7 @@
 /bin/
 /build
 /dist
+/include
 /lib
 /man
 /pyvenv.cfg
