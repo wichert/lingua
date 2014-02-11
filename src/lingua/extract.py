@@ -5,7 +5,10 @@ import datetime
 import os
 import sys
 import time
-import ConfigParser
+try:
+    from configparser import SafeConfigParser
+except ImportError:
+    from ConfigParser import SafeConfigParser
 import polib
 from lingua.extractors import get_extractor
 from lingua.extractors.babel import register_babel_plugins
@@ -139,7 +142,7 @@ def create_catalog(options):
 
 
 def read_config(options):
-    config = ConfigParser.SafeConfigParser()
+    config = SafeConfigParser()
     config.readfp(open(options.config))
     for section in config.sections():
         if section.startswith('extension:'):
