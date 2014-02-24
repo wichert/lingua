@@ -27,9 +27,9 @@ def po_timestamp():
     local = time.localtime()
     offset = -(time.altzone if local.tm_isdst else time.timezone)
     return '%s%s%s' % (
-        time.strftime('%Y-%m-%d %H:%M:%S', local),
+        time.strftime('%Y-%m-%d %H:%M', local),
         '-' if offset < 0 else '+',
-        time.strftime('%H:%M', time.gmtime(abs(offset))))
+        time.strftime('%H%M', time.gmtime(abs(offset))))
 
 
 class POEntry(polib.POEntry):
@@ -72,7 +72,7 @@ class POFile(polib.POFile):
         year = time.localtime().tm_year
         header = [u'SOME DESCRIPTIVE TITLE']
         if self.copyright_holder:
-            header.append(u'Copyright (C) %d %s' %  (year, self.copyright_holder))
+            header.append(u'Copyright (C) %d %s' % (year, self.copyright_holder))
         header.append(
                 u'This file is distributed under the same license as the %s package.' %
                 self.package_name)
