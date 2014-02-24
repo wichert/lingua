@@ -101,6 +101,9 @@ class Extractor(object):
 
     def parse_python(self, element, message):
         msg = message
+        if msg.startswith('python:'):
+            msg = msg[7:]
+
         if isinstance(msg, unicode):
             msg = msg.encode('utf-8')
         for message in _extract_python(self.filename, msg, self.options):
