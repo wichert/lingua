@@ -5,7 +5,6 @@ import sys
 version = '2.0.0dev'
 
 install_requires = [
-        'lxml',
         'polib',
         'Chameleon',
         ]
