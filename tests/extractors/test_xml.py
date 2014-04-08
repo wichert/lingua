@@ -42,11 +42,11 @@ def test_empty_xml():
 @pytest.mark.usefixtures('fake_source')
 def test_attributes_plain():
     global source
-    source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:attributes="title" title="tést title"/>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'tést title'
@@ -73,11 +73,11 @@ def test_custom_i18n_namespace():
 @pytest.mark.usefixtures('fake_source')
 def test_attributes_explicit_MessageId():
     global source
-    source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                        i18n:domain="lingua">
                    <dummy i18n:attributes="title msg_title" title="test tïtle"/>
                  </html>
-                  '''
+                  '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == 'msg_title'
@@ -97,11 +97,11 @@ def test_attributes_no_domain_without_domain_filter():
 @pytest.mark.usefixtures('fake_source')
 def test_attributes_multiple_attributes():
     global source
-    source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                        i18n:domain="lingua">
                    <dummy i18n:attributes="title ; alt" title="tést title"
                           alt="test ålt"/>
-                 </html>'''
+                 </html>'''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 2
     assert [m.msgid for m in messages] == [u'tést title', u'test ålt']
@@ -110,11 +110,11 @@ def test_attributes_multiple_attributes():
 @pytest.mark.usefixtures('fake_source')
 def test_attributes_multiple_attributes_explicit_msgid():
     global source
-    source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:attributes="title msg_title; alt msg_alt"
                          title="test titlé" alt="test ålt"/>
-                </html>'''
+                </html>'''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msg_title'
@@ -126,11 +126,11 @@ def test_attributes_multiple_attributes_explicit_msgid():
 @pytest.mark.usefixtures('fake_source')
 def test_translate_minimal():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:translate="">Dummy téxt</dummy>
-                </html>'''
+                </html>'''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'Dummy téxt'
@@ -139,11 +139,11 @@ def test_translate_minimal():
 @pytest.mark.usefixtures('fake_source')
 def test_translate_explicit_msgid():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy téxt</dummy>
-                </html>'''
+                </html>'''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
@@ -152,13 +152,13 @@ def test_translate_explicit_msgid():
 @pytest.mark.usefixtures('fake_source')
 def test_translate_subelement():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy
                     <strong>text</strong> demø</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
@@ -167,13 +167,13 @@ def test_translate_subelement():
 @pytest.mark.usefixtures('fake_source')
 def test_translate_named_subelement():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy
                     <strong i18n:name="text">téxt</strong> demø</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
@@ -183,7 +183,7 @@ def test_translate_named_subelement():
 @pytest.mark.usefixtures('fake_source')
 def test_translate_translated_subelement():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy
@@ -191,7 +191,7 @@ def test_translate_translated_subelement():
                             i18n:translate="msgid_text">téxt</strong>
                     demø</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msgid_text'

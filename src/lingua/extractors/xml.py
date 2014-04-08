@@ -75,7 +75,7 @@ class Extractor(ElementProgram):
             source = _open(filename).read().decode('utf-8')
         except UnicodeDecodeError as e:
             print('Aborting due to parse error in %s: %s' %
-                    (self.filename, e.message), file=sys.stderr)
+                    (self.filename, e), file=sys.stderr)
             sys.exit(1)
         super(Extractor, self).__init__(source, filename=filename)
 
@@ -156,7 +156,7 @@ class Extractor(ElementProgram):
                 yield source
 
     def parse_python(self, source):
-        if isinstance(source, unicode):
+        if not isinstance(source, bytes):
             source = source.encode('utf-8')
         for message in _extract_python(self.filename, source, self.options):
             self.messages.append(Message(*message[:6],
