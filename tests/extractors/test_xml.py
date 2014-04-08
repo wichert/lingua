@@ -241,7 +241,7 @@ def test_html_entities():
                 </html>
                 '''
     messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'Lock & load'
+    assert messages[0].msgid == u'Lock &amp; load&nbsp;'
 
 
 @pytest.mark.usefixtures('fake_source')
