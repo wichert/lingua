@@ -288,6 +288,19 @@ def test_translate_call_in_python_expression_attribute():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_translate_call_in_python_expression_repeat_attribute():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy tal:repeat="label _(u'foo')">${label}</dummy>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert messages[0].msgid == u'foo'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_translate_call_in_python_expression_in_char_data():
     global source
     source = b'''\

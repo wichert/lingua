@@ -4,6 +4,9 @@ Changelog
 2.1 - Unreleased
 -------------------
 
+- Fix bug in parsing of ``tal:repeat`` and ``tal:define`` attributes in the
+  XML parser.
+
 - Tweak ReST-usage in changelog so the package documentation renders correctly
   on PyPI.
 

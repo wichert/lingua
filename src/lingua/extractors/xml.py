@@ -149,7 +149,7 @@ class Extractor(ElementProgram):
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
                 yield value
-            elif attribute[2] in ['define', 'repeat']:
+            elif attribute[1] in ['define', 'repeat']:
                 yield value.split(None, 1)[1]
         else:
             for source in EXPRESSION.findall(value):
