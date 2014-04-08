@@ -6,8 +6,8 @@ Changelog
 
 - Lingua is now fully Python 3 compatible.
 
-- Add a new `pot-create` command to extract translateable texts. This is
-  (almost) a drop-in replacement for GNU gettext's `xgettext` command and
+- Add a new ``pot-create`` command to extract translateable texts. This is
+  (almost) a drop-in replacement for GNU gettext's ``xgettext`` command and
   replaces the use of Babel's extraction tools. For backwards compatibility
   this tool can use existing Babel extraction plugins.
 
