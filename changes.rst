@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1 - Unreleased
+2.1 - April 8, 2014
 -------------------
 
 - Do not break when encountering HTML entities in Python expressions in XML
