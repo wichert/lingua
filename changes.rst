@@ -4,6 +4,9 @@ Changelog
 2.1 - Unreleased
 -------------------
 
+- Do not break when encountering HTML entities in Python expressions in XML
+  templates.
+
 - Show the correct linenumber in error messages for syntax errors in Python
   expressions occurring in XML templates.
 

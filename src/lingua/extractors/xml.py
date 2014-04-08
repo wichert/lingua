@@ -8,7 +8,7 @@ from chameleon.namespaces import TAL_NS
 from chameleon.program import ElementProgram
 from chameleon.zpt.program import MacroProgram
 from chameleon.tal import parse_defines
-
+from chameleon.utils import decode_htmlentities
 
 from .python import _extract_python
 from . import register_extractor
@@ -125,7 +125,7 @@ class Extractor(ElementProgram):
 
             for (attribute, value) in attributes.items():
                 for source in self.get_code_for_attribute(attribute, value):
-                    self.parse_python(source)
+                    self.parse_python(decode_htmlentities(source))
 
         for child in children:
             self.visit(*child)

@@ -341,7 +341,7 @@ def test_multiple_expressions_with_translate_calls():
 
 
 @pytest.mark.usefixtures('fake_source')
-def test_translate_parse_define():
+def test_translate_multiple_defines():
     global source
     source = b'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
@@ -353,3 +353,15 @@ def test_translate_parse_define():
     messages = list(extract_xml('filename', _options()))
     assert messages[0].msgid == u'one'
     assert messages[1].msgid == u'two'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_entities_in_python_expression():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <div class="${' disabled' if 1 &lt; 2 else None}"/>
+                </html>
+                '''
+    list(extract_xml('filename', _options()))
