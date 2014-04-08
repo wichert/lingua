@@ -149,6 +149,7 @@ def test_translate_explicit_msgid():
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy téxt'
 
+
 @pytest.mark.usefixtures('fake_source')
 def test_translate_subelement():
     global source
@@ -163,6 +164,7 @@ def test_translate_subelement():
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy <dynamic element> demø'
+
 
 @pytest.mark.usefixtures('fake_source')
 def test_translate_named_subelement():
@@ -323,16 +325,3 @@ def test_multiple_expressions_with_translate_calls():
     messages = list(extract_xml('filename', _options()))
     assert messages[0].msgid == u'foo'
     assert messages[1].msgid == u'bar'
-
-
-@pytest.mark.usefixtures('fake_source')
-def test_translate_call_in_python_expression_in_attribute():
-    global source
-    source = b'''\
-                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-                      i18n:domain="lingua">
-                  <dummy title="${_(u'foo')}"></dummy>
-                </html>
-                '''
-    messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'foo'

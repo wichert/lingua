@@ -16,6 +16,7 @@ tests_require = [
         'mock',
         ]
 
+
 class PyTest(TestCommand):
     def finalize_options(self):
         TestCommand.finalize_options(self)
@@ -23,7 +24,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
+        # import here, cause outside the eggs aren't loaded
         import pytest
         errno = pytest.main(self.test_args)
         sys.exit(errno)
@@ -58,7 +59,7 @@ setup(name='lingua',
       zip_safe=True,
       install_requires=install_requires,
       tests_require=tests_require,
-      cmdclass = {'test': PyTest},
+      cmdclass={'test': PyTest},
       entry_points='''
       [console_scripts]
       polint = lingua.polint:main

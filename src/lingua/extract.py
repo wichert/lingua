@@ -1,7 +1,6 @@
 from __future__ import print_function
 import argparse
 import collections
-import datetime
 import os
 import sys
 import time
@@ -72,7 +71,7 @@ class POFile(polib.POFile):
         year = time.localtime().tm_year
         header = [u'SOME DESCRIPTIVE TITLE']
         if self.copyright_holder:
-            header.append(u'Copyright (C) %d %s' %  (year, self.copyright_holder))
+            header.append(u'Copyright (C) %d %s' % (year, self.copyright_holder))
         header.append(
                 u'This file is distributed under the same license as the %s package.' %
                 self.package_name)
