@@ -1,8 +1,12 @@
 Changelog
 =========
 
-2.0.0 - Unreleased
-----------------------
+2.1 - Unreleased
+-------------------
+
+
+2.0 - April 8, 2014
+-------------------
 
 - Lingua is now fully Python 3 compatible.
 

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
 
-version = '2.0'
+version = '2.1dev'
 
 install_requires = [
         'polib',
