@@ -7,6 +7,7 @@ from chameleon.namespaces import I18N_NS
 from chameleon.namespaces import TAL_NS
 from chameleon.program import ElementProgram
 from chameleon.zpt.program import MacroProgram
+from chameleon.tal import parse_defines
 
 
 from .python import _extract_python
@@ -79,6 +80,11 @@ class Extractor(ElementProgram):
             sys.exit(1)
         super(Extractor, self).__init__(source, filename=filename)
 
+    def visit(self, kind, args):
+        visitor = getattr(self, 'visit_%s' % kind, None)
+        if visitor is not None:
+            return visitor(*args)
+
     def visit_element(self, start, end, children):
         if self.translatestack and self.translatestack[-1]:
             self.translatestack[-1].add_element(start)
@@ -149,7 +155,10 @@ class Extractor(ElementProgram):
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
                 yield value
-            elif attribute[1] in ['define', 'repeat']:
+            if attribute[1] == 'define':
+                for (scope, var, value) in parse_defines(value):
+                    yield value
+            elif attribute[1] == 'repeat':
                 yield value.split(None, 1)[1]
         else:
             for source in EXPRESSION.findall(value):

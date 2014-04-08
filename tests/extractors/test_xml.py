@@ -338,3 +338,18 @@ def test_multiple_expressions_with_translate_calls():
     messages = list(extract_xml('filename', _options()))
     assert messages[0].msgid == u'foo'
     assert messages[1].msgid == u'bar'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_parse_define():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <tal:analytics define="isAnon _('one'); account _('two')">
+                  </tal:analytics>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert messages[0].msgid == u'one'
+    assert messages[1].msgid == u'two'
