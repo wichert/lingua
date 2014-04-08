@@ -69,13 +69,13 @@ def _read(filename):
     return open(filename, 'rb').read()
 
 
-def _extract_python(filename, source, options):
+def _extract_python(filename, source, options, firstline=0):
     update_keywords(KEYWORDS, options.keywords)
     try:
         tree = ast.parse(source, filename)
     except SyntaxError as e:
         print('Aborting due to parse error in %s[%d]: %s' %
-                        (filename, e.lineno, e.text), file=sys.stderr)
+                        (filename, firstline + e.lineno, e.text), file=sys.stderr)
         sys.exit(1)
 
     for node in ast.walk(tree):

@@ -167,9 +167,9 @@ class Extractor(ElementProgram):
     def parse_python(self, source):
         if not isinstance(source, bytes):
             source = source.encode('utf-8')
-        for message in _extract_python(self.filename, source, self.options):
+        for message in _extract_python(self.filename, source, self.options, self.linenumber):
             self.messages.append(Message(*message[:6],
-                location=(self.filename, self.linenumber)))
+                location=(self.filename, self.linenumber + message.location[1])))
 
 
 @register_extractor('xml', ['.pt', '.zpt'])

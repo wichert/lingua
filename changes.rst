@@ -4,6 +4,9 @@ Changelog
 2.1 - Unreleased
 -------------------
 
+- Show the correct linenumber in error messages for syntax errors in Python
+  expressions occurring in XML templates.
+
 - Fix bug in parsing of ``tal:repeat`` and ``tal:define`` attributes in the
   XML parser.
 
