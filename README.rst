@@ -35,7 +35,7 @@ There are three ways to tell lingua which files you want it to scan:
 
        $ pot-create src
 
-3. Use the `--files-from`` parameter to point to a file with a list of
+3. Use the ``--files-from`` parameter to point to a file with a list of
    files to scan. Lines starting with ``#`` and empty lines will be ignored.
 
    ::
@@ -55,7 +55,7 @@ directory::
 Configuration
 -------------
 
-In its default configuration lingua will use its python extractor for `.py`
+In its default configuration lingua will use its python extractor for ``.py``
 files, its XML extractor for ``.pt`` and ``.zpt`` files and its ZCML extractor
 for ``.zcml`` files. If you use different extensions you setup a configuration
 file which tells lingua how to process files. This file uses a simple ini-style
@@ -97,7 +97,7 @@ Domain filtering
 
 When working with large systems you may use multiple translation domains
 in a single source tree. Lingua can support that by filtering messages by
-domain when scanning sources. To enable domain filtering use the `-d` option:
+domain when scanning sources. To enable domain filtering use the ``-d`` option:
 
 ::
 
@@ -141,7 +141,7 @@ This can be done in several ways:
   keyword specifier is ``show_result:1,2``
 * If you use message contexts you can specify the parameter used for the context
   by adding a ``c`` to the parameter number. For example the keyword specifier for
-  `pgettext` is ``pgettext:1c,2``.
+  ``pgettext`` is ``pgettext:1c,2``.
 * If your function takes the domain as a parameter you can specify which parameter
   is used for the domain by adding a ``d`` to the parameter number. For example
   the keyword specier for ``dgettext`` is ``dgettext:1d,2``. This is a
@@ -166,7 +166,7 @@ Comparison to other tools
 Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 
 * Support for file formats such as Zope Page Templates (popular in
-  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_),
+  `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_,
   `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_,
   `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
@@ -199,7 +199,7 @@ PO files. Currently implemented tests are:
   for valid reasons, for example when the original text is not spelled
   consistently.
 
-To check a po file simply run `polint` with the po file as argument::
+To check a po file simply run ``polint`` with the po file as argument::
 
     $ polint nl.po
 
