@@ -365,3 +365,61 @@ def test_translate_entities_in_python_expression():
                 </html>
                 '''
     list(extract_xml('filename', _options()))
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_repeat_expression():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <div tal:repeat="(key, value) dict(a=1).iteritems()"></div>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_prefixed_expressions():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                    <div tal:content="string:Foobar"></div>
+                    <div tal:content="structure:123"></div>
+                    <div tal:content="python:2 + 2"></div>
+                    ${string:Foobar}
+                    ${structure:123}
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_structure_as_keyword():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                    <div tal:content="structure 123"></div>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_python_expressions():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                    <div tal:content="_(u'Foo')|_(u'Bar')"></div>
+                    <div tal:replace="python:_(u'Fuz')|python:_(u'Baz')"></div>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 4
+    assert {m.msgid for m in messages} == {u'Foo', u'Bar', u'Fuz', u'Baz'}

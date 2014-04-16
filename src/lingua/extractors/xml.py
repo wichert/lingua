@@ -8,6 +8,8 @@ from chameleon.namespaces import TAL_NS
 from chameleon.program import ElementProgram
 from chameleon.zpt.program import MacroProgram
 from chameleon.tal import parse_defines
+from chameleon.tales import split_parts
+from chameleon.tales import match_prefix
 from chameleon.utils import decode_htmlentities
 
 from .python import _extract_python
@@ -23,6 +25,7 @@ def _open(filename):
 WHITESPACE = re.compile(u"\s+")
 EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
 UNDERSCORE_CALL = re.compile("_\(.*\)")
+REPEAT_EXPR = re.compile(u"(?:(?:\([^)]+\))|(?:[^(]\S*))\s+(?P<expr>.*)")
 
 
 class TranslateContext(object):
@@ -154,15 +157,40 @@ class Extractor(ElementProgram):
     def get_code_for_attribute(self, attribute, value):
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
-                yield value
+                for exp in self.iter_python_expressions(value):
+                    yield exp
             if attribute[1] == 'define':
                 for (scope, var, value) in parse_defines(value):
-                    yield value
+                    for exp in self.iter_python_expressions(value):
+                        yield value
             elif attribute[1] == 'repeat':
-                yield value.split(None, 1)[1]
+                yield REPEAT_EXPR.match(value.strip()).group('expr')
         else:
             for source in EXPRESSION.findall(value):
-                yield source
+                for exp in self.iter_python_expressions(source):
+                    yield exp
+
+    def iter_python_expressions(self, expr):
+        """Iterates over translatable python expressions in a TALES expression.
+
+        Yields each Python expression in the TALES expression that has an
+        underscore call in it.
+        """
+        if not UNDERSCORE_CALL.search(expr):
+            # Short-circuit when there's nothing we're interested in
+            raise StopIteration
+
+        for part in split_parts.split(expr):
+            part = part.strip()
+            prefix = match_prefix(part)
+            if prefix is not None:
+                part = part[len(prefix.group(0)):]
+            elif part.startswith('structure '):
+                # Backwards compatibility for structure as a keyword
+                part = part[10:]
+
+            if UNDERSCORE_CALL.search(part):
+                yield part
 
     def parse_python(self, source):
         if not isinstance(source, bytes):
