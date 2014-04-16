@@ -1,6 +1,9 @@
 from __future__ import print_function
 import argparse
-import collections
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 import os
 import sys
 import time
@@ -124,7 +127,7 @@ def create_catalog(options):
     catalog.copyright_holder = options.copyright_holder
     catalog.package_name = options.package_name
     catalog.metadata_is_fuzzy = True
-    catalog.metadata = collections.OrderedDict()
+    catalog.metadata = OrderedDict()
     catalog.metadata['Project-Id-Version'] = ' '.join(filter(
         None, [options.package_name, options.package_version]))
     if options.msgid_bugs_address:
