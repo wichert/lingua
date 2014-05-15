@@ -1,13 +1,33 @@
 Changelog
 =========
 
-2.0.0 - Unreleased
-----------------------
+2.2 - Unreleased
+------------------
+
+
+2.1 - April 8, 2014
+-------------------
+
+- Do not break when encountering HTML entities in Python expressions in XML
+  templates.
+
+- Show the correct linenumber in error messages for syntax errors in Python
+  expressions occurring in XML templates.
+
+- Fix bug in parsing of ``tal:repeat`` and ``tal:define`` attributes in the
+  XML parser.
+
+- Tweak ReST-usage in changelog so the package documentation renders correctly
+  on PyPI.
+
+
+2.0 - April 8, 2014
+-------------------
 
 - Lingua is now fully Python 3 compatible.
 
-- Add a new `pot-create` command to extract translateable texts. This is
-  (almost) a drop-in replacement for GNU gettext's `xgettext` command and
+- Add a new ``pot-create`` command to extract translateable texts. This is
+  (almost) a drop-in replacement for GNU gettext's ``xgettext`` command and
   replaces the use of Babel's extraction tools. For backwards compatibility
   this tool can use existing Babel extraction plugins.
 
@@ -23,9 +43,8 @@ Changelog
 - Format string detection has been improved: both C and Python format strings
   are now handled correctly.
 
-- The XML/HTML extractor has been rewritten to use HTML parser from `lxml
-  <http://lxml.de/>`_. This allows lingua to handle HTML files that are not
-  valid XML.
+- The XML/HTML extractor has been rewritten to use HTML parser from Chameleon_.
+  This allows lingua to handle HTML files that are not valid XML.
 
 - Whitespace handling in XML extractor has been improved..
 

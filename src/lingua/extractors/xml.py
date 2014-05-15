@@ -3,7 +3,13 @@ from __future__ import print_function
 import collections
 import re
 import sys
-from lxml import etree
+from chameleon.namespaces import I18N_NS
+from chameleon.namespaces import TAL_NS
+from chameleon.program import ElementProgram
+from chameleon.zpt.program import MacroProgram
+from chameleon.tal import parse_defines
+from chameleon.utils import decode_htmlentities
+
 from .python import _extract_python
 from . import register_extractor
 from . import Message
@@ -18,25 +24,21 @@ WHITESPACE = re.compile(u"\s+")
 EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
 UNDERSCORE_CALL = re.compile("_\(.*\)")
 
-I18N_NS = 'http://xml.zope.org/namespaces/i18n'
-TAL_NS = 'http://xml.zope.org/namespaces/tal'
-DEFAULT_NSMAP = {I18N_NS: 'i18n', TAL_NS: 'tal'}
-
 
 class TranslateContext(object):
-    def __init__(self, domain, msgid, filename, lineno, ns_map):
+    def __init__(self, domain, msgid, filename, lineno):
         self.domain = domain
         self.msgid = msgid
         self.text = []
         self.filename = filename
         self.lineno = lineno
-        self.ns_map = ns_map
 
     def add_text(self, text):
         self.text.append(text)
 
     def add_element(self, element):
-        name = element.attrib.get('%s:name' % self.ns_map[I18N_NS])
+        attributes = element['ns_attrs']
+        name = attributes.get((I18N_NS, 'name'))
         if name:
             self.text.append(u'${%s}' % name)
         else:
@@ -59,7 +61,9 @@ class TranslateContext(object):
                 (self.filename, self.lineno))
 
 
-class Extractor(object):
+class Extractor(ElementProgram):
+    DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
+
     def __init__(self, filename, options):
         self.options = options
         self.filename = filename
@@ -67,123 +71,108 @@ class Extractor(object):
         self.messages = []
         self.domainstack = collections.deque([None])
         self.translatestack = collections.deque([None])
-        self.ns_stack = collections.deque([DEFAULT_NSMAP])
-
-    def __call__(self):
-        parser = etree.HTMLParser(encoding='utf-8')
+        self.linenumber = 1
         try:
-            tree = etree.parse(_open(self.filename), parser)
-            for (action, element) in etree.iterwalk(tree, events=['start', 'end']):
-                if action == 'start':
-                    self.start(element)
-                elif action == 'end':
-                    self.end(element)
-        except UnicodeError as e:
+            source = _open(filename).read().decode('utf-8')
+        except UnicodeDecodeError as e:
             print('Aborting due to parse error in %s: %s' %
-                            (self.filename, e.message), file=sys.stderr)
+                    (self.filename, e), file=sys.stderr)
             sys.exit(1)
-        return self.messages
+        super(Extractor, self).__init__(source, filename=filename)
 
-    def add_message(self, element, msgid, comment=u''):
-        self.messages.append(Message(None, msgid, None, [], comment, u'',
-            (self.filename, element.sourceline)))
+    def visit(self, kind, args):
+        visitor = getattr(self, 'visit_%s' % kind, None)
+        if visitor is not None:
+            return visitor(*args)
 
-    def get_code_for_attribute(self, attribute, value, ns_map):
-        if attribute.startswith('%s:' % ns_map[TAL_NS]):
-            attribute = attribute[len(ns_map[TAL_NS]) + 1:]
-            if attribute in ['content', 'replace']:
-                yield value
-            elif attribute in ['define', 'repeat']:
-                yield value.split(None, 1)[1]
-        else:
-            for source in EXPRESSION.findall(value):
-                yield source
+    def visit_element(self, start, end, children):
+        if self.translatestack and self.translatestack[-1]:
+            self.translatestack[-1].add_element(start)
 
-    def parse_python(self, element, message):
-        msg = message
-        if msg.startswith('python:'):
-            msg = msg[7:]
-
-        if isinstance(msg, unicode):
-            msg = msg.encode('utf-8')
-        for message in _extract_python(self.filename, msg, self.options):
-            self.messages.append(Message(*message[:6],
-                location=(self.filename, element.sourceline)))
-
-    def start(self, element):
-        ns_map = self.ns_stack[-1].copy()
-        for (attr, value) in element.attrib.items():
-            if attr.startswith('xmlns:'):
-                ns_map[value] = attr[6:]
-        self.ns_stack.append(ns_map)
-
-        new_domain = element.attrib.get('%s:domain' % ns_map[I18N_NS])
+        attributes = start['ns_attrs']
+        plain_attrs = dict((a['name'].split(':')[-1], a['value']) for a in start['attrs'])
+        new_domain = attributes.get((I18N_NS, 'domain'))
         if new_domain:
             self.domainstack.append(new_domain)
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])
 
-        if self.translatestack[-1]:
-            self.translatestack[-1].add_element(element)
-
-        i18n_translate = element.attrib.get('%s:translate' % ns_map[I18N_NS])
+        i18n_translate = attributes.get((I18N_NS, 'translate'))
         if i18n_translate is not None:
             self.translatestack.append(TranslateContext(
                 self.domainstack[-1] if self.domainstack else None,
-                i18n_translate, self.filename, element.sourceline,
-                ns_map))
+                i18n_translate, self.filename, self.linenumber))
         else:
             self.translatestack.append(None)
 
-        if not self.domainstack:
-            return
+        if self.domainstack:
+            i18n_attributes = attributes.get((I18N_NS, 'attributes'))
+            if i18n_attributes:
+                parts = [p.strip() for p in i18n_attributes.split(';')]
+                for msgid in parts:
+                    if ' ' not in msgid:
+                        if msgid not in plain_attrs:
+                            continue
+                        self.add_message(plain_attrs[msgid])
+                    else:
+                        try:
+                            (attr, msgid) = msgid.split()
+                        except ValueError:
+                            continue
+                        if attr not in plain_attrs:
+                            continue
+                        self.add_message(msgid, u'Default: %s' % plain_attrs[attr])
 
-        i18n_attributes = element.attrib.get('%s:attributes' % ns_map[I18N_NS])
-        if i18n_attributes:
-            parts = [p.strip() for p in i18n_attributes.split(';')]
-            for msgid in parts:
-                if ' ' not in msgid:
-                    if msgid not in element.attrib:
-                        continue
-                    self.add_message(element, element.attrib[msgid])
-                else:
-                    try:
-                        (attr, msgid) = msgid.split()
-                    except ValueError:
-                        continue
-                    if attr not in element.attrib:
-                        continue
-                    self.add_message(element, msgid, u'Default: %s' % element.attrib[attr])
+            for (attribute, value) in attributes.items():
+                for source in self.get_code_for_attribute(attribute, value):
+                    self.parse_python(decode_htmlentities(source))
 
-        for (attribute, value) in element.attrib.items():
-            for source in self.get_code_for_attribute(attribute, value, ns_map):
-                self.parse_python(element, source)
+        for child in children:
+            self.visit(*child)
 
-        if element.text:
-            self.data(element, element.text)
-
-    def data(self, element, data):
-        for source in EXPRESSION.findall(data):
-            if UNDERSCORE_CALL.search(source):
-                self.parse_python(element, source)
-        if not self.translatestack[-1]:
-            return
-        self.translatestack[-1].add_text(data)
-
-    def end(self, tag):
-        if self.ns_stack:
-            self.ns_stack.pop()
         if self.domainstack:
             self.domainstack.pop()
+
         translate = self.translatestack.pop()
         if translate and not translate.ignore() and translate.domain and \
                 (self.target_domain is None or translate.domain == self.target_domain):
             self.messages.append(translate.message())
-        if tag.tail:
-            self.data(tag, tag.tail)
+
+    def visit_text(self, data):
+        for line in data.splitlines():
+            for source in EXPRESSION.findall(line):
+                if UNDERSCORE_CALL.search(source):
+                    self.parse_python(source)
+            self.linenumber += 1
+        if self.translatestack[-1]:
+            self.translatestack[-1].add_text(data)
+
+    def add_message(self, msgid, comment=u''):
+        self.messages.append(Message(None, msgid, None, [], comment, u'',
+            (self.filename, self.linenumber)))
+
+    def get_code_for_attribute(self, attribute, value):
+        if attribute[0] == TAL_NS:
+            if attribute[1] in ['content', 'replace']:
+                yield value
+            if attribute[1] == 'define':
+                for (scope, var, value) in parse_defines(value):
+                    yield value
+            elif attribute[1] == 'repeat':
+                yield value.split(None, 1)[1]
+        else:
+            for source in EXPRESSION.findall(value):
+                yield source
+
+    def parse_python(self, source):
+        if not isinstance(source, bytes):
+            source = source.encode('utf-8')
+        for message in _extract_python(self.filename, source, self.options, self.linenumber):
+            self.messages.append(Message(*message[:6],
+                location=(self.filename, self.linenumber + message.location[1])))
 
 
 @register_extractor('xml', ['.pt', '.zpt'])
 def extract_xml(filename, options):
     extractor = Extractor(filename, options)
-    return extractor()
+    return extractor.messages

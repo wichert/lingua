@@ -27,7 +27,7 @@ class ZcmlExtractor(object):
             self.parser.ParseFile(_open(filename))
         except expat.ExpatError as e:
             print('Aborting due to parse error in %s: %s' %
-                            (filename, e.message), file=sys.stderr)
+                            (filename, e), file=sys.stderr)
             sys.exit(1)
         return self.messages
 
