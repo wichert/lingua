@@ -10,7 +10,7 @@ Message extraction
 ==================
 
 The simplest way to extract all translateable messages is to point the
-`pot-extract` tool at the root of your source tree.
+`pot-create` tool at the root of your source tree.
 
 ::
 
