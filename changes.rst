@@ -4,6 +4,9 @@ Changelog
 2.2 - Unreleased
 ------------------
 
+- Handle TALES expression engine selection. This fixes
+  `issue 30 <https://github.com/wichert/lingua/issues/30`_.
+
 - Handle Python expressions using curly braces in HTML templates. This fixes
   `issue 29 <https://github.com/wichert/lingua/issues/29`_.
 

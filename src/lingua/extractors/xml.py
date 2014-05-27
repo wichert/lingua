@@ -21,6 +21,7 @@ def _open(filename):
     return open(filename, 'rb')
 
 
+ENGINE_PREFIX = re.compile(r'^\s*([a-z\-_]+):\s*')
 WHITESPACE = re.compile(u"\s+")
 EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
 UNDERSCORE_CALL = re.compile("_\(.*\)")
@@ -153,15 +154,30 @@ class Extractor(ElementProgram):
         self.messages.append(Message(None, msgid, None, [], comment, u'',
             (self.filename, self.linenumber)))
 
+    def _assert_valid_python(self, value):
+        if not is_valid_python(value):
+            print('Aborting due to Python syntax error in %s[%d]: %s',
+                    self.filename, self.linenumber, value)
+            sys.exit(1)
+
     def get_code_for_attribute(self, attribute, value):
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
-                yield value
+                (engine, value) = get_tales_engine(value)
+                if engine == 'python':
+                    self._assert_valid_python(value)
+                    yield value
             if attribute[1] == 'define':
                 for (scope, var, value) in parse_defines(value):
-                    yield value
+                    (engine, value) = get_tales_engine(value)
+                    if engine == 'python':
+                        self._assert_valid_python(value)
+                        yield value
             elif attribute[1] == 'repeat':
-                yield value.split(None, 1)[1]
+                (engine, value) = get_tales_engine(value.split(None, 1)[1])
+                if engine == 'python':
+                    self._assert_valid_python(value)
+                    yield value
         else:
             try:
                 for source in get_python_expressions(value):
@@ -186,6 +202,14 @@ def is_valid_python(source):
         return False
     else:
         return True
+
+
+def get_tales_engine(source):
+    m = ENGINE_PREFIX.match(source)
+    if m is None:
+        return ('python', source)
+    else:
+        return (m.group(1), source[m.end():])
 
 
 def get_python_expressions(source):

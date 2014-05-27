@@ -352,8 +352,40 @@ def test_translate_multiple_defines():
                 </html>
                 '''
     messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 2
     assert messages[0].msgid == u'one'
     assert messages[1].msgid == u'two'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_explicit_python_expression_engine():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <tal:analytics define="layout python:_('one'); account _('two')">
+                  </tal:analytics>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 2
+    assert messages[0].msgid == u'one'
+    assert messages[1].msgid == u'two'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_ignore_other_expression_engine():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <tal:analytics define="layout load:layout.pt; account _('two')">
+                  </tal:analytics>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert len(messages) == 1
+    assert messages[0].msgid == u'two'
 
 
 @pytest.mark.usefixtures('fake_source')
