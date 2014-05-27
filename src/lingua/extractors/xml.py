@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
+import ast
 import collections
 import re
 import sys
@@ -124,8 +125,9 @@ class Extractor(ElementProgram):
                         self.add_message(msgid, u'Default: %s' % plain_attrs[attr])
 
             for (attribute, value) in attributes.items():
+                value = decode_htmlentities(value)
                 for source in self.get_code_for_attribute(attribute, value):
-                    self.parse_python(decode_htmlentities(source))
+                    self.parse_python(source)
 
         for child in children:
             self.visit(*child)
@@ -161,7 +163,7 @@ class Extractor(ElementProgram):
             elif attribute[1] == 'repeat':
                 yield value.split(None, 1)[1]
         else:
-            for source in EXPRESSION.findall(value):
+            for source in get_python_expressions(value):
                 yield source
 
     def parse_python(self, source):
@@ -170,6 +172,40 @@ class Extractor(ElementProgram):
         for message in _extract_python(self.filename, source, self.options, self.linenumber):
             self.messages.append(Message(*message[:6],
                 location=(self.filename, self.linenumber + message.location[1])))
+
+
+def is_valid_python(source):
+    try:
+        ast.parse(source, mode='eval')
+    except SyntaxError:
+        return False
+    else:
+        return True
+
+
+def get_python_expressions(source):
+    regex = re.compile(r'(?<!\\)\$({(?P<expression>.*)})', re.DOTALL)
+    while source:
+        m = regex.search(source)
+        if m is None:
+            break
+
+        source = source[m.start():]
+        matched = m.group(0)
+
+        m = regex.search(source)
+        while m is not None:
+            candidate = m.group('expression')
+            if is_valid_python(candidate):
+                yield candidate
+                source = source[m.end():]
+                break
+            else:
+                matched = matched[:-1]
+                m = regex.search(matched)
+        if m is None:
+            # We found ${, but could not find a valid python expression
+            raise SyntaxError()
 
 
 @register_extractor('xml', ['.pt', '.zpt'])

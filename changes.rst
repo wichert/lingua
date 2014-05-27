@@ -4,6 +4,9 @@ Changelog
 2.2 - Unreleased
 ------------------
 
+- Handle Python expressions using curly braces in HTML templates. This fixes
+  `issue 29 <https://github.com/wichert/lingua/issues/29`_.
+
 
 2.1 - April 8, 2014
 -------------------

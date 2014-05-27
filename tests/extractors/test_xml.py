@@ -3,6 +3,7 @@ import mock
 import pytest
 from io import BytesIO
 from lingua.extractors.xml import extract_xml
+from lingua.extractors.xml import get_python_expressions
 
 source = None
 
@@ -365,3 +366,41 @@ def test_translate_entities_in_python_expression():
                 </html>
                 '''
     list(extract_xml('filename', _options()))
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_curly_brace_in_python_expression():
+    global source
+    source = b'''\
+            <html>
+              <p>${request.route_url('set_locale', _query={'locale': 'de'})}</p>
+            </html>
+            '''
+    list(extract_xml('filename', _options()))
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_curly_brace_in_python_attribute_expression():
+    global source
+    source = b'''\
+            <html>
+              <a href="${request.route_url('set_locale', _query={'locale': 'de'})}"></a>
+            </html>
+            '''
+    list(extract_xml('filename', _options()))
+
+
+class Test_get_python_expression(object):
+    def test_no_expressions(self):
+        assert list(get_python_expressions('no python here')) == []
+
+    def test_single_expression(self):
+        assert list(get_python_expressions('${some_python}')) == ['some_python']
+
+    def test_two_expressions(self):
+        assert list(get_python_expressions('${one} ${two}')) == ['one', 'two']
+
+    def test_nested_braces(self):
+        assert list(get_python_expressions(
+            '''${resource_url(_query={'one': 'one'})}''')) == \
+            ['''resource_url(_query={'one': 'one'})''']
