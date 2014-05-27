@@ -4,6 +4,15 @@ Changelog
 2.2 - Unreleased
 ------------------
 
+- Remove seconds from POT timestamps. No other tool includes seconds, and this
+  appearently breaks Babel.
+
+- Fix Python 2.6 compatibility. Patch from Hugo Branquinho
+  (`pull request 25 <https://github.com/wichert/lingua/pull/25`_).
+
+- Fix installation problems on Python 3. Patch from William Wu
+  (`pull request 27 <https://github.com/wichert/lingua/pull/27`_).
+
 - Handle TALES expression engine selection. This fixes
   `issue 30 <https://github.com/wichert/lingua/issues/30`_.
 

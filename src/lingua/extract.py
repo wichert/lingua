@@ -29,7 +29,7 @@ def po_timestamp():
     local = time.localtime()
     offset = -(time.altzone if local.tm_isdst else time.timezone)
     return '%s%s%s' % (
-        time.strftime('%Y-%m-%d %H:%M:%S', local),
+        time.strftime('%Y-%m-%d %H:%M', local),
         '-' if offset < 0 else '+',
         time.strftime('%H:%M', time.gmtime(abs(offset))))
 
