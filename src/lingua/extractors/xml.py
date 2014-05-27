@@ -167,8 +167,8 @@ class Extractor(ElementProgram):
                 for source in get_python_expressions(value):
                     yield source
             except SyntaxError:
-                print('Aborting due to Python syntax error in %s[%d]',
-                        self.filename, self.linenumber)
+                print('Aborting due to Python syntax error in %s[%d]: %s',
+                        self.filename, self.linenumber, value)
                 sys.exit(1)
 
     def parse_python(self, source):
