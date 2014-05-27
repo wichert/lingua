@@ -31,7 +31,7 @@ def po_timestamp():
     return '%s%s%s' % (
         time.strftime('%Y-%m-%d %H:%M', local),
         '-' if offset < 0 else '+',
-        time.strftime('%H:%M', time.gmtime(abs(offset))))
+        time.strftime('%H%M', time.gmtime(abs(offset))))
 
 
 class POEntry(polib.POEntry):
