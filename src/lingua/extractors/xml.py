@@ -163,8 +163,13 @@ class Extractor(ElementProgram):
             elif attribute[1] == 'repeat':
                 yield value.split(None, 1)[1]
         else:
-            for source in get_python_expressions(value):
-                yield source
+            try:
+                for source in get_python_expressions(value):
+                    yield source
+            except SyntaxError:
+                print('Aborting due to Python syntax error in %s[%d]',
+                        self.filename, self.linenumber)
+                sys.exit(1)
 
     def parse_python(self, source):
         if not isinstance(source, bytes):

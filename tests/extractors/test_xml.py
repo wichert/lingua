@@ -390,6 +390,18 @@ def test_curly_brace_in_python_attribute_expression():
     list(extract_xml('filename', _options()))
 
 
+@pytest.mark.usefixtures('fake_source')
+def test_curly_brace_related_syntax_error():
+    global source
+    source = b'''\
+            <html>
+              <a href="${request.route_url('set_locale', _}"></a>
+            </html>
+            '''
+    with pytest.raises(SystemExit):
+        list(extract_xml('filename', _options()))
+
+
 class Test_get_python_expression(object):
     def test_no_expressions(self):
         assert list(get_python_expressions('no python here')) == []
