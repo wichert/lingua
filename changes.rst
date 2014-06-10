@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.2 - Unreleased
-------------------
+2.2 - June 10, 2014
+-------------------
 
 - Remove seconds from POT timestamps. No other tool includes seconds, and this
   appearently breaks Babel.
