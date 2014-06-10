@@ -175,6 +175,7 @@ class Extractor(ElementProgram):
                 for (scope, var, value) in parse_defines(value):
                     (engine, value) = get_tales_engine(value)
                     if engine == 'python':
+                        value = '(%s)' % value
                         self._assert_valid_python(value)
                         yield value
             elif attribute[1] == 'repeat':
