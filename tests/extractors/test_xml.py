@@ -448,3 +448,16 @@ class Test_get_python_expression(object):
         assert list(get_python_expressions(
             '''${resource_url(_query={'one': 'one'})}''')) == \
             ['''resource_url(_query={'one': 'one'})''']
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_ignore_structure_in_replace():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy tal:replace="structure _('foo')">Dummy</dummy>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert messages[0].msgid == u'foo'

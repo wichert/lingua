@@ -22,6 +22,7 @@ def _open(filename):
 
 
 ENGINE_PREFIX = re.compile(r'^\s*([a-z\-_]+):\s*')
+STRUCTURE_PREFIX = re.compile(r'\s*(structure|text)\s+(.*)')
 WHITESPACE = re.compile(u"\s+")
 EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
 UNDERSCORE_CALL = re.compile("_\(.*\)")
@@ -165,6 +166,9 @@ class Extractor(ElementProgram):
             if attribute[1] in ['content', 'replace']:
                 (engine, value) = get_tales_engine(value)
                 if engine == 'python':
+                    m = STRUCTURE_PREFIX.match(value)
+                    if m is not None:
+                        value = m.group(2)
                     self._assert_valid_python(value)
                     yield value
             if attribute[1] == 'define':
