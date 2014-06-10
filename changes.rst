@@ -8,16 +8,16 @@ Changelog
   appearently breaks Babel.
 
 - Fix Python 2.6 compatibility. Patch from Hugo Branquinho
-  (`pull request 25 <https://github.com/wichert/lingua/pull/25`_).
+  (`pull request 25 <https://github.com/wichert/lingua/pull/25>`_).
 
 - Fix installation problems on Python 3. Patch from William Wu
-  (`pull request 27 <https://github.com/wichert/lingua/pull/27`_).
+  (`pull request 27 <https://github.com/wichert/lingua/pull/27>`_).
 
 - Handle TALES expression engine selection. This fixes
-  `issue 30 <https://github.com/wichert/lingua/issues/30`_.
+  `issue 30 <https://github.com/wichert/lingua/issues/30>`_.
 
 - Handle Python expressions using curly braces in HTML templates. This fixes
-  `issue 29 <https://github.com/wichert/lingua/issues/29`_.
+  `issue 29 <https://github.com/wichert/lingua/issues/29>`_.
 
 
 2.1 - April 8, 2014
