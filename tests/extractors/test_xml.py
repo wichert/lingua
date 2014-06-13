@@ -453,38 +453,38 @@ class Test_get_python_expression(object):
 @pytest.mark.usefixtures('fake_source')
 def test_ignore_structure_in_replace():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
-                  <dummy tal:replace="structure _('foo')">Dummy</dummy>
+                  <dummy tal:replace="structure _(u'føo')">Dummy</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'foo'
+    assert messages[0].msgid == u'føo'
 
 
 @pytest.mark.usefixtures('fake_source')
 def test_repeat_multiple_assignment():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
-                  <dummy tal:repeat="(ix, item) [(1, _('foo'))]">Dummy</dummy>
+                  <dummy tal:repeat="(ix, item) [(1, _(u'føo'))]">Dummy</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'foo'
+    assert messages[0].msgid == u'føo'
 
 
 @pytest.mark.usefixtures('fake_source')
 def test_carriage_return_in_define():
     global source
-    source = b'''\
+    source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
                   <dummy tal:define="foo True or
-                                     _('foo')">Dummy</dummy>
+                                     _(u'føo')">Dummy</dummy>
                 </html>
-                '''
+                '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
-    assert messages[0].msgid == u'foo'
+    assert messages[0].msgid == u'føo'

@@ -20,7 +20,7 @@ def test_syntax_error():
     global source
     options = mock.Mock()
     options.keywords = []
-    source = b'''def class xya _('foo')'''
+    source = u'''def class xya _(u'føo')'''
     with pytest.raises(SystemExit):
         generator = extract_python('filename', options)
         list(generator)
@@ -31,10 +31,10 @@ def test_multiline_string():
     global source
     options = mock.Mock()
     options.keywords = []
-    source = b'''_('one two '\n'three')'''
+    source = u'''_(u'őne two '\n'three')'''
     messages = list(extract_python('filename', options))
     assert len(messages) == 1
-    assert messages[0].msgid == 'one two three'
+    assert messages[0].msgid == u'őne two three'
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -42,8 +42,8 @@ def test_plural():
     global source
     options = mock.Mock()
     options.keywords = []
-    source = b'''ngettext('one cow', '%d cows', 5)'''
+    source = u'''ngettext(u'one côw', u'%d cows', 5)'''
     messages = list(extract_python('filename', options))
     assert len(messages) == 1
-    assert messages[0].msgid == 'one cow'
-    assert messages[0].msgid_plural == '%d cows'
+    assert messages[0].msgid == u'one côw'
+    assert messages[0].msgid_plural == u'%d cows'

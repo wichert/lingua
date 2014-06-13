@@ -198,8 +198,7 @@ class Extractor(ElementProgram):
                 sys.exit(1)
 
     def parse_python(self, source):
-        if not isinstance(source, bytes):
-            source = source.encode('utf-8')
+        assert isinstance(source, type(u''))
         for message in _extract_python(self.filename, source, self.options, self.linenumber):
             self.messages.append(Message(*message[:6],
                 location=(self.filename, self.linenumber + message.location[1])))
