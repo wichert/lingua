@@ -1,6 +1,26 @@
 Changelog
 =========
 
+2.3 - Unreleased
+-------------------
+
+- TAL template handling fixes:
+
+  - Correctly handle `structure:` prefixes in TAL expressions. Patch from
+    Ingmar Steen
+    (`pull request 32 <https://github.com/wichert/lingua/pull/32>`_).
+
+  - Fix handling of multi-line `tal:content, `tal:define` and `tal:replace`
+    statements. Patch from Ingmar Steen
+    (pull requests
+    `35 <https://github.com/wichert/lingua/pull/35>`_ and
+    `36 <https://github.com/wichert/lingua/pull/36>`_).
+
+  - Fix handling of `tal:repeat` statements with multiple assignments. Patch
+    from Ingmar Steen
+    (`pull request 37 <https://github.com/wichert/lingua/pull/37>`_).
+
+
 2.2 - June 10, 2014
 -------------------
 
