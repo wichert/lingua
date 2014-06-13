@@ -488,3 +488,31 @@ def test_carriage_return_in_define():
                 '''.encode('utf-8')
     messages = list(extract_xml('filename', _options()))
     assert messages[0].msgid == u'føo'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_multiline_replace():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy tal:replace="True or
+                                      _('foo')">Dummy</dummy>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert messages[0].msgid == u'foo'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_multiline_replace_with_structure():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy tal:replace="structure True or
+                                      _('foo')">Dummy</dummy>
+                </html>
+                '''
+    messages = list(extract_xml('filename', _options()))
+    assert messages[0].msgid == u'foo'
