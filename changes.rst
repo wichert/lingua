@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.3 - Unreleased
+2.3 - June 13, 2014
 -------------------
 
 - Fix incorrect invocation of legacy Babel extraction plugins. This fixes
