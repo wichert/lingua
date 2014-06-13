@@ -178,7 +178,12 @@ class Extractor(ElementProgram):
                         self._assert_valid_python(value)
                         yield value
             elif attribute[1] == 'repeat':
-                (engine, value) = get_tales_engine(value.split(None, 1)[1])
+                defines = parse_defines(value)
+                if len(defines) != 1:
+                    print('Aborting due to syntax error in %s[%d]: %s' % (
+                            self.filename, self.linenumber, value))
+                scope, var, value = defines[0]
+                (engine, value) = get_tales_engine(value)
                 if engine == 'python':
                     self._assert_valid_python(value)
                     yield value
