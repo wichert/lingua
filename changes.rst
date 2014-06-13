@@ -4,6 +4,9 @@ Changelog
 2.3 - Unreleased
 -------------------
 
+- Fix incorrect invocation of legacy Babel extraction plugins. This fixes
+  `issue 28 <https://github.com/wichert/lingua/issues/28>`_.
+
 - TAL template handling fixes:
 
   - Correctly handle `structure:` prefixes in TAL expressions. Patch from

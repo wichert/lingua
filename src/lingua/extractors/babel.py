@@ -20,7 +20,7 @@ DEFAULT_KEYWORDS = {
 def babel_wrapper(extractor):
     def wrapper(filename, options):
         fileobj = open(filename, 'rb')
-        for (lineno, _, msgid, comment) in extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), None):
+        for (lineno, _, msgid, comment) in extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), {}):
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
