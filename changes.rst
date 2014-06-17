@@ -4,7 +4,7 @@ Changelog
 2.4 - Unreleased
 -------------------
 
-- ...
+- Fix timezone format at pot creation (remove colon).
 
 
 2.3 - June 13, 2014
