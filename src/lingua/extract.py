@@ -187,7 +187,7 @@ def main():
             help='Do not include location information')
     parser.add_argument('-n', '--add-location',
             action='store_true', dest='location', default=True,
-            help='Do not include location information')
+            help='Include location information (default)')
     parser.add_argument('-w', '--width', metavar='NUMBER',
             default=79,
             help='Output width')
