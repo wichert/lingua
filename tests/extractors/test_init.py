@@ -2,6 +2,12 @@ from lingua.extractors import check_c_format
 from lingua.extractors import Keyword
 
 
+def test_no_format():
+    flags = []
+    check_c_format('Hello, world', flags)
+    assert flags == []
+
+
 def test_basic_c_format():
     flags = []
     check_c_format('Hello, %s', flags)
