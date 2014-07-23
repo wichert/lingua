@@ -9,6 +9,7 @@ from chameleon.namespaces import TAL_NS
 from chameleon.program import ElementProgram
 from chameleon.zpt.program import MacroProgram
 from chameleon.tal import parse_defines
+from chameleon.tales import split_parts
 from chameleon.utils import decode_htmlentities
 
 from .python import _extract_python
@@ -164,31 +165,31 @@ class Extractor(ElementProgram):
     def get_code_for_attribute(self, attribute, value):
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
-                (engine, value) = get_tales_engine(value)
-                if engine == 'python':
-                    m = STRUCTURE_PREFIX.match(value)
-                    if m is not None:
-                        value = m.group(2)
-                    value = '(%s)' % value
-                    self._assert_valid_python(value)
-                    yield value
-            if attribute[1] == 'define':
-                for (scope, var, value) in parse_defines(value):
-                    (engine, value) = get_tales_engine(value)
+                for (engine, value) in split_expression(value):
                     if engine == 'python':
+                        m = STRUCTURE_PREFIX.match(value)
+                        if m is not None:
+                            value = m.group(2)
                         value = '(%s)' % value
                         self._assert_valid_python(value)
                         yield value
+            if attribute[1] == 'define':
+                for (scope, var, value) in parse_defines(value):
+                    for (engine, value) in split_expression(value):
+                        if engine == 'python':
+                            value = '(%s)' % value
+                            self._assert_valid_python(value)
+                            yield value
             elif attribute[1] == 'repeat':
                 defines = parse_defines(value)
                 if len(defines) != 1:
                     print('Aborting due to syntax error in %s[%d]: %s' % (
                             self.filename, self.linenumber, value))
                 scope, var, value = defines[0]
-                (engine, value) = get_tales_engine(value)
-                if engine == 'python':
-                    self._assert_valid_python(value)
-                    yield value
+                for (engine, value) in split_expression(value):
+                    if engine == 'python':
+                        self._assert_valid_python(value)
+                        yield value
         else:
             try:
                 for source in get_python_expressions(value):
@@ -214,10 +215,17 @@ def is_valid_python(source):
         return True
 
 
-def get_tales_engine(source):
+def split_expression(source):
+    for part in split_parts.split(source):
+        expression = part.replace('\\|', '|')
+        yield get_tales_engine(expression)
+
+
+
+def get_tales_engine(source, default_engine='python'):
     m = ENGINE_PREFIX.match(source)
     if m is None:
-        return ('python', source)
+        return (default_engine, source)
     else:
         return (m.group(1), source[m.end():])
 

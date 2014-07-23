@@ -4,6 +4,9 @@ Changelog
 2.4 - Unreleased
 -------------------
 
+- Correctly handle multiple alternatives in ZPT expressions. This fixes
+  `issue 39 <https://github.com/wichert/lingua/issues/39>`_.
+
 - Do not add ``c-format`` flag for messages without an percent-character.
 
 - Fix timezone format at pot creation (remove colon).
