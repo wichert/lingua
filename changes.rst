@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.4 - Unreleased
+2.4 - July 23, 2014
 -------------------
 
 - Correctly handle multiple alternatives in ZPT expressions. This fixes
