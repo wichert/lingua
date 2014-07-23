@@ -4,6 +4,8 @@ Changelog
 2.4 - Unreleased
 -------------------
 
+- Do not add ``c-format`` flag for messages without an percent-character.
+
 - Fix timezone format at pot creation (remove colon).
 
 

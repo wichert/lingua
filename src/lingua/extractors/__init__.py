@@ -40,10 +40,10 @@ _C_FORMAT = re.compile(r'''
 def check_c_format(buf, flags):
     if 'no-c-format' in flags:
         return
-    if all(_C_FORMAT.match(buf[m.start():]) is not None
-            for m in re.finditer('%(?!%)', buf)):
+    formats = list(re.finditer('%(?!%)', buf))
+    if formats and all(_C_FORMAT.match(buf[m.start():]) is not None
+            for m in formats):
         flags.append('c-format')
-    return
 
 
 # Based on http://docs.python.org/2/library/string.html#format-string-syntax
