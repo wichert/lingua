@@ -451,6 +451,18 @@ class Test_get_python_expression(object):
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_python_expression_in_tales_expressions():
+    global source
+    source = u'''
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy tal:define="css_class css_class|string:${field.widget.css_class};">Dummy</dummy>
+                </html>
+                '''.encode('utf-8')
+    assert list(extract_xml('filename', _options())) == []
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_ignore_structure_in_replace():
     global source
     source = u'''\
