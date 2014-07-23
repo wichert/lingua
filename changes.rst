@@ -9,8 +9,11 @@ Changelog
 - Introduce ``lingua.extractors.Extractor`` object and use it as base for
   all extractors.
 
+
 - Check for global ``.config/lingua`` config file in user's home directory if
   no explicit config file defined.
+
+- Use a single wheel for Python 2 and Python 3.
 
 
 2.4 - July 23, 2014
