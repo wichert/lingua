@@ -2,9 +2,11 @@
 import mock
 import pytest
 from io import BytesIO
-from lingua.extractors.xml import xml_extractor
+from lingua.extractors.xml import XMLExtractor
 from lingua.extractors.xml import get_python_expressions
 
+
+xml_extractor = XMLExtractor()
 source = None
 
 

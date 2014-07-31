@@ -5,6 +5,7 @@ import sys
 version = '2.5dev'
 
 install_requires = [
+        'setuptools',
         'polib',
         'Chameleon',
         ]
@@ -66,8 +67,8 @@ setup(name='lingua',
       polint = lingua.polint:main
       pot-create = lingua.extract:main
       [lingua.extractors]
-      python = lingua.extractors.python:python_extractor
-      xml = lingua.extractors.xml:xml_extractor
-      zcml = lingua.extractors.zcml:zcml_extractor
+      python = lingua.extractors.python:PythonExtractor
+      xml = lingua.extractors.xml:XMLExtractor
+      zcml = lingua.extractors.zcml:ZCMLExtractor
       '''
       )

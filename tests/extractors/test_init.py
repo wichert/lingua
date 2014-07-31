@@ -1,5 +1,7 @@
 from lingua.extractors import check_c_format
 from lingua.extractors import Keyword
+from lingua.extractors import Extractor
+import pytest
 
 
 def test_no_format():
@@ -64,3 +66,8 @@ class TestKeywordFromSpec(object):
         assert kw.msgid_param == 1
         assert kw.msgid_plural_param is None
         assert kw.required_arguments == 5
+
+
+def test_extractor():
+    with pytest.raises(TypeError):
+        Extractor()

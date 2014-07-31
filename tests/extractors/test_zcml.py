@@ -1,9 +1,10 @@
 import mock
 import pytest
 from io import BytesIO
-from lingua.extractors.zcml import zcml_extractor
+from lingua.extractors.zcml import ZCMLExtractor
 
 
+zcml_extractor = ZCMLExtractor()
 source = None
 
 

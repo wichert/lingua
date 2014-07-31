@@ -12,7 +12,7 @@ def _open(filename):
     return open(filename, 'rb')
 
 
-class ZcmlExtractor(Extractor):
+class ZCMLExtractor(Extractor):
     extensions = ['.zcml']
     ATTRIBUTES = set(['title', 'description'])
 
@@ -54,5 +54,3 @@ class ZcmlExtractor(Extractor):
     def EndElementHandler(self, name):
         if self.domainstack:
             self.domainstack.pop()
-
-zcml_extractor = ZcmlExtractor()

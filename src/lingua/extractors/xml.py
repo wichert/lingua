@@ -210,8 +210,6 @@ class XMLExtractor(Extractor, ElementProgram):
             self.messages.append(Message(*message[:6],
                 location=(self.filename, self.linenumber + message.location[1])))
 
-xml_extractor = XMLExtractor()
-
 
 def is_valid_python(source):
     try:

@@ -105,5 +105,3 @@ class PythonExtractor(Extractor):
 
     def __call__(self, filename, options):
         return _extract_python(filename, _read(filename), options)
-
-python_extractor = PythonExtractor()

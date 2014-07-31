@@ -1,5 +1,8 @@
 from __future__ import print_function
+from pkg_resources import working_set
+import abc
 import collections
+import inspect
 import os
 import re
 import sys
@@ -110,20 +113,24 @@ def update_keywords(keywords, specs):
 
 
 class Extractor(object):
-    extensions = []
+    __metaclass__ = abc.ABCMeta
 
+    @abc.abstractproperty
+    def extensions(self):
+        raise NotImplementedError(
+            u'Abstract ``Extractor`` does not implement ``extensions``')
+
+    @abc.abstractmethod
     def __call__(self, filename, options):
-        raise NotImplementedError(u'Abstract ``CustomExtractor`` does not '
-                                  u'implement ``__call__``')
+        raise NotImplementedError(
+            u'Abstract ``Extractor`` does not implement ``__call__``')
 
 
 def register_extractors():
-    try:
-        from pkg_resources import working_set
-    except ImportError:
-        return
     for entry_point in working_set.iter_entry_points('lingua.extractors'):
         extractor = entry_point.load(require=True)
+        if inspect.isclass(extractor):
+            extractor = extractor()
         if not isinstance(extractor, Extractor):
             raise ValueError(u'Registered extractor must be instance of '
                              u'``Extractor``')

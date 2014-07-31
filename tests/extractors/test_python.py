@@ -1,9 +1,10 @@
 # coding=utf-8
 import mock
 import pytest
-from lingua.extractors.python import python_extractor
+from lingua.extractors.python import PythonExtractor
 
 
+python_extractor = PythonExtractor()
 source = None
 
 
