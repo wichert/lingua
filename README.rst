@@ -222,7 +222,7 @@ First we need to create the custom extractor::
     class MyExtractor(Extractor):
         extensions = ['.txt']
 
-        def __call__(filename, options):
+        def __call__(self, filename, options):
             return [Message(None, 'msgid', None, [], u'', u'', (filename, 1))]
 
     my_extractor = MyExtractor()
