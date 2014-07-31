@@ -221,7 +221,7 @@ def main():
         read_config(options.config)
     else:
         user_home = os.path.expanduser('~')
-        global_config = os.path.join(user_home, '.lingua.cfg')
+        global_config = os.path.join(user_home, '.config', 'lingua')
         if os.path.exists(global_config):
             read_config(global_config)
 

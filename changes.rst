@@ -4,7 +4,7 @@ Changelog
 2.5 - Unreleased
 ----------------
 
-- Check for global ``.lingua.cfg`` config file in user's home directory if
+- Check for global ``.config/lingua`` config file in user's home directory if
   no explicit config file defined.
 
 

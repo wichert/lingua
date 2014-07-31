@@ -67,9 +67,9 @@ the ``.html`` extension::
     [extension:.html]
     plugin = xml
 
-Either place a global configuration file named ``.lingua.cfg`` to your home
-folder or use the ``--config`` option to point lingua to your configuration
-file.
+Either place a global configuration file named ``.config/lingua`` to your
+home folder or use the ``--config`` option to point lingua to your
+configuration file.
 
 ::
 
