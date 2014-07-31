@@ -1,10 +1,11 @@
 Changelog
 =========
 
-2.4 - Unreleased
--------------------
+2.5 - Unreleased
+----------------
 
-- ...
+- Check for global ``.lingua.cfg`` config file in user's home directory if
+  no explicit config file defined.
 
 
 2.4 - July 23, 2014
