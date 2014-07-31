@@ -4,6 +4,11 @@ Changelog
 2.5 - Unreleased
 ----------------
 
+- Extractors can now be hooked up from outside via entry points.
+
+- Introduce ``lingua.extractors.Extractor`` object and use it as base for
+  all extractors.
+
 - Check for global ``.config/lingua`` config file in user's home directory if
   no explicit config file defined.
 

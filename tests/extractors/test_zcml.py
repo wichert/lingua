@@ -1,7 +1,7 @@
 import mock
 import pytest
 from io import BytesIO
-from lingua.extractors.zcml import extract_zcml
+from lingua.extractors.zcml import zcml_extractor
 
 
 source = None
@@ -28,7 +28,7 @@ def fake_source(request):
 def test_empty_zcml():
     global source
     source = b'''<configure/>'''
-    assert list(extract_zcml('filename', _options())) == []
+    assert list(zcml_extractor('filename', _options())) == []
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -39,7 +39,7 @@ def test_i18n_without_domain():
                   <dummy title="test title"/>
                 </configure>
               '''
-    assert list(extract_zcml('filename', _options())) == []
+    assert list(zcml_extractor('filename', _options())) == []
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -50,7 +50,7 @@ def test_i18n_with_domain():
                   <dummy title="test title"/>
                 </configure>
               '''
-    messages = list(extract_zcml('filename', _options()))
+    messages = list(zcml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'test title'
 
@@ -64,7 +64,7 @@ def test_multiple_messages():
                   <dummy title="test title 2"/>
                 </configure>
               '''
-    messages = list(extract_zcml('filename', _options()))
+    messages = list(zcml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'test title 1'
     assert messages[1].msgid == u'test title 2'
@@ -81,7 +81,7 @@ def test_domain_nesting():
                   <dummy title="test title 2"/>
                 </configure>
               '''
-    messages = list(extract_zcml('filename', _options()))
+    messages = list(zcml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'test title 1'
 
@@ -91,4 +91,4 @@ def test_abort_on_syntax_error():
     global source
     source = b'''<configure'''
     with pytest.raises(SystemExit):
-        list(extract_zcml('filename', _options()))
+        list(zcml_extractor('filename', _options()))

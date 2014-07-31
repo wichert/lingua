@@ -13,7 +13,7 @@ from chameleon.tales import split_parts
 from chameleon.utils import decode_htmlentities
 
 from .python import _extract_python
-from . import register_extractor
+from . import Extractor
 from . import Message
 
 
@@ -65,10 +65,14 @@ class TranslateContext(object):
                 (self.filename, self.lineno))
 
 
-class Extractor(ElementProgram):
+class XMLExtractor(Extractor, ElementProgram):
+    extensions = ['.pt', '.zpt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
 
-    def __init__(self, filename, options):
+    def __init__(self):
+        pass
+
+    def __call__(self, filename, options):
         self.options = options
         self.filename = filename
         self.target_domain = options.domain
@@ -82,7 +86,8 @@ class Extractor(ElementProgram):
             print('Aborting due to parse error in %s: %s' %
                     (self.filename, e), file=sys.stderr)
             sys.exit(1)
-        super(Extractor, self).__init__(source, filename=filename)
+        super(XMLExtractor, self).__init__(source, filename=filename)
+        return self.messages
 
     def visit(self, kind, args):
         visitor = getattr(self, 'visit_%s' % kind, None)
@@ -205,6 +210,8 @@ class Extractor(ElementProgram):
             self.messages.append(Message(*message[:6],
                 location=(self.filename, self.linenumber + message.location[1])))
 
+xml_extractor = XMLExtractor()
+
 
 def is_valid_python(source):
     try:
@@ -253,9 +260,3 @@ def get_python_expressions(source):
         if m is None:
             # We found ${, but could not find a valid python expression
             raise SyntaxError()
-
-
-@register_extractor('xml', ['.pt', '.zpt'])
-def extract_xml(filename, options):
-    extractor = Extractor(filename, options)
-    return extractor.messages

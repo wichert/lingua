@@ -1,7 +1,7 @@
 # coding=utf-8
 import mock
 import pytest
-from lingua.extractors.python import extract_python
+from lingua.extractors.python import python_extractor
 
 
 source = None
@@ -22,7 +22,7 @@ def test_syntax_error():
     options.keywords = []
     source = u'''def class xya _(u'føo')'''
     with pytest.raises(SystemExit):
-        generator = extract_python('filename', options)
+        generator = python_extractor('filename', options)
         list(generator)
 
 
@@ -32,7 +32,7 @@ def test_multiline_string():
     options = mock.Mock()
     options.keywords = []
     source = u'''_(u'őne two '\n'three')'''
-    messages = list(extract_python('filename', options))
+    messages = list(python_extractor('filename', options))
     assert len(messages) == 1
     assert messages[0].msgid == u'őne two three'
 
@@ -43,7 +43,7 @@ def test_plural():
     options = mock.Mock()
     options.keywords = []
     source = u'''ngettext(u'one côw', u'%d cows', 5)'''
-    messages = list(extract_python('filename', options))
+    messages = list(python_extractor('filename', options))
     assert len(messages) == 1
     assert messages[0].msgid == u'one côw'
     assert messages[0].msgid_plural == u'%d cows'

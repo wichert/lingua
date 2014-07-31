@@ -3,7 +3,7 @@ from __future__ import print_function
 import collections
 import sys
 from xml.parsers import expat
-from . import register_extractor
+from . import Extractor
 from . import Message
 
 
@@ -13,6 +13,7 @@ def _open(filename):
 
 
 class ZcmlExtractor(object):
+    extensions = ['.zcml']
     ATTRIBUTES = set(['title', 'description'])
 
     def __call__(self, filename, options):
@@ -54,8 +55,4 @@ class ZcmlExtractor(object):
         if self.domainstack:
             self.domainstack.pop()
 
-
-@register_extractor('zcml', ['.zcml'])
-def extract_zcml(filename, options):
-    extractor = ZcmlExtractor()
-    return extractor(filename, options)
+zcml_extractor = ZcmlExtractor()

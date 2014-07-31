@@ -17,13 +17,6 @@ from lingua.extractors import register_extractors
 from lingua.extractors.babel import register_babel_plugins
 from lingua.extractors import EXTRACTORS
 from lingua.extractors import EXTENSIONS
-import lingua.extractors.python
-import lingua.extractors.xml
-import lingua.extractors.zcml
-
-lingua.extractors.python  # Keep PyFlakes happy
-lingua.extractors.xml
-lingua.extractors.zcml
 
 
 def po_timestamp():
@@ -211,8 +204,8 @@ def main():
             help='Email address bugs should be send to')
 
     options = parser.parse_args()
-    register_babel_plugins()
     register_extractors()
+    register_babel_plugins()
 
     if options.list_plugins:
         for plugin in sorted(EXTRACTORS):

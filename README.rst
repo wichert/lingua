@@ -211,8 +211,8 @@ To check a po file simply run ``polint`` with the po file as argument::
     2       "${val}" is not a string
 
 
-Hookin up custom extractors
-===========================
+Writing Custom extractors
+=========================
 
 First we need to create the custom extractor::
 
