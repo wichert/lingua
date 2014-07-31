@@ -231,7 +231,6 @@ in ``setup.py``::
     setup(name='mypackage',
           ...
           install_requires=[
-              'setuptools',
               'lingua',
           ],
           ...
