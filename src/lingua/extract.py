@@ -143,9 +143,9 @@ def create_catalog(options):
     return catalog
 
 
-def read_config(options):
+def read_config(filename):
     config = SafeConfigParser()
-    config.readfp(open(options.config))
+    config.readfp(open(filename))
     for section in config.sections():
         if section.startswith('extension:'):
             extension = section[10:]
@@ -218,7 +218,13 @@ def main():
         return
 
     if options.config:
-        read_config(options)
+        read_config(options.config)
+    else:
+        user_home = os.path.expanduser('~')
+        global_config = os.path.join(user_home, '.config', 'lingua')
+        if os.path.exists(global_config):
+            read_config(global_config)
+
     catalog = create_catalog(options)
 
     scanned = 0
