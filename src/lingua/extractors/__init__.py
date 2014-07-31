@@ -116,3 +116,26 @@ def update_keywords(keywords, specs):
             print(e, file=sys.stderr)
             sys.exit(1)
         keywords[kw.function] = kw
+
+
+class Extractor(object):
+    extensions = []
+
+    def __call__(self, filename, options):
+        raise NotImplementedError(u'Abstract ``CustomExtractor`` does not '
+                                  u'implement ``__call__``')
+
+
+def register_extractors():
+    try:
+        from pkg_resources import working_set
+    except ImportError:
+        return
+    for entry_point in working_set.iter_entry_points('lingua.extractors'):
+        extractor = entry_point.load(require=True)
+        if not isinstance(extractor, Extractor):
+            raise ValueError(u'Registered extractor must be instance of '
+                             u'``Extractor``')
+        EXTRACTORS[entry_point.name] = extractor
+        for extension in extractor.extensions:
+            EXTENSIONS[extension] = extractor

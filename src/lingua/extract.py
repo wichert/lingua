@@ -13,6 +13,7 @@ except ImportError:
     from ConfigParser import SafeConfigParser
 import polib
 from lingua.extractors import get_extractor
+from lingua.extractors import register_extractors
 from lingua.extractors.babel import register_babel_plugins
 from lingua.extractors import EXTRACTORS
 from lingua.extractors import EXTENSIONS
@@ -211,6 +212,7 @@ def main():
 
     options = parser.parse_args()
     register_babel_plugins()
+    register_extractors()
 
     if options.list_plugins:
         for plugin in sorted(EXTRACTORS):
