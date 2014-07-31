@@ -12,7 +12,7 @@ def _open(filename):
     return open(filename, 'rb')
 
 
-class ZcmlExtractor(object):
+class ZcmlExtractor(Extractor):
     extensions = ['.zcml']
     ATTRIBUTES = set(['title', 'description'])
 

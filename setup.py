@@ -67,7 +67,7 @@ setup(name='lingua',
       pot-create = lingua.extract:main
       [lingua.extractors]
       python = lingua.extractors.python:python_extractor
-      xml = lingua.extractors.xml.xml_extractor
-      zcml = lingua.extractors.zcml.zcml_extractor
+      xml = lingua.extractors.xml:xml_extractor
+      zcml = lingua.extractors.zcml:zcml_extractor
       '''
       )
