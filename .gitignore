@@ -7,6 +7,9 @@
 /lib
 /man
 /pyvenv.cfg
+/.project
+/.pydevproject
+/.settings/
 *.pyo
 *.pyc
 *.egg
