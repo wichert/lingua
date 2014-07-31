@@ -6,6 +6,7 @@ import inspect
 import os
 import re
 import sys
+from .compat import add_metaclass
 
 
 Message = collections.namedtuple('Message',
@@ -112,8 +113,8 @@ def update_keywords(keywords, specs):
         keywords[kw.function] = kw
 
 
+@add_metaclass(abc.ABCMeta)
 class Extractor(object):
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
     def extensions(self):
