@@ -117,13 +117,11 @@ class Extractor(object):
 
     @abc.abstractproperty
     def extensions(self):
-        raise NotImplementedError(
-            u'Abstract ``Extractor`` does not implement ``extensions``')
+        NotImplemented()
 
     @abc.abstractmethod
     def __call__(self, filename, options):
-        raise NotImplementedError(
-            u'Abstract ``Extractor`` does not implement ``__call__``')
+        NotImplemented()
 
 
 def register_extractors():
@@ -132,8 +130,8 @@ def register_extractors():
         if inspect.isclass(extractor):
             extractor = extractor()
         if not isinstance(extractor, Extractor):
-            raise ValueError(u'Registered extractor must be instance of '
-                             u'``Extractor``')
+            raise ValueError(
+                u'Registered extractor must derive from ``Extractor``')
         EXTRACTORS[entry_point.name] = extractor
         for extension in extractor.extensions:
             EXTENSIONS[extension] = extractor

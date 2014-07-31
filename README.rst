@@ -240,7 +240,7 @@ in ``setup.py``::
           """
           ...)
 
-Note - the registered extractor may be a class or a instance of
+Note - the registered extractor may be a class or an instance of
 an ``Extractor`` deriving object.
 
 After installing ``mypackage`` the custom extractor gets executed.
