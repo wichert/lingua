@@ -2,9 +2,11 @@
 import mock
 import pytest
 from io import BytesIO
-from lingua.extractors.xml import extract_xml
+from lingua.extractors.xml import XMLExtractor
 from lingua.extractors.xml import get_python_expressions
 
+
+xml_extractor = XMLExtractor()
 source = None
 
 
@@ -30,14 +32,14 @@ def test_abort_on_syntax_error():
     global source
     source = b'''\xff\xff\xff'''
     with pytest.raises(SystemExit):
-        list(extract_xml('filename', _options()))
+        list(xml_extractor('filename', _options()))
 
 
 @pytest.mark.usefixtures('fake_source')
 def test_empty_xml():
     global source
     source = b'''<html/>'''
-    assert list(extract_xml('filename', _options())) == []
+    assert list(xml_extractor('filename', _options())) == []
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -48,7 +50,7 @@ def test_attributes_plain():
                   <dummy i18n:attributes="title" title="tést title"/>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'tést title'
 
@@ -66,7 +68,7 @@ def test_custom_i18n_namespace():
                    <dummy i18n:translate="">Foo</dummy>
                  </html>
                  '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 4
     assert [m.msgid for m in messages] == [u'Foo'] * 4
 
@@ -79,7 +81,7 @@ def test_attributes_explicit_MessageId():
                    <dummy i18n:attributes="title msg_title" title="test tïtle"/>
                  </html>
                   '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == 'msg_title'
     assert messages[0].comment == u'Default: test tïtle'
@@ -91,7 +93,7 @@ def test_attributes_no_domain_without_domain_filter():
     source = b'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n">
                    <dummy i18n:attributes="title" title="test title"/>
                   </html>'''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
 
 
@@ -103,7 +105,7 @@ def test_attributes_multiple_attributes():
                    <dummy i18n:attributes="title ; alt" title="tést title"
                           alt="test ålt"/>
                  </html>'''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert [m.msgid for m in messages] == [u'tést title', u'test ålt']
 
@@ -116,7 +118,7 @@ def test_attributes_multiple_attributes_explicit_msgid():
                   <dummy i18n:attributes="title msg_title; alt msg_alt"
                          title="test titlé" alt="test ålt"/>
                 </html>'''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msg_title'
     assert messages[0].comment == u'Default: test titlé'
@@ -132,7 +134,7 @@ def test_translate_minimal():
                       i18n:domain="lingua">
                   <dummy i18n:translate="">Dummy téxt</dummy>
                 </html>'''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'Dummy téxt'
 
@@ -145,7 +147,7 @@ def test_translate_explicit_msgid():
                       i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy téxt</dummy>
                 </html>'''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy téxt'
@@ -161,7 +163,7 @@ def test_translate_subelement():
                     <strong>text</strong> demø</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy <dynamic element> demø'
@@ -177,7 +179,7 @@ def test_translate_named_subelement():
                     <strong i18n:name="text">téxt</strong> demø</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy ${text} demø'
@@ -195,7 +197,7 @@ def test_translate_translated_subelement():
                     demø</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msgid_text'
     assert messages[0].comment == u'Default: téxt'
@@ -215,7 +217,7 @@ def test_strip_extra_whitespace():
                   text</dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Dummy text'
 
 
@@ -230,7 +232,7 @@ def test_strip_trailing_and_leading_whitespace():
                   </dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Dummy text'
 
 
@@ -243,7 +245,7 @@ def test_html_entities():
                   <button i18n:translate="">Lock &amp; load&nbsp;</button>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Lock &amp; load&nbsp;'
 
 
@@ -258,7 +260,7 @@ def test_ignore_undeclared_namespace():
                   <p i18n:translate="">Test</p>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Test'
 
 
@@ -272,7 +274,7 @@ def test_ignore_dynamic_message():
                   <p i18n:translate="">${'dummy'}</p>
                 </html>
                 '''
-    assert list(extract_xml('filename', _options())) == []
+    assert list(xml_extractor('filename', _options())) == []
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -284,7 +286,7 @@ def test_translate_call_in_python_expression_attribute():
                   <dummy tal:replace="_(u'foo')">Dummy</dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'foo'
 
 
@@ -297,7 +299,7 @@ def test_translate_call_in_python_expression_repeat_attribute():
                   <dummy tal:repeat="label _(u'foo')">${label}</dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'foo'
 
 
@@ -310,7 +312,7 @@ def test_translate_call_in_python_expression_in_char_data():
                   <dummy>${_(u'foo')}</dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'foo'
 
 
@@ -323,7 +325,7 @@ def test_translate_call_in_python_expression_in_attribute():
                   <dummy title="${_(u'foo')}"></dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'foo'
 
 
@@ -336,7 +338,7 @@ def test_multiple_expressions_with_translate_calls():
                   <dummy title="${_(u'foo')} ${_(u'bar')}"></dummy>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'foo'
     assert messages[1].msgid == u'bar'
 
@@ -351,7 +353,7 @@ def test_translate_multiple_defines():
                   </tal:analytics>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'one'
     assert messages[1].msgid == u'two'
@@ -367,7 +369,7 @@ def test_translate_explicit_python_expression_engine():
                   </tal:analytics>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'one'
     assert messages[1].msgid == u'two'
@@ -383,7 +385,7 @@ def test_translate_ignore_other_expression_engine():
                   </tal:analytics>
                 </html>
                 '''
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'two'
 
@@ -397,7 +399,7 @@ def test_translate_entities_in_python_expression():
                   <div class="${' disabled' if 1 &lt; 2 else None}"/>
                 </html>
                 '''
-    list(extract_xml('filename', _options()))
+    list(xml_extractor('filename', _options()))
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -408,7 +410,7 @@ def test_curly_brace_in_python_expression():
               <p>${request.route_url('set_locale', _query={'locale': 'de'})}</p>
             </html>
             '''
-    list(extract_xml('filename', _options()))
+    list(xml_extractor('filename', _options()))
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -419,7 +421,7 @@ def test_curly_brace_in_python_attribute_expression():
               <a href="${request.route_url('set_locale', _query={'locale': 'de'})}"></a>
             </html>
             '''
-    list(extract_xml('filename', _options()))
+    list(xml_extractor('filename', _options()))
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -431,7 +433,7 @@ def test_curly_brace_related_syntax_error():
             </html>
             '''
     with pytest.raises(SystemExit):
-        list(extract_xml('filename', _options()))
+        list(xml_extractor('filename', _options()))
 
 
 class Test_get_python_expression(object):
@@ -459,7 +461,7 @@ def test_python_expression_in_tales_expressions():
                   <dummy tal:define="css_class css_class|string:${field.widget.css_class};">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    assert list(extract_xml('filename', _options())) == []
+    assert list(xml_extractor('filename', _options())) == []
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -471,7 +473,7 @@ def test_ignore_structure_in_replace():
                   <dummy tal:replace="structure _(u'føo')">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'føo'
 
 
@@ -484,7 +486,7 @@ def test_repeat_multiple_assignment():
                   <dummy tal:repeat="(ix, item) [(1, _(u'føo'))]">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'føo'
 
 
@@ -498,7 +500,7 @@ def test_carriage_return_in_define():
                                      _(u'føo')">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'føo'
 
 
@@ -512,7 +514,7 @@ def test_multiline_replace():
                                       _(u'føo')">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'føo'
 
 
@@ -526,5 +528,5 @@ def test_multiline_replace_with_structure():
                                       _(u'føo')">Dummy</dummy>
                 </html>
                 '''.encode('utf-8')
-    messages = list(extract_xml('filename', _options()))
+    messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'føo'

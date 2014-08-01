@@ -1,3 +1,4 @@
+from pkg_resources import working_set
 from . import EXTRACTORS
 from . import Message
 from . import check_c_format
@@ -30,10 +31,6 @@ def babel_wrapper(extractor):
 
 
 def register_babel_plugins():
-    try:
-        from pkg_resources import working_set
-    except ImportError:
-        return
     for entry_point in working_set.iter_entry_points('babel.extractors'):
         extractor = babel_wrapper(entry_point.load(require=True))
         EXTRACTORS['babel-%s' % entry_point.name] = extractor

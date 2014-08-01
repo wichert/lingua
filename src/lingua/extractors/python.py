@@ -1,7 +1,7 @@
 from __future__ import print_function
 import ast
 import sys
-from . import register_extractor
+from . import Extractor
 from . import Message
 from . import check_c_format
 from . import check_python_format
@@ -100,6 +100,8 @@ def _extract_python(filename, source, options, firstline=0):
         yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, node.lineno))
 
 
-@register_extractor('python', ['.py'])
-def extract_python(filename, options):
-    return _extract_python(filename, _read(filename), options)
+class PythonExtractor(Extractor):
+    extensions = ['.py']
+
+    def __call__(self, filename, options):
+        return _extract_python(filename, _read(filename), options)

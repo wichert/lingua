@@ -186,7 +186,6 @@ Differences compared to `Babel`_:
   domains in a single application.
 
 
-
 Validating translations
 =======================
 
@@ -211,3 +210,53 @@ To check a po file simply run ``polint`` with the po file as argument::
     1       ${val} is not a string
     2       "${val}" is not a string
 
+
+Writing custom extractors
+=========================
+
+First we need to create the custom extractor::
+
+    from lingua.extractors import Extractor
+    from lingua.extractors import Message
+
+    class MyExtractor(Extractor):
+        extensions = ['.txt']
+
+        def __call__(self, filename, options):
+            return [Message(None, 'msgid', None, [], u'', u'', (filename, 1))]
+
+Hooking up extractors to lingua is done by ``lingua.extractors`` entry points
+in ``setup.py``::
+
+    setup(name='mypackage',
+          ...
+          install_requires=[
+              'lingua',
+          ],
+          ...
+          entry_points="""
+          [lingua.extractors]
+          my_extractor = mypackage.extractor:MyExtractor
+          """
+          ...)
+
+Note - the registered extractor may be a class or an instance of
+an ``Extractor`` deriving object.
+
+After installing ``mypackage`` the custom extractor gets executed.
+
+
+Helper Script
+=============
+
+There exists a helper shell script for managing translations of packages in
+``docs/examples`` named ``i18n.sh``. Copy it to package root where you want to
+work on translations, edit the configuration params inside the script and use::
+
+    ./i18n.sh lang
+
+for initial catalog creation and::
+
+    ./i18n.sh
+
+for updating translation and compiling the catalog.

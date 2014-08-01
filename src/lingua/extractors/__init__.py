@@ -1,8 +1,12 @@
 from __future__ import print_function
+from pkg_resources import working_set
+import abc
 import collections
+import inspect
 import os
 import re
 import sys
+from .compat import add_metaclass
 
 
 Message = collections.namedtuple('Message',
@@ -10,15 +14,6 @@ Message = collections.namedtuple('Message',
 
 EXTRACTORS = {}
 EXTENSIONS = {}
-
-
-def register_extractor(identifier, extensions):
-    def wrapper(func):
-        EXTRACTORS[identifier] = func
-        for extension in extensions:
-            EXTENSIONS[extension] = func
-        return func
-    return wrapper
 
 
 def get_extractor(filename):
@@ -116,3 +111,28 @@ def update_keywords(keywords, specs):
             print(e, file=sys.stderr)
             sys.exit(1)
         keywords[kw.function] = kw
+
+
+@add_metaclass(abc.ABCMeta)
+class Extractor(object):
+
+    @abc.abstractproperty
+    def extensions(self):
+        NotImplemented()
+
+    @abc.abstractmethod
+    def __call__(self, filename, options):
+        NotImplemented()
+
+
+def register_extractors():
+    for entry_point in working_set.iter_entry_points('lingua.extractors'):
+        extractor = entry_point.load(require=True)
+        if inspect.isclass(extractor):
+            extractor = extractor()
+        if not isinstance(extractor, Extractor):
+            raise ValueError(
+                u'Registered extractor must derive from ``Extractor``')
+        EXTRACTORS[entry_point.name] = extractor
+        for extension in extractor.extensions:
+            EXTENSIONS[extension] = extractor
