@@ -4,6 +4,10 @@ Changelog
 2.5 - Unreleased
 ----------------
 
+- Correct handling of alternatives in TALES expressions when the pipe-symbol
+  was surrounded by whitespace. This fixes
+  `issue 43 <https://github.com/wichert/lingua/issues/43>`_.
+
 - Extractors can now be hooked up from outside via entry points.
 
 - Introduce ``lingua.extractors.Extractor`` object and use it as base for

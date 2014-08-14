@@ -222,7 +222,7 @@ def is_valid_python(source):
 
 def split_expression(source):
     for part in split_parts.split(source):
-        expression = part.replace('\\|', '|')
+        expression = part.strip().replace('\\|', '|')
         yield get_tales_engine(expression)
 
 
