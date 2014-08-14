@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.5 - Unreleased
-----------------
+2.5 - August 14, 2014
+---------------------
 
 - Correct handling of alternatives in TALES expressions when the pipe-symbol
   was surrounded by whitespace. This fixes
