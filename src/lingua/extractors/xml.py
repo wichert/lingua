@@ -163,8 +163,8 @@ class XMLExtractor(Extractor, ElementProgram):
 
     def _assert_valid_python(self, value):
         if not is_valid_python(value):
-            print('Aborting due to Python syntax error in %s[%d]: %s',
-                    self.filename, self.linenumber, value)
+            print('Aborting due to Python syntax error in %s[%d]: %s' %
+                    (self.filename, self.linenumber, value))
             sys.exit(1)
 
     def get_code_for_attribute(self, attribute, value):
