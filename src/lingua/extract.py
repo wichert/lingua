@@ -149,7 +149,9 @@ def read_config(filename):
                     file=sys.stderr)
             sys.exit(1)
         try:
-            EXTENSIONS[extension] = EXTRACTORS[plugin]
+            config = dict(config.items(section))
+            config.pop('plugin')
+            EXTENSIONS[extension] = EXTRACTORS[plugin](config)
         except KeyError:
             print('Unknown plugin %s. Check --list-plugins for available options' % plugin,
                     file=sys.stderr)

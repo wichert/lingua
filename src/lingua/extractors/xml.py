@@ -69,9 +69,6 @@ class XMLExtractor(Extractor, ElementProgram):
     extensions = ['.pt', '.zpt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
 
-    def __init__(self):
-        pass
-
     def __call__(self, filename, options):
         self.options = options
         self.filename = filename
@@ -86,7 +83,7 @@ class XMLExtractor(Extractor, ElementProgram):
             print('Aborting due to parse error in %s: %s' %
                     (self.filename, e), file=sys.stderr)
             sys.exit(1)
-        super(XMLExtractor, self).__init__(source, filename=filename)
+        ElementProgram.__init__(self, source, filename=filename)
         return self.messages
 
     def visit(self, kind, args):

@@ -66,6 +66,7 @@ setup(name='lingua',
       [console_scripts]
       polint = lingua.polint:main
       pot-create = lingua.extract:main
+
       [lingua.extractors]
       python = lingua.extractors.python:PythonExtractor
       xml = lingua.extractors.xml:XMLExtractor

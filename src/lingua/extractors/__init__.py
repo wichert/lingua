@@ -2,7 +2,6 @@ from __future__ import print_function
 from pkg_resources import working_set
 import abc
 import collections
-import inspect
 import os
 import re
 import sys
@@ -115,6 +114,8 @@ def update_keywords(keywords, specs):
 
 @add_metaclass(abc.ABCMeta)
 class Extractor(object):
+    def __init__(self, config=None):
+        self.config = config if config else {}
 
     @abc.abstractproperty
     def extensions(self):
@@ -128,11 +129,9 @@ class Extractor(object):
 def register_extractors():
     for entry_point in working_set.iter_entry_points('lingua.extractors'):
         extractor = entry_point.load(require=True)
-        if inspect.isclass(extractor):
-            extractor = extractor()
-        if not isinstance(extractor, Extractor):
+        if not issubclass(extractor, Extractor):
             raise ValueError(
                 u'Registered extractor must derive from ``Extractor``')
         EXTRACTORS[entry_point.name] = extractor
         for extension in extractor.extensions:
-            EXTENSIONS[extension] = extractor
+            EXTENSIONS[extension] = extractor()
