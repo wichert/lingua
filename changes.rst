@@ -9,11 +9,14 @@ Changelog
 - Introduce ``lingua.extractors.Extractor`` object and use it as base for
   all extractors.
 
-
 - Check for global ``.config/lingua`` config file in user's home directory if
   no explicit config file defined.
 
-- Use a single wheel for Python 2 and Python 3.
+- Fix error message when detecting a syntax error in scanned Python code. Patch
+  from tisdall (`pull request 42
+  <https://github.com/wichert/lingua/pull/42>`_).
+
+- Use a single wheel distrbution for Python 2 and Python 3.
 
 
 2.4 - July 23, 2014
