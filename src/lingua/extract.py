@@ -137,25 +137,39 @@ def create_catalog(options):
     return catalog
 
 
+def _register_extension(extension, extractor):
+    if extractor not in EXTRACTORS:
+        print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
+                file=sys.stderr)
+        sys.exit(1)
+    EXTENSIONS[extension] = extractor
+
+
 def read_config(filename):
     config = SafeConfigParser()
     config.readfp(open(filename))
     for section in config.sections():
         if section == 'extensions':
-            for (extension, extractor) in secion.items():
-                if extractor not in EXTRACTORS:
-                    print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
-                            file=sys.stderr)
-                    sys.exit(1)
-                EXTENSIONS[extension] = extractor
+            for (extension, extractor) in config.items(section):
+                _register_extension(extension, extractor)
         elif section.startswith('extractor:'):
-            extractor = section[7:]
+            extractor = section[10:]
             if extractor not in EXTRACTORS:
-                print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
+                print('Unknown extractor %s. '
+                      'Check --list-extractors for available options' % extractor,
                         file=sys.stderr)
                 sys.exit(1)
             config = dict(config.items(section))
             EXTRACTORS[extractor].update_config(**config)
+        elif section.startswith('extension'):
+            print('Use of %s section is obsolete. '
+                  'Please use the "extensions" section.' % section)
+            extension = section[10:]
+            plugin = config.get(section, 'plugin')
+            if not plugin:
+                print('No plugin defined for extension %s' % extension,
+                    file=sys.stderr)
+            _register_extension(extension, plugin)
 
 
 def main():
