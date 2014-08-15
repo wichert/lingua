@@ -26,10 +26,15 @@ class BabelExtractor(Extractor):
     def __call__(self, filename, options):
         fileobj = open(filename, 'rb')
         for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), {}):
+            if isinstance(msgid, tuple):
+                (msgid, msgid_plural) = msgid[:2]
+            else:
+                msgid_plural = u''
+            comment = u' '.join(comment)
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
-            yield Message(None, msgid, u'', flags, u' '.join(comment), None, (filename, lineno))
+            yield Message(None, msgid, msgid_plural, flags, comment, u'', (filename, lineno))
 
 
 def register_babel_plugins():
