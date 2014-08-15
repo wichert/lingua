@@ -22,10 +22,16 @@ DEFAULT_KEYWORDS = {
 class BabelExtractor(Extractor):
     extensions = []
     extractor = None
+    default_options = {
+            'comment-tags': '',
+    }
 
     def __call__(self, filename, options):
         fileobj = open(filename, 'rb')
-        for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), {}):
+        comment_tags = self.config['comment-tags'].split()
+
+        for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(),
+                comment_tags, self.config):
             if isinstance(msgid, tuple):
                 (msgid, msgid_plural) = msgid[:2]
             else:

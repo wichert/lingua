@@ -116,7 +116,14 @@ file::
      [extensions]
      .json = babel-json
 
-    
+Some Babel plugins require you to specify comment tags. This can be set with
+the ``comment-tags`` option.
+
+::
+
+    [extractor:babel-mako]
+    comment-tags = TRANSLATOR:
+
 
 Domain filtering
 ----------------

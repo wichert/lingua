@@ -4,6 +4,8 @@ Changelog
 2.6 - Unreleased
 ---------------------
 
+- Make it possible to configure Babel plugins.
+
 - Include a brief description in ``--list-extractors`` output.
 
 - Rename the ``xml`` extractor to ``chameleon`` to better fit the syntax it
