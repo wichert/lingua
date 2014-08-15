@@ -100,13 +100,13 @@ configuration file.
     $ pot-create -c lingua.cfg src
 
 
-Babel extractor support
------------------------
+Babel plugin support
+--------------------
 
-In addition to using lingua's extractors you can also use use all Babel
-extraction plugins available on your system.  To prevent naming conflicts the
-Babel plugin names will be prefixed with ``babel-``. The ``list-extractors``
-output will include all known Babel plugins.
+There are several packages with plugins for `Babel
+<http://babel.edgewall.org/>`_'s message extraction tool. Lingua can use those
+plugins as well. The plugin names will be prefixed with ``babel-`` to
+distinguish them from lingua extractors.
 
 For example, if you have the `PyBabel-json
 <https://pypi.python.org/pypi/PyBabel-json>`_ package installed you can
@@ -175,15 +175,6 @@ This can be done in several ways:
 * You can specify the exact number of parameters a function call must have
   using the ``t`` postfix. For example if a funtion *must* have four parameters
   to be a valid call, the specifier could be ``myfunc:1,5t``.
-
-
-Babel plugin support
---------------------
-
-There are several packages with plugins for `Babel
-<http://babel.edgewall.org/>`_'s message extraction tool. Lingua can use those
-plugins as well. The plugin names will be prefixed with ``babel-`` to
-distinguish them from lingua extractors.
 
 
 Comparison to other tools
