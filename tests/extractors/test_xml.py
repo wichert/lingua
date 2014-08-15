@@ -2,11 +2,11 @@
 import mock
 import pytest
 from io import BytesIO
-from lingua.extractors.xml import XMLExtractor
+from lingua.extractors.xml import ChameleonExtractor
 from lingua.extractors.xml import get_python_expressions
 
 
-xml_extractor = XMLExtractor()
+xml_extractor = ChameleonExtractor()
 source = None
 
 

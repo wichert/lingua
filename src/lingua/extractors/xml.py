@@ -65,8 +65,8 @@ class TranslateContext(object):
                 (self.filename, self.lineno))
 
 
-class XMLExtractor(Extractor, ElementProgram):
-    extensions = ['.pt', '.zpt']
+class ChameleonExtractor(Extractor, ElementProgram):
+    extensions = ['.pt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
     default_config = {
             'default-engine': 'python',
@@ -210,6 +210,13 @@ class XMLExtractor(Extractor, ElementProgram):
         for message in _extract_python(self.filename, source, self.options, self.linenumber):
             self.messages.append(Message(*message[:6],
                 location=(self.filename, self.linenumber + message.location[1])))
+
+
+class ZopeExtractor(ChameleonExtractor):
+    extensions = ['.zpt', '.cpt']
+    default_config = {
+            'default-engine': 'tales',
+            }
 
 
 def is_valid_python(source):

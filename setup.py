@@ -69,7 +69,9 @@ setup(name='lingua',
 
       [lingua.extractors]
       python = lingua.extractors.python:PythonExtractor
-      xml = lingua.extractors.xml:XMLExtractor
+      chameleon = lingua.extractors.xml:ChameleonExtractor
+      xml = lingua.extractors.xml:ChameleonExtractor
+      zope = lingua.extractors.xml:ZopeExtractor
       zcml = lingua.extractors.zcml:ZCMLExtractor
       '''
       )
