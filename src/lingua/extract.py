@@ -163,7 +163,8 @@ def read_config(filename):
             EXTRACTORS[extractor].update_config(**config)
         elif section.startswith('extension'):
             print('Use of %s section is obsolete. '
-                  'Please use the "extensions" section.' % section)
+                  'Please use the "extensions" section.' % section,
+                  file=sys.stderr)
             extension = section[10:]
             plugin = config.get(section, 'plugin')
             if not plugin:
