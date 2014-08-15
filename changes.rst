@@ -6,6 +6,13 @@ Changelog
 
 - Include a brief description in ``--list-extractors`` output.
 
+- Rename the ``xml`` extractor to ``chameleon`` to better fit the syntax it
+  handles.
+
+- Add a new ``zope`` extractor. This is identical to the chameleon extractor,
+  but changes the default expression engine used to TALES. This engine is now
+  the default for ``.cpt`` and ``.zpt`` files.
+
 - Allow per-extractor configuration.
 
 - Fix handling of comments returned by Babel extractor plugins. This fixes
