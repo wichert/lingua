@@ -38,6 +38,6 @@ def register_babel_plugins():
         extractor = entry_point.load(require=True)
         cls = type('BabelExtractor_%s' % name,
                 (BabelExtractor, object),
-                {'extractor': extractor,
+                {'extractor': staticmethod(extractor),
                  '__doc__': extractor.__doc__.splitlines()[0]})
         EXTRACTORS['babel-%s' % name] = cls()
