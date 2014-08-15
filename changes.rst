@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0 - Unreleased
+3.0 - August 15, 2014
 ---------------------
 
 *Zope users*: this release changes the extraction for `.pt` files. You will

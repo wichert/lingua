@@ -208,7 +208,7 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 
 * Support for file formats such as Zope Page Templates (popular in
   `Pyramid <http://docs.pylonsproject.org/projects/pyramid/en/latest/>`_,
-  `Chameleon <http://chameleon.readthedocs.org/en/latest/>`_,
+  `Chameleon`_,
   `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
 * No direct support for C, C++, Perl, and many other languages. Lingua focues
