@@ -6,6 +6,9 @@ Changelog
 
 - Allow per-extractor configuration.
 
+- Fix handling of comments returned by Babel extractor plugins. This fixes
+  `issue 44 <https://github.com/wichert/lingua/issues/44>`_.
+
 
 2.5 - August 14, 2014
 ---------------------

@@ -29,7 +29,7 @@ class BabelExtractor(Extractor):
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
-            yield Message(None, msgid, u'', flags, comment, None, (filename, lineno))
+            yield Message(None, msgid, u'', flags, u' '.join(comment), None, (filename, lineno))
 
 
 def register_babel_plugins():
