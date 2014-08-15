@@ -235,6 +235,7 @@ First we need to create the custom extractor::
     from lingua.extractors import Message
 
     class MyExtractor(Extractor):
+        '''One-line description for --list-extractors'''
         extensions = ['.txt']
 
         def __call__(self, filename, options):
