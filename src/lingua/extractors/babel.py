@@ -22,7 +22,7 @@ DEFAULT_KEYWORDS = {
 class BabelExtractor(Extractor):
     extensions = []
     extractor = None
-    default_options = {
+    default_config = {
             'comment-tags': '',
     }
 
