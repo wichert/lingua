@@ -3,6 +3,7 @@ from . import EXTRACTORS
 from . import Message
 from . import check_c_format
 from . import check_python_format
+from . import Extractor
 
 
 DEFAULT_KEYWORDS = {
@@ -18,19 +19,25 @@ DEFAULT_KEYWORDS = {
         }
 
 
-def babel_wrapper(extractor):
-    def wrapper(filename, options):
+class BabelExtractor(Extractor):
+    extensions = []
+    extractor = None
+
+    def __call__(self, filename, options):
         fileobj = open(filename, 'rb')
-        for (lineno, _, msgid, comment) in extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), {}):
+        for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(), (), {}):
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
             yield Message(None, msgid, u'', flags, comment, None, (filename, lineno))
-    wrapper.__doc__ = extractor.__doc__
-    return wrapper
 
 
 def register_babel_plugins():
     for entry_point in working_set.iter_entry_points('babel.extractors'):
-        extractor = babel_wrapper(entry_point.load(require=True))
-        EXTRACTORS['babel-%s' % entry_point.name] = extractor
+        name = entry_point.name
+        extractor = entry_point.load(require=True)
+        cls = type('BabelExtractor_%s' % name,
+                (BabelExtractor, object),
+                {'extractor': extractor,
+                 '__doc__': extractor.__doc__})
+        EXTRACTORS['babel-%s' % name] = cls()
