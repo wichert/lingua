@@ -68,6 +68,9 @@ class TranslateContext(object):
 class XMLExtractor(Extractor, ElementProgram):
     extensions = ['.pt', '.zpt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
+    default_config = {
+            'default-engine': 'python',
+            }
 
     def __call__(self, filename, options):
         self.options = options
@@ -165,9 +168,10 @@ class XMLExtractor(Extractor, ElementProgram):
             sys.exit(1)
 
     def get_code_for_attribute(self, attribute, value):
+        default_engine = self.config['default-engine']
         if attribute[0] == TAL_NS:
             if attribute[1] in ['content', 'replace']:
-                for (engine, value) in split_expression(value):
+                for (engine, value) in split_expression(value, default_engine):
                     if engine == 'python':
                         m = STRUCTURE_PREFIX.match(value)
                         if m is not None:
@@ -177,7 +181,7 @@ class XMLExtractor(Extractor, ElementProgram):
                         yield value
             if attribute[1] == 'define':
                 for (scope, var, value) in parse_defines(value):
-                    for (engine, value) in split_expression(value):
+                    for (engine, value) in split_expression(value, default_engine):
                         if engine == 'python':
                             value = '(%s)' % value
                             self._assert_valid_python(value)
@@ -188,17 +192,17 @@ class XMLExtractor(Extractor, ElementProgram):
                     print('Aborting due to syntax error in %s[%d]: %s' % (
                             self.filename, self.linenumber, value))
                 scope, var, value = defines[0]
-                for (engine, value) in split_expression(value):
+                for (engine, value) in split_expression(value, default_engine):
                     if engine == 'python':
                         self._assert_valid_python(value)
                         yield value
         else:
             try:
-                for source in get_python_expressions(value):
+                for source in get_python_expressions(value, default_engine):
                     yield source
             except SyntaxError:
-                print('Aborting due to Python syntax error in %s[%d]: %s',
-                        self.filename, self.linenumber, value)
+                print('Aborting due to Python syntax error in %s[%d]: %s' %
+                        (self.filename, self.linenumber, value))
                 sys.exit(1)
 
     def parse_python(self, source):
@@ -217,14 +221,14 @@ def is_valid_python(source):
         return True
 
 
-def split_expression(source):
+def split_expression(source, default_engine):
     for part in split_parts.split(source):
         expression = part.strip().replace('\\|', '|')
-        yield get_tales_engine(expression)
+        yield get_tales_engine(expression, default_engine)
 
 
 
-def get_tales_engine(source, default_engine='python'):
+def get_tales_engine(source, default_engine):
     m = ENGINE_PREFIX.match(source)
     if m is None:
         return (default_engine, source)
@@ -232,7 +236,7 @@ def get_tales_engine(source, default_engine='python'):
         return (m.group(1), source[m.end():])
 
 
-def get_python_expressions(source):
+def get_python_expressions(source, default_engine):
     regex = re.compile(r'(?<!\\)\$({(?P<expression>.*)})', re.DOTALL)
     while source:
         m = regex.search(source)
@@ -242,16 +246,28 @@ def get_python_expressions(source):
         source = source[m.start():]
         matched = m.group(0)
 
+        # We foundsomething that looks like ${...}, but could also be
+        # ${...}..}, so keep trying to parse while stripping the last
+        # character until either all python validates, or we no longer
+        # match
+
         m = regex.search(source)
         while m is not None:
             candidate = m.group('expression')
-            if is_valid_python(candidate):
-                yield candidate
+            candidates = [code for (engine, code) in split_expression(candidate, default_engine)
+                          if engine == 'python']
+            if all(is_valid_python(c) for c in candidates):
+                # All valid, so return and move to next ${ block
+                for c in candidates:
+                    yield c
                 source = source[m.end():]
                 break
             else:
+                # Syntax error somewhere, so try again with last character
+                # stripped.
                 matched = matched[:-1]
                 m = regex.search(matched)
+
         if m is None:
             # We found ${, but could not find a valid python expression
             raise SyntaxError()
