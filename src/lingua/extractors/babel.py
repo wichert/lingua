@@ -39,5 +39,5 @@ def register_babel_plugins():
         cls = type('BabelExtractor_%s' % name,
                 (BabelExtractor, object),
                 {'extractor': extractor,
-                 '__doc__': extractor.__doc__})
+                 '__doc__': extractor.__doc__.splitlines()[0]})
         EXTRACTORS['babel-%s' % name] = cls()

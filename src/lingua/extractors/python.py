@@ -101,6 +101,7 @@ def _extract_python(filename, source, options, firstline=0):
 
 
 class PythonExtractor(Extractor):
+    '''Python sources'''
     extensions = ['.py']
 
     def __call__(self, filename, options):

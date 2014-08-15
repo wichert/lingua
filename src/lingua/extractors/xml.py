@@ -66,6 +66,7 @@ class TranslateContext(object):
 
 
 class ChameleonExtractor(Extractor, ElementProgram):
+    '''Chameleon templates (defaults to Python expressions)'''
     extensions = ['.pt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
     default_config = {
@@ -213,6 +214,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
 
 
 class ZopeExtractor(ChameleonExtractor):
+    '''Zope templates (defaults to TALES expressions)'''
     extensions = ['.zpt', '.cpt']
     default_config = {
             'default-engine': 'tales',

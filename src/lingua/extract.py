@@ -226,7 +226,7 @@ def main():
 
     if options.list_extractors:
         for extractor in sorted(EXTRACTORS):
-            print(extractor)
+            print('%-17s %s' % (extractor, EXTRACTORS[extractor].__doc__ or ''))
         return
 
     if options.config:

@@ -13,6 +13,7 @@ def _open(filename):
 
 
 class ZCMLExtractor(Extractor):
+    '''Zope Configuration Markup Language (ZCML)'''
     extensions = ['.zcml']
     ATTRIBUTES = set(['title', 'description'])
 

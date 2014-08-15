@@ -78,9 +78,11 @@ To find out which extrctors are available use the ``-list-extractors`` option.
 ::
 
     $ bin/pot-create --list-extractors
-    python
-    xml
-    zcml
+    chameleon         Chameleon templates (defaults to Python expressions)
+    python            Python sources
+    xml               Chameleon templates (defaults to Python expressions)
+    zcml              Zope Configuration Markup Language (ZCML)
+    zope              Zope templates (defaults to TALES expressions)
 
 A section named `extractor:<name>` can be used to configure a specific
 extractor. For example to tell the XMl extractor that the default language

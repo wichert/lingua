@@ -4,6 +4,8 @@ Changelog
 2.6 - Unreleased
 ---------------------
 
+- Include a brief description in ``--list-extractors`` output.
+
 - Allow per-extractor configuration.
 
 - Fix handling of comments returned by Babel extractor plugins. This fixes
