@@ -249,10 +249,10 @@ in ``setup.py``::
               'lingua',
           ],
           ...
-          entry_points="""
+          entry_points='''
           [lingua.extractors]
           my_extractor = mypackage.extractor:MyExtractor
-          """
+          '''
           ...)
 
 Note - the registered extractor must be a class derived from the ``Extractor``
