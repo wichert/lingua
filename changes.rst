@@ -1,8 +1,11 @@
 Changelog
 =========
 
-2.6 - Unreleased
+3.0 - Unreleased
 ---------------------
+
+*Zope users*: this release changes the extraction for `.pt` files. You will
+need to configure lingua to use the new ``zope`` extractor for ``.pt`` files.
 
 - Make it possible to configure Babel plugins.
 

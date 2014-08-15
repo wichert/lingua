@@ -100,31 +100,6 @@ configuration file.
     $ pot-create -c lingua.cfg src
 
 
-Babel plugin support
---------------------
-
-There are several packages with plugins for `Babel
-<http://babel.edgewall.org/>`_'s message extraction tool. Lingua can use those
-plugins as well. The plugin names will be prefixed with ``babel-`` to
-distinguish them from lingua extractors.
-
-For example, if you have the `PyBabel-json
-<https://pypi.python.org/pypi/PyBabel-json>`_ package installed you can
-instruct lingua to use it for .json files by adding this to your configuration
-file::
-
-     [extensions]
-     .json = babel-json
-
-Some Babel plugins require you to specify comment tags. This can be set with
-the ``comment-tags`` option.
-
-::
-
-    [extractor:babel-mako]
-    comment-tags = TRANSLATOR:
-
-
 Domain filtering
 ----------------
 
@@ -184,8 +159,50 @@ This can be done in several ways:
   to be a valid call, the specifier could be ``myfunc:1,5t``.
 
 
+Extractors
+==========
+
+Lingua includes a number of extractors:
+
+* `python`: handles Python source code.
+* `chameleon`: handles `Chameleon <http://www.pagetemplates.org/>`_ files,
+  using the `Zope i18n syntax
+  <https://chameleon.readthedocs.org/en/latest/reference.html#id51>`_
+* `zcml`: handles Zope Configuration Markup Language (ZCML) files.
+* `zope`: a variant of the chameleon extractor, which assumes the default
+   expression language is `TALES
+   <https://chameleon.readthedocs.org/en/latest/reference.html#expressions-tales>`_
+   instead of Python.
+* `xml`: old name for the `chameleon` extractor. This should not be used
+   anymore.
+
+Babel extractors
+----------------
+
+There are several packages with plugins for `Babel
+<http://babel.edgewall.org/>`_'s message extraction tool. Lingua can use those
+plugins as well. The plugin names will be prefixed with ``babel-`` to
+distinguish them from lingua extractors.
+
+For example, if you have the `PyBabel-json
+<https://pypi.python.org/pypi/PyBabel-json>`_ package installed you can
+instruct lingua to use it for .json files by adding this to your configuration
+file::
+
+     [extensions]
+     .json = babel-json
+
+Some Babel plugins require you to specify comment tags. This can be set with
+the ``comment-tags`` option.
+
+::
+
+    [extractor:babel-mako]
+    comment-tags = TRANSLATOR:
+
+
 Comparison to other tools
--------------------------
+=========================
 
 Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 
