@@ -85,7 +85,7 @@ To find out which extrctors are available use the ``-list-extractors`` option.
     zope              Zope templates (defaults to TALES expressions)
 
 A section named `extractor:<name>` can be used to configure a specific
-extractor. For example to tell the XMl extractor that the default language
+extractor. For example to tell the XML extractor that the default language
 used for expressions is TALES instead of Python::
 
     [extractor:xml]
