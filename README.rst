@@ -61,11 +61,33 @@ for ``.zcml`` files. If you use different extensions you setup a configuration
 file which tells lingua how to process files. This file uses a simple ini-style
 format.
 
-This minimal configuration tells lingua to use its XML extractor for files with
-the ``.html`` extension::
+There are two types of configuration that can be set in the configuration file:
+which extractor to use for a file extension, and the configuration for a single
+extractor.
 
-    [extension:.html]
-    plugin = xml
+File extensions are configured in the ``extensions`` section. Each entry in
+this section maps a file extension to an extractor name. For example to
+tell lingua to use its XML extactor for files with a ``.html`` extension
+you can use this configuration::
+
+    [extensions]
+    .html = xml
+
+To find out which extrctors are available use the ``-list-extractors`` option.
+
+::
+
+    $ bin/pot-create --list-extractors
+    python
+    xml
+    zcml
+
+A section named `extractor:<name>` can be used to configure a specific
+extractor. For example to tell the XMl extractor that the default language
+used for expressions is TALES instead of Python::
+
+    [extractor:xml]
+    default-engine = tales
 
 Either place a global configuration file named ``.config/lingua`` to your
 home folder or use the ``--config`` option to point lingua to your
@@ -75,23 +97,23 @@ configuration file.
 
     $ pot-create -c lingua.cfg src
 
-This also allows you to use Babel extraction plugins available on your system.
-To prevent naming conflicts you need to prefix the name of a babel plugin with
-``babel-``. This file can be used to extract messages fromm JSON files if you
-have the `PyBabel-json <https://pypi.python.org/pypi/PyBabel-json>`_ package
-installed::
 
-     [extension:.json]
-     plugin = babel-json
+Babel extractor support
+-----------------------
 
-To find out which plugins are available use the ``-list-plugins`` option.
+In addition to using lingua's extractors you can also use use all Babel
+extraction plugins available on your system.  To prevent naming conflicts the
+Babel plugin names will be prefixed with ``babel-``. The ``list-extractors``
+output will include all known Babel plugins.
 
-::
+For example, if you have the `PyBabel-json
+<https://pypi.python.org/pypi/PyBabel-json>`_ package installed you can
+instruct lingua to use it for .json files by adding this to your configuration
+file::
 
-    $ bin/pot-create --list-plugins
-    python
-    xml
-    zcml
+     [extensions]
+     .json = babel-json
+
     
 
 Domain filtering
@@ -243,7 +265,8 @@ in ``setup.py``::
 Note - the registered extractor must be a class derived from the ``Extractor``
 base class.
 
-After installing ``mypackage`` the custom extractor gets executed.
+After installing ``mypackage`` lingua will automatically detect the new custom
+extractor.
 
 
 Helper Script

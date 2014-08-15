@@ -4,7 +4,7 @@ Changelog
 2.6 - Unreleased
 ---------------------
 
-- ..
+- Allow per-extractor configuration.
 
 
 2.5 - August 14, 2014

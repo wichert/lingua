@@ -17,7 +17,10 @@ EXTENSIONS = {}
 
 def get_extractor(filename):
     ext = os.path.splitext(filename)[1]
-    return EXTENSIONS.get(ext)
+    try:
+        return EXTRACTORS[EXTENSIONS[ext]]
+    except KeyError:
+        return None
 
 
 # Based on http://www.cplusplus.com/reference/cstdio/printf/
@@ -114,8 +117,15 @@ def update_keywords(keywords, specs):
 
 @add_metaclass(abc.ABCMeta)
 class Extractor(object):
+    default_config = {}
+
     def __init__(self, config=None):
-        self.config = config if config else {}
+        self.config = self.default_config.copy()
+        if config:
+            self.config.update(config)
+
+    def update_config(self, **kw):
+        self.config.update(kw)
 
     @abc.abstractproperty
     def extensions(self):
@@ -132,6 +142,6 @@ def register_extractors():
         if not issubclass(extractor, Extractor):
             raise ValueError(
                 u'Registered extractor must derive from ``Extractor``')
-        EXTRACTORS[entry_point.name] = extractor
+        EXTRACTORS[entry_point.name] = extractor()
         for extension in extractor.extensions:
-            EXTENSIONS[extension] = extractor()
+            EXTENSIONS[extension] = entry_point.name

@@ -141,21 +141,21 @@ def read_config(filename):
     config = SafeConfigParser()
     config.readfp(open(filename))
     for section in config.sections():
-        if section.startswith('extension:'):
-            extension = section[10:]
-        plugin = config.get(section, 'plugin')
-        if not plugin:
-            print('No plugin defined for extension %s' % extension,
-                    file=sys.stderr)
-            sys.exit(1)
-        try:
+        if section == 'extensions':
+            for (extension, extractor) in secion.items():
+                if extractor not in EXTRACTORS:
+                    print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
+                            file=sys.stderr)
+                    sys.exit(1)
+                EXTENSIONS[extension] = extractor
+        elif section.startswith('extractor:'):
+            extractor = section[7:]
+            if extractor not in EXTRACTORS:
+                print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
+                        file=sys.stderr)
+                sys.exit(1)
             config = dict(config.items(section))
-            config.pop('plugin')
-            EXTENSIONS[extension] = EXTRACTORS[plugin](config)
-        except KeyError:
-            print('Unknown plugin %s. Check --list-plugins for available options' % plugin,
-                    file=sys.stderr)
-            sys.exit(1)
+            EXTRACTORS[extractor].update_config(**config)
 
 
 def main():
@@ -163,7 +163,7 @@ def main():
             description='Extract translateable strings.')
 
     parser.add_argument('-c', '--config', metavar='CONFIG',
-            help='Read plugin configuration from CONFIG file')
+            help='Read configuration from CONFIG file')
     # Input options
     parser.add_argument('-f', '--files-from', metavar='FILE',
             help='Get list of files to process from FILE')
@@ -172,7 +172,7 @@ def main():
             help='Add DIRECTORY to list of paths to check for input files')
     parser.add_argument('file', nargs='*',
             help='Source file to process')
-    parser.add_argument('--list-plugins', action='store_true',
+    parser.add_argument('--list-extractors', action='store_true',
             help='List all known extraction plugins')
     # Output options
     parser.add_argument('-o', '--output', metavar='FILE',
@@ -209,9 +209,9 @@ def main():
     register_extractors()
     register_babel_plugins()
 
-    if options.list_plugins:
-        for plugin in sorted(EXTRACTORS):
-            print(plugin)
+    if options.list_extractors:
+        for extractor in sorted(EXTRACTORS):
+            print(extractor)
         return
 
     if options.config:
