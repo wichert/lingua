@@ -7,7 +7,7 @@
 
 # configuration
 DOMAIN="mydomain"
-SEACH_PATH=src/mypackage
+SEARCH_PATH=src/mypackage
 LOCALES_PATH=src/mypackage/locale
 # end configuration
 
@@ -19,14 +19,14 @@ fi
 
 # create pot if not exists
 if [ ! -f $LOCALES_PATH/$DOMAIN.pot ]; then
-	echo "Create pot file"
-	touch $LOCALES_PATH/$DOMAIN.pot
+    echo "Create pot file"
+    touch $LOCALES_PATH/$DOMAIN.pot
 fi
 
 # no arguments, extract and update
 if [ $# -eq 0 ]; then
     echo "Extract messages"
-    pot-create $SEACH_PATH -o $LOCALES_PATH/$DOMAIN.pot
+    pot-create $SEARCH_PATH -o $LOCALES_PATH/$DOMAIN.pot
 
     echo "Update translations"
     for po in $LOCALES_PATH/*/LC_MESSAGES/$DOMAIN.po; do
