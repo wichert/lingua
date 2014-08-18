@@ -144,7 +144,7 @@ This can be done in several ways:
   parameter number with ``<keyword>:<parameter number>``. For example if
   you use ``i18n_log(level, msg)`` the keyword specifier would be ``i18n_log:2``
 * If you support plurals you can specify the parameter used for the plural message
-  by specifying tne parameter number for both the singular and plural text. For
+  by specifying the parameter number for both the singular and plural text. For
   example if your function signature is ``show_result(single, plural)`` the
   keyword specifier is ``show_result:1,2``
 * If you use message contexts you can specify the parameter used for the context
