@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.1 - Unreleased
+3.1 - August 18, 2014
 ---------------------
 
 - Make sure two message strings are added when a plural message is encountered.
