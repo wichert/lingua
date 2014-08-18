@@ -4,7 +4,9 @@ Changelog
 3.1 - Unreleased
 ---------------------
 
-- ...
+- Make sure two message strings are added when a plural message is encountered.
+  This fixes an error from `msginit` when it sees ``msgid_plural`` but only a
+  single ``msgstr``
 
 
 3.0 - August 15, 2014

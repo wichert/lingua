@@ -254,8 +254,11 @@ def main():
             entry = catalog.find(message.msgid, msgctxt=message.msgctxt)
             if entry is None:
                 entry = POEntry(msgctxt=message.msgctxt,
-                                msgid=message.msgid,
-                                msgid_plural=message.msgid_plural)
+                                msgid=message.msgid)
+                if message.msgid_plural:
+                    entry.msgid_plural = message.msgid_plural
+                    entry.msgstr_plural[0] = ''
+                    entry.msgstr_plural[1] = ''
                 catalog.append(entry)
             entry.update(message)
         scanned += 1
