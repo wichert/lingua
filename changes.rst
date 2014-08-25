@@ -4,7 +4,8 @@ Changelog
 3.2 - Unreleased
 ---------------------
 
-- ...
+- Correctly extract messages from empty elements that used HTML notation. This
+  fixes `issue 48 <https://github.com/wichert/lingua/issues/48>`_.
 
 
 3.1 - August 18, 2014

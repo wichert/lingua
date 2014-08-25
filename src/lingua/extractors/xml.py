@@ -95,6 +95,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
         if visitor is not None:
             return visitor(*args)
 
+    def visit_start_tag(self, element):
+        self.visit_element(element, None, [])
+
     def visit_element(self, start, end, children):
         if self.translatestack and self.translatestack[-1]:
             self.translatestack[-1].add_element(start)

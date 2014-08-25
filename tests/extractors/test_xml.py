@@ -542,3 +542,17 @@ def test_spaces_around_tal_pipe_symbol():
                 </html>
                 '''.encode('utf-8')
     list(xml_extractor('filename', _options()))
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_empty_element():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <img title="message" i18n:attributes="title">
+                  <p></p>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert len(messages) == 1
