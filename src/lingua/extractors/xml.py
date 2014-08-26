@@ -241,7 +241,6 @@ def split_expression(source, default_engine):
         yield get_tales_engine(expression, default_engine)
 
 
-
 def get_tales_engine(source, default_engine):
     m = ENGINE_PREFIX.match(source)
     if m is None:
