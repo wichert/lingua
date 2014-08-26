@@ -129,11 +129,11 @@ class Extractor(object):
 
     @abc.abstractproperty
     def extensions(self):
-        NotImplemented()
+        raise NotImplemented()
 
     @abc.abstractmethod
-    def __call__(self, filename, options):
-        NotImplemented()
+    def __call__(self, filename, options, fileobj=None, lineno=0):
+        raise NotImplemented()
 
 
 def register_extractors():

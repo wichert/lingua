@@ -104,5 +104,9 @@ class PythonExtractor(Extractor):
     '''Python sources'''
     extensions = ['.py']
 
-    def __call__(self, filename, options):
-        return _extract_python(filename, _read(filename), options)
+    def __call__(self, filename, options, fileobj=None, lineno=0):
+        if fileobj is None:
+            code = _read(filename)
+        else:
+            code = fileobj.read()
+        return _extract_python(filename, code, options, lineno)

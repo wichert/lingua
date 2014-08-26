@@ -26,8 +26,9 @@ class BabelExtractor(Extractor):
             'comment-tags': '',
     }
 
-    def __call__(self, filename, options):
-        fileobj = open(filename, 'rb')
+    def __call__(self, filename, options, fileobj=None, lineno=0):
+        if fileobj is None:
+            fileobj = open(filename, 'rb')
         comment_tags = self.config['comment-tags'].split()
 
         for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(),

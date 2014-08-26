@@ -4,6 +4,10 @@ Changelog
 3.2 - Unreleased
 ---------------------
 
+- Refactor the extractor API a little bit to make it easier for extractors
+  to call each other. This is particularly useful when an extractor needs to
+  call the Python extractor to handle local Python expressions.
+
 - Correctly extract messages from empty elements that used HTML notation. This
   fixes `issue 48 <https://github.com/wichert/lingua/issues/48>`_.
 

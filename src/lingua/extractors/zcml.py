@@ -17,7 +17,7 @@ class ZCMLExtractor(Extractor):
     extensions = ['.zcml']
     ATTRIBUTES = set(['title', 'description'])
 
-    def __call__(self, filename, options):
+    def __call__(self, filename, options, fileobj=None, lineno=0):
         self.filename = filename
         self.target_domain = options.domain
         self.messages = []
@@ -25,8 +25,10 @@ class ZCMLExtractor(Extractor):
         self.parser.StartElementHandler = self.StartElementHandler
         self.parser.EndElementHandler = self.EndElementHandler
         self.domainstack = collections.deque()
+        if fileobj is None:
+            fileobj = _open(filename)
         try:
-            self.parser.ParseFile(_open(filename))
+            self.parser.ParseFile(fileobj)
         except expat.ExpatError as e:
             print('Aborting due to parse error in %s: %s' %
                             (filename, e), file=sys.stderr)

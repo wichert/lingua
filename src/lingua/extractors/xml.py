@@ -73,7 +73,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
             'default-engine': 'python',
             }
 
-    def __call__(self, filename, options):
+    def __call__(self, filename, options, fileobj=None, lineno=0):
         self.options = options
         self.filename = filename
         self.target_domain = options.domain
@@ -81,8 +81,10 @@ class ChameleonExtractor(Extractor, ElementProgram):
         self.domainstack = collections.deque([None])
         self.translatestack = collections.deque([None])
         self.linenumber = 1
+        if fileobj is None:
+            fileobj = _open(filename)
         try:
-            source = _open(filename).read().decode('utf-8')
+            source = fileobj.read().decode('utf-8')
         except UnicodeDecodeError as e:
             print('Aborting due to parse error in %s: %s' %
                     (self.filename, e), file=sys.stderr)
