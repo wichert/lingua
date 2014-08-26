@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.2 - Unreleased
+3.2 - August 26, 2014
 ---------------------
 
 - Refactor the extractor API a little bit to make it easier for extractors
