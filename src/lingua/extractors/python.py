@@ -19,7 +19,6 @@ KEYWORDS = {
         'ungettext': Keyword('ungettext', 1, 2),
         'dngettext': Keyword('dngettext', 2, 3, domain_param=1),
         'ldngettext': Keyword('dngettext', 2, 3, domain_param=1),
-        'N_': Keyword('N_', 1),
         }
 
 

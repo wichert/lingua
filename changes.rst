@@ -4,7 +4,9 @@ Changelog
 3.3 - Unreleased
 ---------------------
 
-- ...
+- Do not try to extract a message from ``N_()`` calls: these are explicitly
+  intended to be used for situations where you pass in a variable instead of
+  a string.
 
 
 3.2 - August 26, 2014
