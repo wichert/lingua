@@ -4,6 +4,11 @@ Changelog
 3.3 - Unreleased
 ---------------------
 
+- Modify the message format-checker to not consider a space ofter a percent-
+  character as a format flag. Space is a valid flag but is almost never used,
+  and this was creating a lot of false positives (for example a sentence like
+  "take a sample of 5% of all candidates").
+
 - Do not try to extract a message from ``N_()`` calls: these are explicitly
   intended to be used for situations where you pass in a variable instead of
   a string.

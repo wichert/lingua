@@ -24,9 +24,11 @@ def get_extractor(filename):
 
 
 # Based on http://www.cplusplus.com/reference/cstdio/printf/
+# Note that we skip the space-flag in this list, since this creates too
+# many false positives.
 _C_FORMAT = re.compile(r'''
         %
-        [+ #0-]?              # flags
+        [+#0-]?               # flags
         (\d+|\*)?             # width
         (\.(\d+|\*))?         # precision
         (hh?|ll?|j|z|t|L)?    # length

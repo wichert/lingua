@@ -10,6 +10,14 @@ def test_no_format():
     assert flags == []
 
 
+def test_space_in_format():
+    # This is technically a violation: printf(3) allows a space in format
+    # strings, but in the real world this leads to many false positives.
+    flags = []
+    check_c_format('This is 5% of everything', flags)
+    assert flags == []
+
+
 def test_basic_c_format():
     flags = []
     check_c_format('Hello, %s', flags)
