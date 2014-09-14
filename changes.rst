@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.3 - Unreleased
----------------------
+3.3 - September 14, 2014
+------------------------
 
 - Modify the message format-checker to not consider a space ofter a percent-
   character as a format flag. Space is a valid flag but is almost never used,
