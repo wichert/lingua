@@ -213,7 +213,7 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
 * Better support for detecting format strings used in Python.
 * No direct support for C, C++, Perl, and many other languages. Lingua focues
   on languages commonly used in Python projects, although support for other
-  langauges can be added via plugins.
+  languages can be added via plugins.
 
 
 Differences compared to `Babel`_:
