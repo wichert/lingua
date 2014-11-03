@@ -30,8 +30,9 @@ UNDERSCORE_CALL = re.compile("_\(.*\)")
 
 
 class TranslateContext(object):
-    def __init__(self, domain, msgid, filename, lineno):
+    def __init__(self, domain, msgctxt, msgid, filename, lineno):
         self.domain = domain
+        self.msgctxt = msgctxt
         self.msgid = msgid
         self.text = []
         self.filename = filename
@@ -61,7 +62,7 @@ class TranslateContext(object):
             self.msgid = text
             text = u''
         comment = u'Default: %s' % text if text else u''
-        return Message(None, self.msgid, None, [], comment, u'',
+        return Message(self.msgctxt, self.msgid, None, [], comment, u'',
                 (self.filename, self.lineno))
 
 
@@ -78,7 +79,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
         self.filename = filename
         self.target_domain = options.domain
         self.messages = []
-        self.domainstack = collections.deque([None])
+        self.domainstack = collections.deque([(None, None)])
         self.translatestack = collections.deque([None])
         self.linenumber = 1
         if fileobj is None:
@@ -107,15 +108,19 @@ class ChameleonExtractor(Extractor, ElementProgram):
         attributes = start['ns_attrs']
         plain_attrs = dict((a['name'].split(':')[-1], a['value']) for a in start['attrs'])
         new_domain = attributes.get((I18N_NS, 'domain'))
-        if new_domain:
-            self.domainstack.append(new_domain)
+        old_domain = self.domainstack[-1][0] if self.domainstack else None
+        new_context = attributes.get((I18N_NS, 'context'))
+        old_context = self.domainstack[-1][1] if self.domainstack else None
+        if new_domain or new_context:
+            self.domainstack.append((new_domain or old_domain, new_context or old_context))
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])
 
         i18n_translate = attributes.get((I18N_NS, 'translate'))
         if i18n_translate is not None:
             self.translatestack.append(TranslateContext(
-                self.domainstack[-1] if self.domainstack else None,
+                self.domainstack[-1][0] if self.domainstack else None,
+                self.domainstack[-1][1] if self.domainstack else None,
                 i18n_translate, self.filename, self.linenumber))
         else:
             self.translatestack.append(None)

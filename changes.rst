@@ -1,6 +1,13 @@
 Changelog
 =========
 
+3.4 - Unreleased
+------------------------
+
+- Add support for the ``i18n:context`` attribute in ZPT templates. This is
+  supported by Chameleon 2.17 and later to set the translation context.
+
+
 3.3 - September 14, 2014
 ------------------------
 
