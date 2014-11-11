@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.5 - Unreleased
-----------------------
+3.5 - November 11, 2014
+-----------------------
 
 - When encountering nested translations in ZPT templates automatically add a
   comment to the sub-message with the full text for the outer sentence. For
