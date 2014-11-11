@@ -4,7 +4,20 @@ Changelog
 3.6 - Unreleased
 -----------------------
 
-- ..
+- Extend automatic context-comments for ZPT templates to also show the
+  canonical text for sub-elements.  For example this markup::
+
+     <p i18n:translate="">This is just
+       <em i18n:name="wonderful" i18n:translate="">wonderful</em>!</p>
+
+  The resulting PO entry for the outer element will look like this::
+
+    #. Canonical text for ${wonderful} is: "wonderful"
+    msgid "This is just ${wonderful}!"
+    msgstr ""
+
+  This is only do for sub-elements that have a name (i.e. the have an
+  ``i18n:name`` attribute).
 
 
 3.5.1 - November 11, 2014

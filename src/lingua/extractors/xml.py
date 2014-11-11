@@ -38,6 +38,7 @@ class TranslateContext(object):
         self.filename = filename
         self.lineno = lineno
         self.parent = None
+        self.children = collections.OrderedDict()
 
     def add_text(self, text):
         self.text.append(text)
@@ -49,6 +50,12 @@ class TranslateContext(object):
             self.text.append(u'${%s}' % name)
         else:
             self.text.append(u'<dynamic element>')
+
+    def register_child(self, element, context):
+        attributes = element['ns_attrs']
+        name = attributes.get((I18N_NS, 'name'))
+        if name:
+            self.children[name] = context
 
     def ignore(self):
         text = u''.join(self.text).strip()
@@ -69,8 +76,12 @@ class TranslateContext(object):
         comments = []
         if text:
             comments.append(u'Default: %s' % text)
+        for (name, context) in self.children.items():
+            comments.append(u'Canonical text for ${%s} is: "%s"' %
+                    (name, context.full_text()))
         if self.parent:
-            comments.append(u'Used in sentence: "%s"' % self.parent.full_text())
+            comments.append(u'Used in sentence: "%s"' %
+                    self.parent.full_text())
         return Message(self.msgctxt, self.msgid, None, [],
                 u'\n'.join(comments), u'',
                 (self.filename, self.lineno))
@@ -135,6 +146,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
                 i18n_translate, self.filename, self.linenumber)
             if self.translatestack:
                 ctx.parent = self.translatestack[-1]
+                if ctx.parent is not None:
+                    ctx.parent.register_child(start, ctx)
             self.translatestack.append(ctx)
         else:
             self.translatestack.append(None)

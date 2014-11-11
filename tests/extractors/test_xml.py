@@ -202,7 +202,7 @@ def test_translate_translated_subelement():
     assert messages[0].msgid == u'téxt'
     assert messages[0].comment == u'Used in sentence: "Dummy ${text} demø"'
     assert messages[1].msgid == u'Dummy ${text} demø'
-    assert messages[1].comment == u''
+    assert messages[1].comment == u'Canonical text for ${text} is: "téxt"'
 
 @pytest.mark.usefixtures('fake_source')
 def test_translate_translated_subelement_with_id():
@@ -221,7 +221,8 @@ def test_translate_translated_subelement_with_id():
     assert messages[0].msgid == u'msgid_text'
     assert messages[0].comment == u'Default: téxt\nUsed in sentence: "Dummy ${text} demø"'
     assert messages[1].msgid == u'msgid_dummy'
-    assert messages[1].comment == u'Default: Dummy ${text} demø'
+    assert messages[1].comment == u'Default: Dummy ${text} demø\n' \
+                                  u'Canonical text for ${text} is: "téxt"'
 
 
 @pytest.mark.usefixtures('fake_source')
