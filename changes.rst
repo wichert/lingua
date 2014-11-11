@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.6 - Unreleased
+3.6 - November 11, 2014
 -----------------------
 
 - Extend automatic context-comments for ZPT templates to also show the
