@@ -204,6 +204,7 @@ def test_translate_translated_subelement():
     assert messages[1].msgid == u'Dummy ${text} demø'
     assert messages[1].comment == u'Canonical text for ${text} is: "téxt"'
 
+
 @pytest.mark.usefixtures('fake_source')
 def test_translate_translated_subelement_with_id():
     global source
