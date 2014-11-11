@@ -200,7 +200,7 @@ def test_translate_translated_subelement():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'téxt'
-    assert messages[0].comment == u'Used in sentence: "Dummy ${text}"'
+    assert messages[0].comment == u'Used in sentence: "Dummy ${text} demø"'
     assert messages[1].msgid == u'Dummy ${text} demø'
     assert messages[1].comment == u''
 
@@ -219,7 +219,7 @@ def test_translate_translated_subelement_with_id():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msgid_text'
-    assert messages[0].comment == u'Default: téxt\nUsed in sentence: "Dummy ${text}"'
+    assert messages[0].comment == u'Default: téxt\nUsed in sentence: "Dummy ${text} demø"'
     assert messages[1].msgid == u'msgid_dummy'
     assert messages[1].comment == u'Default: Dummy ${text} demø'
 

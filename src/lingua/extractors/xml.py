@@ -101,7 +101,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
                     (self.filename, e), file=sys.stderr)
             sys.exit(1)
         ElementProgram.__init__(self, source, filename=filename)
-        return self.messages
+        return [m.message() if isinstance(m, TranslateContext) else m
+                for m in self.messages]
 
     def visit(self, kind, args):
         visitor = getattr(self, 'visit_%s' % kind, None)
@@ -170,7 +171,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
         translate = self.translatestack.pop()
         if translate and not translate.ignore() and translate.domain and \
                 (self.target_domain is None or translate.domain == self.target_domain):
-            self.messages.append(translate.message())
+            self.messages.append(translate)
 
     def visit_text(self, data):
         for line in data.splitlines():

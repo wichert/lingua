@@ -1,10 +1,11 @@
 Changelog
 =========
 
-3.6 - Uereleased
+3.5.1 - Unreleased
 -----------------------
 
-- ..
+- Fix a bug in the generated context-comment for substrings which
+  caused part of the outer sentence text to be skipped.
 
 3.5 - November 11, 2014
 -----------------------
