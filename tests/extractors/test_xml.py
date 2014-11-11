@@ -191,6 +191,25 @@ def test_translate_translated_subelement():
     source = u'''\
                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
                       i18n:domain="lingua">
+                  <dummy i18n:translate="">Dummy
+                    <strong i18n:name="text"
+                            i18n:translate="">téxt</strong>
+                    demø</dummy>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert len(messages) == 2
+    assert messages[0].msgid == u'téxt'
+    assert messages[0].comment == u'Used in sentence: "Dummy ${text}"'
+    assert messages[1].msgid == u'Dummy ${text} demø'
+    assert messages[1].comment == u''
+
+@pytest.mark.usefixtures('fake_source')
+def test_translate_translated_subelement_with_id():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
                   <dummy i18n:translate="msgid_dummy">Dummy
                     <strong i18n:name="text"
                             i18n:translate="msgid_text">téxt</strong>
@@ -200,7 +219,7 @@ def test_translate_translated_subelement():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert messages[0].msgid == u'msgid_text'
-    assert messages[0].comment == u'Default: téxt'
+    assert messages[0].comment == u'Default: téxt\nUsed in sentence: "Dummy ${text}"'
     assert messages[1].msgid == u'msgid_dummy'
     assert messages[1].comment == u'Default: Dummy ${text} demø'
 

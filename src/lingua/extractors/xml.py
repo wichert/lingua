@@ -37,6 +37,7 @@ class TranslateContext(object):
         self.text = []
         self.filename = filename
         self.lineno = lineno
+        self.parent = None
 
     def add_text(self, text):
         self.text.append(text)
@@ -55,14 +56,23 @@ class TranslateContext(object):
         text = EXPRESSION.sub(u'', text)
         return not text
 
-    def message(self):
+    def full_text(self):
         text = u''.join(self.text).strip()
         text = WHITESPACE.sub(u' ', text)
+        return text
+
+    def message(self):
+        text = self.full_text()
         if not self.msgid:
             self.msgid = text
             text = u''
-        comment = u'Default: %s' % text if text else u''
-        return Message(self.msgctxt, self.msgid, None, [], comment, u'',
+        comments = []
+        if text:
+            comments.append(u'Default: %s' % text)
+        if self.parent:
+            comments.append(u'Used in sentence: "%s"' % self.parent.full_text())
+        return Message(self.msgctxt, self.msgid, None, [],
+                u'\n'.join(comments), u'',
                 (self.filename, self.lineno))
 
 
@@ -118,10 +128,13 @@ class ChameleonExtractor(Extractor, ElementProgram):
 
         i18n_translate = attributes.get((I18N_NS, 'translate'))
         if i18n_translate is not None:
-            self.translatestack.append(TranslateContext(
+            ctx = TranslateContext(
                 self.domainstack[-1][0] if self.domainstack else None,
                 self.domainstack[-1][1] if self.domainstack else None,
-                i18n_translate, self.filename, self.linenumber))
+                i18n_translate, self.filename, self.linenumber)
+            if self.translatestack:
+                ctx.parent = self.translatestack[-1]
+            self.translatestack.append(ctx)
         else:
             self.translatestack.append(None)
 

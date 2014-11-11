@@ -1,7 +1,26 @@
 Changelog
 =========
 
-3.4 - November 3, 2014 
+3.5 - Unreleased
+----------------------
+
+- When encountering nested translations in ZPT templates automatically add a
+  comment to the sub-message with the full text for the outer sentence. For
+  example this markup::
+
+     <p i18n:translate="">This is just
+       <em i18n:name="wonderful" i18n:translate="">wonderful</em>!</p>
+
+  The resulting PO entry will look like this::
+
+    #. Used in sentence: "This is just ${wonderful}!"
+    msgid "wonderful"
+    msgstr ""
+
+  This extra context information can be very important for translators.
+
+
+3.4 - November 3, 2014
 ----------------------
 
 - Add support for the ``i18n:context`` attribute in ZPT templates. This is
