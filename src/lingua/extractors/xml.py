@@ -2,6 +2,10 @@ from __future__ import absolute_import
 from __future__ import print_function
 import ast
 import collections
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 import re
 import sys
 from chameleon.namespaces import I18N_NS
@@ -38,7 +42,7 @@ class TranslateContext(object):
         self.filename = filename
         self.lineno = lineno
         self.parent = None
-        self.children = collections.OrderedDict()
+        self.children = OrderedDict()
 
     def add_text(self, text):
         self.text.append(text)
