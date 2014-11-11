@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.6.1 - Unreleased
+3.6.1 - November 11, 2014
 -------------------------
 
 - Restore Python 2.6 compatibility.
