@@ -4,6 +4,8 @@ Changelog
 3.7 - Unreleased
 -----------------------
 
+- Include used lingua version in POT metadata.
+
 - Add support for message contexts in translationstring instances.
 
 
