@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.7 - Unreleased
+3.7 - December 17, 2014
 -----------------------
 
 - Include used lingua version in POT metadata.
