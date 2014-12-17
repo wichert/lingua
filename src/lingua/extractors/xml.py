@@ -34,7 +34,7 @@ UNDERSCORE_CALL = re.compile("_\(.*\)")
 
 
 class TranslateContext(object):
-    def __init__(self, domain, msgctxt, msgid, filename, lineno):
+    def __init__(self, domain, msgctxt, msgid, comment, filename, lineno):
         self.domain = domain
         self.msgctxt = msgctxt
         self.msgid = msgid
@@ -43,6 +43,7 @@ class TranslateContext(object):
         self.lineno = lineno
         self.parent = None
         self.children = OrderedDict()
+        self.comment = comment
 
     def add_text(self, text):
         self.text.append(text)
@@ -78,6 +79,8 @@ class TranslateContext(object):
             self.msgid = text
             text = u''
         comments = []
+        if self.comment:
+            comments.append(self.comment)
         if text:
             comments.append(u'Default: %s' % text)
         for (name, context) in self.children.items():
@@ -137,6 +140,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
         old_domain = self.domainstack[-1][0] if self.domainstack else None
         new_context = attributes.get((I18N_NS, 'context'))
         old_context = self.domainstack[-1][1] if self.domainstack else None
+        comment = attributes.get((I18N_NS, 'comment'))
         if new_domain or new_context:
             self.domainstack.append((new_domain or old_domain, new_context or old_context))
         elif self.domainstack:
@@ -147,7 +151,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
             ctx = TranslateContext(
                 self.domainstack[-1][0] if self.domainstack else None,
                 self.domainstack[-1][1] if self.domainstack else None,
-                i18n_translate, self.filename, self.linenumber)
+                i18n_translate, comment, self.filename, self.linenumber)
             if self.translatestack:
                 ctx.parent = self.translatestack[-1]
                 if ctx.parent is not None:

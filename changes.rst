@@ -8,6 +8,8 @@ Changelog
 
 - Add support for message contexts in translationstring instances.
 
+- Add support for i18n:comment attributes in ZPT templates.
+
 
 3.6.1 - November 11, 2014
 -------------------------

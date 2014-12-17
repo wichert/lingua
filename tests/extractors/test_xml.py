@@ -590,3 +590,29 @@ def test_translation_context():
     messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Save'
     assert messages[0].msgctxt == u'form'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translation_comment():
+    global source
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <button i18n:comment="Generic save button" i18n:translate="">Save</button>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert messages[0].msgid == u'Save'
+    assert messages[0].comment == u'Generic save button'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translation_comment_and_msgid():
+    global source
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <button i18n:comment="Generic save button" i18n:translate="btn_save">Save</button>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert messages[0].msgid == u'btn_save'
+    assert messages[0].comment == u'Generic save button\nDefault: Save'
