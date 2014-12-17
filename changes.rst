@@ -4,7 +4,7 @@ Changelog
 3.7 - Unreleased
 -----------------------
 
-- ...
+- Add support for message contexts in translationstring instances.
 
 
 3.6.1 - November 11, 2014

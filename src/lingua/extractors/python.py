@@ -44,6 +44,7 @@ def parse_translationstring(node):
         return None
 
     msgid = None
+    context = None
     default = u''
     if isinstance(node.args[0], ast.Str):
         msgid = node.args[0].s
@@ -56,11 +57,13 @@ def parse_translationstring(node):
             msgid = keyword.value.s
         elif keyword.arg == 'default':
             default = keyword.value.s
+        elif keyword.arg == 'context':
+            context = keyword.value.s
     if not msgid:
         return None
 
     comment = u'Default: %s' % default if default else u''
-    return (None, None, msgid, None, comment)
+    return (None, context, msgid, None, comment)
 
 
 def _read(filename):

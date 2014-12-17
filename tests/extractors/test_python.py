@@ -48,3 +48,28 @@ def test_plural():
     assert len(messages) == 1
     assert messages[0].msgid == u'one côw'
     assert messages[0].msgid_plural == u'%d cows'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translationstring_parameters():
+    global source
+    options = mock.Mock()
+    options.keywords = []
+    source = u'''_(u'msgid', default=u'Canonical text')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].msgctxt is None
+    assert messages[0].msgid == u'msgid'
+    assert messages[0].comment == u'Default: Canonical text'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_translationstring_context():
+    global source
+    options = mock.Mock()
+    options.keywords = []
+    source = u'''_(u'Canonical text', context='button')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].msgctxt == 'button'
+    assert messages[0].msgid == u'Canonical text'
