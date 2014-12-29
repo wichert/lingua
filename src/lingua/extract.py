@@ -4,6 +4,7 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
+from operator import attrgetter
 import os
 import sys
 import time
@@ -204,6 +205,12 @@ def main():
     parser.add_argument('-w', '--width', metavar='NUMBER',
             default=79,
             help='Output width')
+    parser.add_argument('--sort-by-msgid', '--sort-output', # babel compatibility
+            action='store_true', dest='sort_output',
+            help='Order messages by their msgid')
+    parser.add_argument('--sort-by-file',
+            action='store_true', dest='sort_by_file',
+            help='Order messages by file location')
     # Extraction configuration
     parser.add_argument('-d', '--domain',
             help='Domain to extract')
@@ -270,6 +277,12 @@ def main():
     if not catalog:
         print('No translatable strings found, aborting', file=sys.stderr)
         sys.exit(2)
+    if options.sort_output:
+        catalog.sort(key=attrgetter('msgid'))
+    elif options.sort_by_file:
+        # Order the occurrences themselves, so the output is consistent
+        catalog.sort(key=lambda m: m.occurrences.sort() or m.occurrences)
+
     catalog.save(options.output)
 
 
