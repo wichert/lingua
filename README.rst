@@ -1,7 +1,7 @@
 What is lingua?
 ===============
 
-Lingua is a package with tools to extract translateable texts from
+Lingua is a package with tools to extract translatable texts from
 your code, and to check existing translations. It replaces the use
 of the ``xgettext`` command from gettext, or ``pybabel`` from Babel.
 
@@ -9,7 +9,7 @@ of the ``xgettext`` command from gettext, or ``pybabel`` from Babel.
 Message extraction
 ==================
 
-The simplest way to extract all translateable messages is to point the
+The simplest way to extract all translatable messages is to point the
 ``pot-create`` tool at the root of your source tree.
 
 ::
@@ -67,13 +67,13 @@ extractor.
 
 File extensions are configured in the ``extensions`` section. Each entry in
 this section maps a file extension to an extractor name. For example to
-tell lingua to use its XML extactor for files with a ``.html`` extension
+tell lingua to use its XML extractor for files with a ``.html`` extension
 you can use this configuration::
 
     [extensions]
     .html = xml
 
-To find out which extrctors are available use the ``-list-extractors`` option.
+To find out which extractors are available use the ``-list-extractors`` option.
 
 ::
 
@@ -152,11 +152,11 @@ This can be done in several ways:
   ``pgettext`` is ``pgettext:1c,2``.
 * If your function takes the domain as a parameter you can specify which parameter
   is used for the domain by adding a ``d`` to the parameter number. For example
-  the keyword specier for ``dgettext`` is ``dgettext:1d,2``. This is a
+  the keyword specifier for ``dgettext`` is ``dgettext:1d,2``. This is a
   lingua-specified extension.
 * You can specify the exact number of parameters a function call must have
-  using the ``t`` postfix. For example if a funtion *must* have four parameters
-  to be a valid call, the specifier could be ``myfunc:1,5t``.
+  using the ``t`` postfix. For example if a function *must* have four parameters
+  to be a valid call, the specifier could be ``myfunc:1,4t``.
 
 
 Extractors
@@ -211,7 +211,7 @@ Differences compared to `GNU gettext <https://www.gnu.org/software/gettext/>`_:
   `Chameleon`_,
   `Plone <http://plone.org/>`_ and `Zope <http://www.zope.org>`_).
 * Better support for detecting format strings used in Python.
-* No direct support for C, C++, Perl, and many other languages. Lingua focues
+* No direct support for C, C++, Perl, and many other languages. Lingua focuses
   on languages commonly used in Python projects, although support for other
   languages can be added via plugins.
 
