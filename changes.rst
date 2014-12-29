@@ -1,6 +1,13 @@
 Changelog
 =========
 
+3.8 - Unreleased
+-----------------------
+
+- Add options to sort messages by either location or message id when creating a
+  POT file.
+
+
 3.7 - December 17, 2014
 -----------------------
 

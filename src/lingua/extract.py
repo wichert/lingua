@@ -205,11 +205,11 @@ def main():
     parser.add_argument('-w', '--width', metavar='NUMBER',
             default=79,
             help='Output width')
-    parser.add_argument('--sort-by-msgid', '--sort-output', # babel compatibility
-            action='store_true', dest='sort_output',
+    parser.add_argument('-s', '--sort-output', # babel compatibility
+            action='store_const', const='msgid', dest='sort',
             help='Order messages by their msgid')
-    parser.add_argument('--sort-by-file',
-            action='store_true', dest='sort_by_file',
+    parser.add_argument('-F', '--sort-by-file',
+            action='store_const', const='location', dest='sort',
             help='Order messages by file location')
     # Extraction configuration
     parser.add_argument('-d', '--domain',
@@ -277,9 +277,10 @@ def main():
     if not catalog:
         print('No translatable strings found, aborting', file=sys.stderr)
         sys.exit(2)
-    if options.sort_output:
+
+    if options.sort == 'msgid':
         catalog.sort(key=attrgetter('msgid'))
-    elif options.sort_by_file:
+    elif options.sort == 'location':
         # Order the occurrences themselves, so the output is consistent
         catalog.sort(key=lambda m: m.occurrences.sort() or m.occurrences)
 
