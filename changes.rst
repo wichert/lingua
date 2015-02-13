@@ -1,6 +1,12 @@
 Changelog
 =========
 
+3.9 - Unreleased
+----------------
+
+- Fix line number reporting
+
+
 3.8 - January 20, 2015
 ----------------------
 

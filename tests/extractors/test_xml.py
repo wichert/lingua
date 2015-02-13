@@ -53,6 +53,7 @@ def test_attributes_plain():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'tést title'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -71,6 +72,7 @@ def test_custom_i18n_namespace():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 4
     assert [m.msgid for m in messages] == [u'Foo'] * 4
+    assert [m.location[1] for m in messages] == [2, 5, 7, 8]
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -85,6 +87,7 @@ def test_attributes_explicit_MessageId():
     assert len(messages) == 1
     assert messages[0].msgid == 'msg_title'
     assert messages[0].comment == u'Default: test tïtle'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -95,6 +98,7 @@ def test_attributes_no_domain_without_domain_filter():
                   </html>'''
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
+    assert messages[0].location[1] == 2
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -108,6 +112,7 @@ def test_attributes_multiple_attributes():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 2
     assert [m.msgid for m in messages] == [u'tést title', u'test ålt']
+    assert [m.location[1] for m in messages] == [3, 4]
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -124,6 +129,7 @@ def test_attributes_multiple_attributes_explicit_msgid():
     assert messages[0].comment == u'Default: test titlé'
     assert messages[1].msgid == u'msg_alt'
     assert messages[1].comment == u'Default: test ålt'
+    assert [m.location[1] for m in messages] == [4, 4]
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -137,6 +143,7 @@ def test_translate_minimal():
     messages = list(xml_extractor('filename', _options()))
     assert len(messages) == 1
     assert messages[0].msgid == u'Dummy téxt'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -151,6 +158,7 @@ def test_translate_explicit_msgid():
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy téxt'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -167,6 +175,7 @@ def test_translate_subelement():
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy <dynamic element> demø'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -183,6 +192,7 @@ def test_translate_named_subelement():
     assert len(messages) == 1
     assert messages[0].msgid == u'msgid_dummy'
     assert messages[0].comment == u'Default: Dummy ${text} demø'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -201,8 +211,10 @@ def test_translate_translated_subelement():
     assert len(messages) == 2
     assert messages[0].msgid == u'téxt'
     assert messages[0].comment == u'Used in sentence: "Dummy ${text} demø"'
+    assert messages[0].location[1] == 5
     assert messages[1].msgid == u'Dummy ${text} demø'
     assert messages[1].comment == u'Canonical text for ${text} is: "téxt"'
+    assert messages[1].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -221,9 +233,11 @@ def test_translate_translated_subelement_with_id():
     assert len(messages) == 2
     assert messages[0].msgid == u'msgid_text'
     assert messages[0].comment == u'Default: téxt\nUsed in sentence: "Dummy ${text} demø"'
+    assert messages[0].location[1] == 5
     assert messages[1].msgid == u'msgid_dummy'
     assert messages[1].comment == u'Default: Dummy ${text} demø\n' \
                                   u'Canonical text for ${text} is: "téxt"'
+    assert messages[1].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -240,6 +254,7 @@ def test_strip_extra_whitespace():
                 '''
     messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'Dummy text'
+    assert messages[0].location[1] == 3
 
 
 @pytest.mark.usefixtures('fake_source')
@@ -616,3 +631,60 @@ def test_translation_comment_and_msgid():
     messages = list(xml_extractor('filename', _options()))
     assert messages[0].msgid == u'btn_save'
     assert messages[0].comment == u'Generic save button\nDefault: Save'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_linenumbers():
+    global source
+    source = u'''<!DOCTYPE html>
+                 <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <span />
+                  <span
+                    />
+                  <div>
+                    <dummy i18n:comment="Generic save button" i18n:translate="dummy1">Foo<</dummy>
+                  </div>
+                  <div
+                    foo="bar">
+                    <dummy i18n:comment="Generic save button"
+                           i18n:translate="dummy2">Foo</dummy>
+                  </div>
+                  <div foo="bar"
+                    class="blubb">
+                    <dummy i18n:comment="Generic
+                                         save button"><span tal:omit-tag="" i18n:translate="dummy3">Foo</span></dummy>
+                  </div>
+                  <script>
+                  // <![CDATA[
+
+                    $(document).ready(function () {
+                    });
+                  // ]]>
+                  </script>
+                </html>
+
+                <!--
+                    comment
+                -->
+                <tal:macros
+                    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                    i18n:domain="lingua">
+                        <!--
+                            comment
+                        -->
+                        <metal:action define-macro="action">
+                            <dummy i18n:comment="Generic
+                                                 save button">
+                                <span tal:omit-tag="" i18n:translate="dummy4">Foo</span> ${value}
+                            </dummy>
+                        </metal:action>
+                </tal:macros>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    got = [(x.msgid, x.location[1]) for x in messages]
+    assert got == [
+        ('dummy1', 8),
+        ('dummy2', 13),
+        ('dummy3', 18),
+        ('dummy4', 41)]

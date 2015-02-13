@@ -94,6 +94,22 @@ class TranslateContext(object):
                 (self.filename, self.lineno))
 
 
+def get_newline_count(s):
+    s = s or ''
+    return len(s.split('\n')) - 1
+
+
+def get_plain_attrs(attrs):
+    plain_attrs = dict()
+    offset = 0
+    for attr in attrs:
+        offset += get_newline_count(attr['space'] + attr['name'] + attr['eq'] + attr['quote'])
+        post_offset = offset + get_newline_count(attr['value'] + attr['quote'])
+        plain_attrs[attr['name'].split(':')[-1]] = (attr['value'], offset, post_offset)
+        offset = post_offset
+    return plain_attrs
+
+
 class ChameleonExtractor(Extractor, ElementProgram):
     '''Chameleon templates (defaults to Python expressions)'''
     extensions = ['.pt']
@@ -126,16 +142,25 @@ class ChameleonExtractor(Extractor, ElementProgram):
         visitor = getattr(self, 'visit_%s' % kind, None)
         if visitor is not None:
             return visitor(*args)
+        else:
+            print("Warning: Unknown node type '%s', linenumbers might be off. Please report this warning." %
+                    kind, file=sys.stderr)
 
     def visit_start_tag(self, element):
         self.visit_element(element, None, [])
 
     def visit_element(self, start, end, children):
+        self.linenumber += get_newline_count(start['prefix'] + start['name'])
         if self.translatestack and self.translatestack[-1]:
             self.translatestack[-1].add_element(start)
 
         attributes = start['ns_attrs']
-        plain_attrs = dict((a['name'].split(':')[-1], a['value']) for a in start['attrs'])
+        plain_attrs = get_plain_attrs(start['attrs'])
+        childs_lineno = self.linenumber
+        post_offset = [x[2] for x in plain_attrs.values()]
+        if post_offset:
+            childs_lineno += max(post_offset)
+        childs_lineno += get_newline_count(start['suffix'])
         new_domain = attributes.get((I18N_NS, 'domain'))
         old_domain = self.domainstack[-1][0] if self.domainstack else None
         new_context = attributes.get((I18N_NS, 'context'))
@@ -151,7 +176,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
             ctx = TranslateContext(
                 self.domainstack[-1][0] if self.domainstack else None,
                 self.domainstack[-1][1] if self.domainstack else None,
-                i18n_translate, comment, self.filename, self.linenumber)
+                i18n_translate, comment, self.filename, childs_lineno)
             if self.translatestack:
                 ctx.parent = self.translatestack[-1]
                 if ctx.parent is not None:
@@ -168,7 +193,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
                     if ' ' not in msgid:
                         if msgid not in plain_attrs:
                             continue
-                        self.add_message(plain_attrs[msgid])
+                        value, offset, post_offset = plain_attrs[msgid]
+                        self.add_message(value, offset=offset)
                     else:
                         try:
                             (attr, msgid) = msgid.split()
@@ -176,15 +202,24 @@ class ChameleonExtractor(Extractor, ElementProgram):
                             continue
                         if attr not in plain_attrs:
                             continue
-                        self.add_message(msgid, u'Default: %s' % plain_attrs[attr])
+                        value, offset, post_offset = plain_attrs[attr]
+                        self.add_message(msgid, u'Default: %s' % value, offset=offset)
 
             for (attribute, value) in attributes.items():
                 value = decode_htmlentities(value)
                 for source in self.get_code_for_attribute(attribute, value):
                     self.parse_python(source)
 
+        self.linenumber = childs_lineno
         for child in children:
             self.visit(*child)
+
+        if end is not None:
+            self.linenumber += get_newline_count(end['prefix'] + end['name'])
+            post_offset = [x[2] for x in get_plain_attrs(end['attrs']).values()]
+            if post_offset:
+                self.linenumber += max(post_offset)
+            self.linenumber += get_newline_count(end['suffix'])
 
         if self.domainstack:
             self.domainstack.pop()
@@ -199,13 +234,25 @@ class ChameleonExtractor(Extractor, ElementProgram):
             for source in EXPRESSION.findall(line):
                 if UNDERSCORE_CALL.search(source):
                     self.parse_python(source)
-            self.linenumber += 1
         if self.translatestack[-1]:
             self.translatestack[-1].add_text(data)
+        self.linenumber += get_newline_count(data)
 
-    def add_message(self, msgid, comment=u''):
+    def visit_comment(self, data):
+        self.linenumber += get_newline_count(data)
+
+    def visit_cdata(self, data):
+        self.linenumber += get_newline_count(data)
+
+    def visit_default(self, data):
+        if not data.lower().startswith('<!doctype'):
+            print("%s:%s\n    Warning: Node type 'default', possible bad markup" %
+                    (self.filename, self.linenumber), file=sys.stderr)
+        self.linenumber += get_newline_count(data)
+
+    def add_message(self, msgid, comment=u'', offset=0):
         self.messages.append(Message(None, msgid, None, [], comment, u'',
-            (self.filename, self.linenumber)))
+            (self.filename, self.linenumber + offset)))
 
     def _assert_valid_python(self, value):
         if not is_valid_python(value):
