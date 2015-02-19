@@ -61,6 +61,7 @@ setup(name='lingua',
       zip_safe=True,
       install_requires=install_requires,
       tests_require=tests_require,
+      extras_require={'tests': tests_require},
       cmdclass={'test': PyTest},
       entry_points='''
       [console_scripts]
