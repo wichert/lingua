@@ -4,14 +4,17 @@ Changelog
 3.9 - Unreleased
 ----------------
 
-- Fix line number reporting
+- Fix line number reporting for XML/zope/Chameleon extractors.
+  `Pull request 53 <https://github.com/wichert/lingua/pull/53>`_
+  from Florian Schulze.
 
 
 3.8 - January 20, 2015
 ----------------------
 
 - Add options to sort messages by either location or message id when creating a
-  POT file.
+  POT file. Based on `pull request 51 <https://github.com/wichert/lingua/pull/51>`_
+  from Emanuele Gaifas.
 
 
 3.7 - December 17, 2014
