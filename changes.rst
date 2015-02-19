@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.9 - Unreleased
-----------------
+3.9 - February 19, 2015
+-----------------------
 
 - Fix line number reporting for XML/zope/Chameleon extractors.
   `Pull request 53 <https://github.com/wichert/lingua/pull/53>`_
