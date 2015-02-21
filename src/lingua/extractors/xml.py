@@ -269,9 +269,11 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         m = STRUCTURE_PREFIX.match(value)
                         if m is not None:
                             value = m.group(2)
-                        value = '(%s)' % value
-                        self._assert_valid_python(value)
-                        yield value
+                        m = ENGINE_PREFIX.match(value)
+                        if m is None:
+                            value = '(%s)' % value
+                            self._assert_valid_python(value)
+                            yield value
             if attribute[1] == 'define':
                 for (scope, var, value) in parse_defines(value):
                     for (engine, value) in split_expression(value, default_engine):
