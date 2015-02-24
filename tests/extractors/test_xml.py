@@ -441,6 +441,21 @@ def test_translate_ignore_other_content_expression_engine_with_structure():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_translate_explicit_python_engine_with_structure():
+    global source
+    source = b'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <tal:var content="structure python:_('foo')">
+                  </tal:var>
+                </html>
+                '''
+    messages = list(xml_extractor('filename', _options()))
+    assert len(messages) == 1
+    assert messages[0].msgid == u'foo'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_translate_entities_in_python_expression():
     global source
     source = b'''\

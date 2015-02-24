@@ -270,6 +270,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         if m is not None:
                             value = m.group(2)
                         m = ENGINE_PREFIX.match(value)
+                        if (m is not None) and (m.group(1) == 'python'):
+                            m = None
+                            value = value.split(':', 1)[1]
                         if m is None:
                             value = '(%s)' % value
                             self._assert_valid_python(value)
