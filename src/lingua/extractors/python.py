@@ -108,7 +108,7 @@ def _extract_python(filename, source, options, firstline=0):
         flags = []
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
-        yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, node.lineno))
+        yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, firstline + node.lineno))
 
 
 class PythonExtractor(Extractor):
