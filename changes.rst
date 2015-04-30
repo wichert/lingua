@@ -4,7 +4,9 @@ Changelog
 3.10 - Unreleased
 -----------------------
 
-- ..
+- Warn when using a function call instead of a string as parameter in a
+  gettext keyword in Python code. This fixes `issue 57
+  <https://github.com/wichert/lingua/issues/57>`_.
 
 
 3.9 - February 19, 2015

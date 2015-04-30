@@ -22,17 +22,26 @@ KEYWORDS = {
         }
 
 
-def parse_keyword(node, keyword):
+def parse_keyword(node, keyword, filename, firstline):
     if keyword.required_arguments and len(node.args) != keyword.required_arguments:
         return None
+
+    def get_string(param, error_msg):
+        if not param:
+            return None
+        arg = node.args[param - 1]
+        if not isinstance(node.args[0], ast.Str):
+            print('%s[%d]: %s' %  (filename, firstline + arg.lineno, error_msg),
+                    file=sys.stderr)
+            raise IndexError()
+        else:
+            return arg.s
+
     try:
-        domain = node.args[keyword.domain_param - 1].s \
-                if keyword.domain_param else None
-        msgid = node.args[keyword.msgid_param - 1].s
-        msgid_plural = node.args[keyword.msgid_plural_param - 1].s \
-                if keyword.msgid_plural_param else None
-        msgctxt = node.args[keyword.msgctxt_param - 1].s \
-                if keyword.msgctxt_param else None
+        domain = get_string(keyword.domain_param, 'Domain argument must be a string')
+        msgid = get_string(keyword.msgid_param, 'Message argument must be a string')
+        msgid_plural = get_string(keyword.msgid_plural_param, 'Plural message argument must be a string')
+        msgctxt = get_string(keyword.msgctxt_param, 'Context argument must be a string')
         comment = keyword.comment
     except IndexError:
         return None
@@ -87,7 +96,7 @@ def _extract_python(filename, source, options, firstline=0):
             continue
         msg = None
         if node.func.id in KEYWORDS:
-            msg = parse_keyword(node, KEYWORDS[node.func.id])
+            msg = parse_keyword(node, KEYWORDS[node.func.id], filename, firstline)
         elif node.func.id == '_':
             msg = parse_translationstring(node)
         if msg is None:

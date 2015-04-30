@@ -73,3 +73,12 @@ def test_translationstring_context():
     assert len(messages) == 1
     assert messages[0].msgctxt == 'button'
     assert messages[0].msgid == u'Canonical text'
+
+@pytest.mark.usefixtures('fake_source')
+def test_function_call_in_keyword():
+    global source
+    options = mock.Mock()
+    options.keywords = ['other']
+    source = u'''other(six.u('word'))'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 0
