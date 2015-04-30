@@ -74,6 +74,7 @@ def test_translationstring_context():
     assert messages[0].msgctxt == 'button'
     assert messages[0].msgid == u'Canonical text'
 
+
 @pytest.mark.usefixtures('fake_source')
 def test_function_call_in_keyword():
     global source
@@ -82,3 +83,14 @@ def test_function_call_in_keyword():
     source = u'''other(six.u('word'))'''
     messages = list(python_extractor('filename', options))
     assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_use_lineno_parameter():
+    global source
+    options = mock.Mock()
+    options.keywords = []
+    source = u'''_(u'word')'''
+    messages = list(python_extractor('filename', options, lineno=5))
+    assert len(messages) == 1
+    assert messages[0].location[1] == 6
