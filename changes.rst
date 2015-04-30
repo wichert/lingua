@@ -4,6 +4,12 @@ Changelog
 3.10 - Unreleased
 -----------------------
 
+- Fix handling of line number parameter in the Python extractor. This fixes
+  invalid line numbers generated for Python code embedded in other files,
+  for example in Mako templates. This fixes `issue 58
+  <https://github.com/wichert/lingua/issues/58>`_ based on a fix from
+  Laurent Daverio.
+
 - Warn when using a function call instead of a string as parameter in a
   gettext keyword in Python code. This fixes `issue 57
   <https://github.com/wichert/lingua/issues/57>`_.
