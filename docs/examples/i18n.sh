@@ -35,7 +35,7 @@ if [ $# -eq 0 ]; then
 
     echo "Compile message catalogs"
     for po in "$LOCALES_PATH"/*/LC_MESSAGES/*.po; do
-        msgfmt -o "${po%.*}.mo" "$po"
+        msgfmt --statistics -o "${po%.*}.mo" "$po"
     done
 
 # first argument represents language identifier, create catalog
