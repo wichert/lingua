@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.10 - Unreleased
------------------------
+3.10 - May 1, 2015
+------------------
 
 - Update ``i18n.sh`` example to show statistics when compiling catalogs. This
   reveals catalogs with fuzzy messages. This fixes`issue 59

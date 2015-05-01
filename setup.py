@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
 
-version = '3.10.dev.0'
+version = '3.10'
 
 install_requires = [
         'setuptools',
