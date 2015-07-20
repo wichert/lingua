@@ -227,7 +227,27 @@ class ChameleonExtractor(Extractor, ElementProgram):
         translate = self.translatestack.pop()
         if translate and not translate.ignore() and translate.domain and \
                 (self.target_domain is None or translate.domain == self.target_domain):
+            self._assert_matching_replacements(translate, children)
             self.messages.append(translate)
+
+    def _assert_matching_replacements(self, msg, children):
+        elem_children_names = set()
+        for kind, child in children:
+            if kind != 'element':
+                continue
+            for attr in child[0]['attrs']:
+                if attr['name'] != 'i18n:name':
+                    continue
+                elem_children_names.add('${%s}' % attr['value'])
+        if elem_children_names or any('${' in x for x in msg.text):
+            replacement_names = set()
+            for line in msg.text:
+                for replacement in re.findall('\${.*?}', line):
+                    replacement_names.add(replacement)
+            if replacement_names == elem_children_names:
+                return
+            print("%s:%s\n    Warning: msgid %s, possible wrong markup for dynamic content" %
+                    (self.filename, self.linenumber, msg.msgid), file=sys.stderr)
 
     def visit_text(self, data):
         for line in data.splitlines():
