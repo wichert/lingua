@@ -230,8 +230,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
             self.messages.append(translate)
 
     def visit_text(self, data):
+        default_engine = self.config['default-engine']
         for line in data.splitlines():
-            for source in EXPRESSION.findall(line):
+            for source in get_python_expressions(line, default_engine):
                 if UNDERSCORE_CALL.search(source):
                     self.parse_python(source)
         if self.translatestack[-1]:

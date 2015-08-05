@@ -624,6 +624,20 @@ def test_empty_element():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_brace_in_python_expression():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <p>${some_method(_('abc'), {'a':'b'})}</p>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert len(messages) == 1
+    assert messages[0].msgid == u'abc'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_translation_context():
     global source
     source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
