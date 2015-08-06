@@ -1,11 +1,11 @@
 Changelog
 =========
 
-3.11 - Unreleased
-------------------
+3.11 - August 6, 2015
+---------------------
 
 - Correctly handle Python expressions using braces in template text. This fixes
-  `issue 62<https://github.com/wichert/lingua/issues/62>`_.
+  `issue 62 <https://github.com/wichert/lingua/issues/62>`_.
 
 
 3.10 - May 1, 2015
