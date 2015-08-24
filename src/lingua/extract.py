@@ -162,8 +162,8 @@ def read_config(filename):
                       'Check --list-extractors for available options' % extractor,
                         file=sys.stderr)
                 sys.exit(1)
-            config = dict(config.items(section))
-            EXTRACTORS[extractor].update_config(**config)
+            extractor_config = dict(config.items(section))
+            EXTRACTORS[extractor].update_config(**extractor_config)
         elif section.startswith('extension'):
             print('Use of %s section is obsolete. '
                   'Please use the "extensions" section.' % section,
