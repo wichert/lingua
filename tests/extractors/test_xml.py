@@ -685,6 +685,7 @@ def test_linenumbers():
                   <span />
                   <span
                     />
+                  <?python foo = 1 ?>
                   <div>
                     <dummy i18n:comment="Generic save button" i18n:translate="dummy1">Foo<</dummy>
                   </div>
@@ -693,6 +694,10 @@ def test_linenumbers():
                     <dummy i18n:comment="Generic save button"
                            i18n:translate="dummy2">Foo</dummy>
                   </div>
+                  <?python
+                      import bar
+                      bar.ham()
+                      ?>
                   <div foo="bar"
                     class="blubb">
                     <dummy i18n:comment="Generic
@@ -727,7 +732,7 @@ def test_linenumbers():
     messages = list(xml_extractor('filename', _options()))
     got = [(x.msgid, x.location[1]) for x in messages]
     assert got == [
-        ('dummy1', 8),
-        ('dummy2', 13),
-        ('dummy3', 18),
-        ('dummy4', 41)]
+        ('dummy1', 9),
+        ('dummy2', 14),
+        ('dummy3', 23),
+        ('dummy4', 46)]
