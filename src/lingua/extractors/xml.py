@@ -143,8 +143,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
         if visitor is not None:
             return visitor(*args)
         else:
-            print("Warning: Unknown node type '%s', linenumbers might be off. Please report this warning." %
-                    kind, file=sys.stderr)
+            print("Warning: Unknown node type '%s' in %s, linenumbers might be off. Please report this warning." %
+                    (kind, self.filename), file=sys.stderr)
 
     def visit_start_tag(self, element):
         self.visit_element(element, None, [])
@@ -244,6 +244,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
 
     def visit_cdata(self, data):
         self.linenumber += get_newline_count(data)
+
+    def visit_processing_instruction(self, data):
+        self.linenumber += get_newline_count(data['text'])
 
     def visit_default(self, data):
         if not data.lower().startswith('<!doctype'):

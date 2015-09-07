@@ -4,7 +4,7 @@ Changelog
 3.12 - Unreleased
 ---------------------
 
-- ...
+- Fix line number reporting when processing instructions are used.
 
 
 3.11 - August 6, 2015
