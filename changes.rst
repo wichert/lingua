@@ -5,6 +5,12 @@ Changelog
 ---------------------
 
 - Fix line number reporting when processing instructions are used.
+  `Patch #64 <https://github.com/wichert/lingua/pull/64>`_ from
+  Florian Schulze.
+
+- Fix handling of extractor configuration.
+  `Patch #63 <https://github.com/wichert/lingua/pull/63>`_ from
+  Stéphane Brunner.
 
 
 3.11 - August 6, 2015
