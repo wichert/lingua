@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.12 - Unreleased
----------------------
+3.12 - October 5, 2015
+----------------------
 
 - Fix line number reporting when processing instructions are used.
   `Patch #64 <https://github.com/wichert/lingua/pull/64>`_ from
