@@ -28,7 +28,7 @@ Changelog
 ------------------
 
 - Update ``i18n.sh`` example to show statistics when compiling catalogs. This
-  reveals catalogs with fuzzy messages. This fixes`issue 59
+  reveals catalogs with fuzzy messages. This fixes `issue 59
   <https://github.com/wichert/lingua/issues/59>`_.
 
 - Fix handling of line number parameter in the Python extractor. This fixes
