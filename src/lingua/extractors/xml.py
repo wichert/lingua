@@ -171,6 +171,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])
 
+        current_domain = self.domainstack[-1][0]
+        include_domain = self.target_domain is None or self.target_domain == current_domain
+
         i18n_translate = attributes.get((I18N_NS, 'translate'))
         if i18n_translate is not None:
             ctx = TranslateContext(
@@ -187,7 +190,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
 
         if self.domainstack:
             i18n_attributes = attributes.get((I18N_NS, 'attributes'))
-            if i18n_attributes:
+            if i18n_attributes and include_domain:
                 parts = [p.strip() for p in i18n_attributes.split(';')]
                 for msgid in parts:
                     if ' ' not in msgid:
@@ -225,8 +228,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
             self.domainstack.pop()
 
         translate = self.translatestack.pop()
-        if translate and not translate.ignore() and translate.domain and \
-                (self.target_domain is None or translate.domain == self.target_domain):
+        if translate and not translate.ignore() and translate.domain and include_domain:
             self.messages.append(translate)
 
     def visit_text(self, data):
