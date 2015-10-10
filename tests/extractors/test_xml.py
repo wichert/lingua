@@ -760,3 +760,15 @@ def test_domain_filter_for_attribute():
                 </html>'''.encode('utf-8')
     messages = list(xml_extractor('filename', _options(domain='other')))
     assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_domain_filter_for_expression():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy>${_(u'foo')}</dummy>
+                </html>'''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options(domain='other')))
+    assert len(messages) == 0

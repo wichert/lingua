@@ -232,13 +232,14 @@ class ChameleonExtractor(Extractor, ElementProgram):
             self.messages.append(translate)
 
     def visit_text(self, data):
-        default_engine = self.config['default-engine']
-        for line in data.splitlines():
-            for source in get_python_expressions(line, default_engine):
-                if UNDERSCORE_CALL.search(source):
-                    self.parse_python(source)
-        if self.translatestack[-1]:
-            self.translatestack[-1].add_text(data)
+        if self.target_domain is None or self.target_domain == self.domainstack[-1][0]:
+            default_engine = self.config['default-engine']
+            for line in data.splitlines():
+                for source in get_python_expressions(line, default_engine):
+                    if UNDERSCORE_CALL.search(source):
+                        self.parse_python(source)
+            if self.translatestack[-1]:
+                self.translatestack[-1].add_text(data)
         self.linenumber += get_newline_count(data)
 
     def visit_comment(self, data):
