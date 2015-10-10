@@ -736,3 +736,15 @@ def test_linenumbers():
         ('dummy2', 14),
         ('dummy3', 23),
         ('dummy4', 46)]
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_domain_filter():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <dummy i18n:translate="">Dummy téxt</dummy>
+                </html>'''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options(domain='other')))
+    assert len(messages) == 0
