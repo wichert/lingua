@@ -1,8 +1,8 @@
 Changelog
 =========
 
-3.12 - October 5, 2015
-----------------------
+3.12 - October 10, 2015
+-----------------------
 
 - Fix HTML extractor to apply domain filter when processing attributes and
   ``${..}`` expressions. This fixes `issue 66
