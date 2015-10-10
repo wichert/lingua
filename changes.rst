@@ -6,7 +6,7 @@ Changelog
 
 - Fix HTML extractor to apply domain filter when processing attributes and
   ``${..}`` expressions. This fixes `issue 66
-  <https://github.com/wichert/lingua/issues/66`_
+  <https://github.com/wichert/lingua/issues/66>`_
 
 - Fix line number reporting when processing instructions are used.
   `Patch #64 <https://github.com/wichert/lingua/pull/64>`_ from
