@@ -152,6 +152,8 @@ class TokenStreamer(object):
             self.complete = True
         return token
 
+    __next__ = next  # For Python 3 compatibility
+
 
 class PythonParser(object):
     last_comment = (-2, None)
