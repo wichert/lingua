@@ -1,6 +1,7 @@
 # coding=utf-8
 import mock
 import pytest
+import io
 from lingua.extractors.python import PythonExtractor
 
 
@@ -10,8 +11,8 @@ source = None
 
 @pytest.fixture
 def fake_source(request):
-    patcher = mock.patch('lingua.extractors.python._read',
-            side_effect=lambda *a: source)
+    patcher = mock.patch('lingua.extractors.python._open',
+            side_effect=lambda *a: io.StringIO(source))
     patcher.start()
     request.addfinalizer(patcher.stop)
 
