@@ -81,8 +81,9 @@ def _open(filename):
     return open(filename, 'rb')
 
 
-def semi_safe_eval(s):
-    return eval(s, {'__builtins__':{}}, {})
+def safe_eval(s):
+    tree = ast.compile(s)
+    return tree.body[0].value.s
 
 
 def _extract_python(filename, source, options, firstline=0):
@@ -224,16 +225,16 @@ class PythonParser(object):
                 raise SyntaxError('Unepextected token: %s' % token)
         elif token_type == tokenize.STRING:
             if self.in_argument:
-                token = semi_safe_eval(token)
+                token = safe_eval(token)
                 self.arguments[-1] = (self.arguments[-1][0], self.arguments[-1][1] + token)
             else:
-                token = semi_safe_eval(token)
+                token = safe_eval(token)
                 self.add_argument(token)
                 self.in_argument = True
         elif token_type == tokenize.NUMBER:
             if self.in_argument:
                 raise SyntaxError('Unexpected number: %s' % token)
-            self.add_argument(semi_safe_eval(token))
+            self.add_argument(safe_eval(token))
         elif token_type == tokenize.NAME:
             self.in_argument = True
             (next_token_type, next_token) = token_stream.peek()[:2]
