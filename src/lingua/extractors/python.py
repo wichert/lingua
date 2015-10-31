@@ -82,7 +82,7 @@ def _open(filename):
 
 
 def safe_eval(s):
-    tree = ast.compile(s)
+    tree = ast.parse(s, mode='single')
     return tree.body[0].value.s
 
 
