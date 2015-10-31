@@ -83,7 +83,13 @@ def _open(filename):
 
 def safe_eval(s):
     tree = ast.parse(s, mode='single')
-    return tree.body[0].value.s
+    value = tree.body[0].value
+    if isinstance(value, ast.Str):
+        return value.s
+    elif isinstance(value, ast.Num):
+        return value.n
+    else:
+        return None
 
 
 def _extract_python(filename, source, options, firstline=0):
