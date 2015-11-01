@@ -293,9 +293,9 @@ class PythonParser(object):
 
 
 def _extract_python(filename, source, options, firstline=0):
-    if not isinstance(source, bytes):
-        source = source.encode('utf-8')
-    fileobj = io.BytesIO(source)
+    if isinstance(source, bytes):
+        source = source.decode('utf-8')
+    fileobj = io.StringIO(source)
     update_keywords(KEYWORDS, options.keywords)
     extractor = PythonExtractor()
     return extractor(filename, options, fileobj, firstline)
