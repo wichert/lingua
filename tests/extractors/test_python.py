@@ -22,7 +22,7 @@ def test_syntax_error():
     global source
     options = mock.Mock()
     options.keywords = []
-    source = u'''def class xya _(u'føo')'''
+    source = u'''def class xya _(u'føo' 1)'''
     with pytest.raises(SystemExit):
         generator = python_extractor('filename', options)
         list(generator)

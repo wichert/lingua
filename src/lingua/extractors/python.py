@@ -1,5 +1,6 @@
 from __future__ import print_function
 import ast
+import io
 import sys
 import tokenize
 from . import Extractor
@@ -8,6 +9,12 @@ from . import check_c_format
 from . import check_python_format
 from . import Keyword
 from . import update_keywords
+
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 KEYWORDS = {
@@ -23,20 +30,27 @@ KEYWORDS = {
 }
 
 
-def parse_keyword(node, keyword, filename, firstline):
-    if keyword.required_arguments and len(node.args) != keyword.required_arguments:
+class ParseError(ValueError):
+    def __init__(self, msg, lineno):
+        self.lineno = lineno
+        ValueError.__init__(self, msg)
+
+
+def parse_keyword(arguments, keyword, filename, firstline):
+    # This assumes kw arguments are not used.
+    if keyword.required_arguments and len(arguments) != keyword.required_arguments:
         return None
 
     def get_string(param, error_msg):
         if not param:
             return None
-        arg = node.args[param - 1]
-        if not isinstance(node.args[0], ast.Str):
-            print('%s[%d]: %s' % (filename, firstline + arg.lineno, error_msg),
+        (arg_name, arg_value, lineno) = arguments[param - 1]
+        if not isinstance(arg_value, basestring):
+            print('%s[%d]: %s' % (filename, firstline + lineno, error_msg),
                     file=sys.stderr)
             raise IndexError()
         else:
-            return arg.s
+            return arg_value
 
     try:
         domain = get_string(keyword.domain_param, 'Domain argument must be a string')
@@ -49,26 +63,29 @@ def parse_keyword(node, keyword, filename, firstline):
     return (domain, msgctxt, msgid, msgid_plural, comment)
 
 
-def parse_translationstring(node):
-    if not node.args:
+def parse_translationstring(arguments, filename, firstline):
+    if not arguments:
         return None
 
     msgid = None
     context = None
     default = u''
-    if isinstance(node.args[0], ast.Str):
-        msgid = node.args[0].s
-    if len(node.args) > 2 and isinstance(node.args[2], ast.Str):
-        default = node.args[2].s
-    for keyword in node.keywords:
-        if not isinstance(keyword.value, ast.Str):
+    args = [a[1] for a in arguments if a[0] is None]
+    kwargs = dict((a[0], a[1]) for a in arguments if a[0] is not None)
+
+    if isinstance(args[0], basestring):
+        msgid = args[0]
+    if len(args) > 2 and isinstance(args[2], basestring):
+        default = args[2]
+    for (key, value) in kwargs.items():
+        if not isinstance(value, basestring):
             continue
-        if keyword.arg == 'msgid':
-            msgid = keyword.value.s
-        elif keyword.arg == 'default':
-            default = keyword.value.s
-        elif keyword.arg == 'context':
-            context = keyword.value.s
+        if key == 'msgid':
+            msgid = value
+        elif key == 'default':
+            default = value
+        elif key == 'context':
+            context = value
     if not msgid:
         return None
 
@@ -82,38 +99,9 @@ def _open(filename):
 
 
 def safe_eval(s):
+    if isinstance(s, bytes):
+        s = s.decode('utf-8')
     return ast.literal_eval(s)
-
-
-def _extract_python(filename, source, options, firstline=0):
-    update_keywords(KEYWORDS, options.keywords)
-    try:
-        tree = ast.parse(source, filename)
-    except SyntaxError as e:
-        print('Aborting due to parse error in %s[%d]: %s' %
-                        (filename, firstline + e.lineno, e.text), file=sys.stderr)
-        sys.exit(1)
-
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        if not isinstance(node.func, ast.Name):
-            continue
-        msg = None
-        if node.func.id in KEYWORDS:
-            msg = parse_keyword(node, KEYWORDS[node.func.id], filename, firstline)
-        elif node.func.id == '_':
-            msg = parse_translationstring(node)
-        if msg is None:
-            continue
-
-        if options.domain is not None and msg[0] and msg[0] != options.domain:
-            continue
-
-        flags = []
-        check_c_format(msg[2], flags)
-        check_python_format(msg[2], flags)
-        yield Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (filename, firstline + node.lineno))
 
 
 DYNAMIC = []
@@ -130,7 +118,7 @@ class TokenStreamer(object):
 
     def _transform(self, raw_token):
         (token_type, token, loc_start, loc_end, line) = raw_token
-        return (token_type, token, line, self)
+        return (token_type, token, loc_start, self)
 
     def push(self, token):
         self.pushed.append(token)
@@ -159,11 +147,21 @@ class PythonParser(object):
     last_comment = (-2, None)
     comment_marker = 'I18N:'
 
-    def __call__(self, token_stream):
+    def __call__(self, token_stream, options, filename, firstline):
+        self.options = options
+        self.filename = filename
+        self.firstline = firstline
         self.messages = []
         self.handler = self.state_skip
-        for (token_type, token, location, line) in token_stream:
-            self.process_token(token_type, token, location, token_stream)
+        try:
+            for (token_type, token, location, _) in token_stream:
+                self.process_token(token_type, token, location, token_stream)
+        except ParseError as e:
+            print('Aborting due to parse error in %s[%d]: %s' %
+                            (filename, firstline + e.lineno, e.message),
+                            file=sys.stderr)
+            sys.exit(1)
+        return self.messages
 
     def process_token(self, token_type, token, location, token_stream):
         if token_type == tokenize.COMMENT:
@@ -184,9 +182,10 @@ class PythonParser(object):
     def state_skip(self, token_type, token, location, token_stream):
         """Ignore all input until we see one of our keywords.
         """
-        if token_type == tokenize.NAME and token in KEYWORDS:
+        if token_type == tokenize.NAME and (token in KEYWORDS or token == '_'):
             self.handler = self.state_in_keyword
-            self.keyword = KEYWORDS[token]
+            self.keyword = KEYWORDS.get(token, None)
+            self.lineno = location[0]
 
     def state_in_keyword(self, token_type, token, location, token_stream):
         """Check if the keyword is used in a proper function call."""
@@ -194,67 +193,71 @@ class PythonParser(object):
             self.arguments = []
             self.argument_name = None
             self.in_argument = False
+            self.in_string = False
             self.handler = self.state_in_keyword_call
         else:
             self.handler = self.state_skip
 
     def state_in_keyword_call(self, token_type, token, location, token_stream):
         """Collect all keyword parameters."""
+        if token_type != tokenize.STRING:
+            self.in_string = False
         if token_type == tokenize.OP:
             if token == ')':
                 self.process_keyword()
                 self.handler = self.state_skip
             elif token == ',':
                 if not self.in_argument:
-                    raise SyntaxError('Unexpected )')
+                    raise ParseError('Unexpected )', location[0])
                 self.in_argument = False
             elif token == '(':  # Tuple
                 self.in_argument = True
                 self.skip_iterable('(', ')', token_stream)
-                self.add_argument(DYNAMIC)
+                self.add_argument(DYNAMIC, location[0])
             elif token == '{':  # Dictionary
                 self.in_argument = True
                 self.skip_iterable('{', '}', token_stream)
-                self.add_argument(DYNAMIC)
+                self.add_argument(DYNAMIC, location[0])
             elif token == '[':  # Array
                 self.in_argument = True
                 self.skip_iterable('[', ']', token_stream)
-                self.add_argument(DYNAMIC)
+                self.add_argument(DYNAMIC, location[0])
             else:
-                raise SyntaxError('Unepextected token: %s' % token)
+                raise ParseError('Unepextected token: %s' % token, location[0])
         elif token_type == tokenize.STRING:
-            if self.in_argument:
+            if self.in_string:
                 token = safe_eval(token)
-                self.arguments[-1] = (self.arguments[-1][0], self.arguments[-1][1] + token)
+                self.arguments[-1] = (self.arguments[-1][0], self.arguments[-1][1] + token, self.arguments[-1][2])
             else:
                 token = safe_eval(token)
-                self.add_argument(token)
+                self.add_argument(token, location[0])
                 self.in_argument = True
+                self.in_string = True
         elif token_type == tokenize.NUMBER:
             if self.in_argument:
-                raise SyntaxError('Unexpected number: %s' % token)
-            self.add_argument(safe_eval(token))
+                raise ParseError('Unexpected number: %s' % token, location[0])
+            self.add_argument(safe_eval(token), location[0])
         elif token_type == tokenize.NAME:
             self.in_argument = True
             (next_token_type, next_token) = token_stream.peek()[:2]
             if next_token_type == tokenize.OP and next_token in ',)':
                 # Variable reference
-                self.add_argument(DYNAMIC)
+                self.add_argument(DYNAMIC, location[0])
             elif next_token_type == tokenize.OP and next_token == '(':
                 # Function call
                 self.skip_iterable('(', ')', token_stream)
-                self.add_argument(DYNAMIC)
+                self.add_argument(DYNAMIC, location[0])
             elif next_token_type == tokenize.OP and next_token == '=':
                 if self.argument_name is not None:
-                    raise SyntaxError('Unexpected token: %s' % token)
+                    raise ParseError('Unexpected token: %s' % token, location[0])
                 next(token_stream)  # Pop the equal token
                 self.argument_name = token
         else:
-            raise SyntaxError('Unexpected token: %s' % token)
+            raise ParseError('Unexpected token: %s' % token, location[0])
         # XXX Does this handle trailing comma: func(foo,x bar,)
 
-    def add_argument(self, value):
-        self.arguments.append((self.argument_name, value))
+    def add_argument(self, value, lineno):
+        self.arguments.append((self.argument_name, value, lineno))
         self.argument_name = None
 
     def skip_iterable(self, start_token, end_token, token_stream):
@@ -268,12 +271,34 @@ class PythonParser(object):
                     if depth == 0:
                         return
             elif token_type == tokenize.ENDMARKER:
-                raise SyntaxError('Unexpected end of file')
+                raise ParseError('Unexpected end of file', loc_end[0])
             elif token_type == tokenize.DEDENT:
-                raise SyntaxError('Unexpected dedent')
+                raise ParseError('Unexpected dedent', loc_start[0])
 
     def process_keyword(self):
-        print('Got a keyword: %s %r' % (self.keyword, self.arguments))
+        if self.keyword is not None:
+            msg = parse_keyword(self.arguments, self.keyword, self.filename, self.firstline)
+        else:
+            msg = parse_translationstring(self.arguments, self.filename, self.firstline)
+        if msg is None:
+            return
+
+        if self.options.domain is not None and msg[0] and msg[0] != self.options.domain:
+            return
+
+        flags = []
+        check_c_format(msg[2], flags)
+        check_python_format(msg[2], flags)
+        self.messages.append(Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (self.filename, self.firstline + self.lineno)))
+
+
+def _extract_python(filename, source, options, firstline=0):
+    if not isinstance(source, bytes):
+        source = source.encode('utf-8')
+    fileobj = io.BytesIO(source)
+    update_keywords(KEYWORDS, options.keywords)
+    extractor = PythonExtractor()
+    return extractor(filename, options, fileobj, firstline)
 
 
 class PythonExtractor(Extractor):
@@ -285,6 +310,4 @@ class PythonExtractor(Extractor):
             fileobj = _open(filename)
         token_stream = TokenStreamer(fileobj.readline)
         parser = PythonParser()
-        parser(token_stream)
-        fileobj.seek(0)
-        return _extract_python(filename, fileobj.read(), options, lineno)
+        return parser(token_stream, options, filename, lineno)
