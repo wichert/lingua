@@ -158,7 +158,7 @@ class PythonParser(object):
                 self.process_token(token_type, token, location, token_stream)
         except ParseError as e:
             print('Aborting due to parse error in %s[%d]: %s' %
-                            (filename, firstline + e.lineno, e.message),
+                            (filename, firstline + e.lineno, e.args[0]),
                             file=sys.stderr)
             sys.exit(1)
         return self.messages
