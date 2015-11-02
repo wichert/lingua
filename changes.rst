@@ -10,6 +10,9 @@ Changelog
 - Support message comments in Python code. These can be put in lines immediately
   before a line containing a message, and must be prefixed with a special marker.
 
+- Use domain filtering for Python expressions where possible (i.e. when using
+  translaction functions that take a domain parameter, such as ``dgettext``.
+
 
 3.12 - October 10, 2015
 -----------------------

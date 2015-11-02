@@ -139,3 +139,16 @@ def test_tagged_multiline_comment():
     messages = list(python_extractor('filename', options))
     assert len(messages) == 1
     assert messages[0].comment == 'one two'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_domain_filter():
+    global source
+    options = mock.Mock()
+    options.domain = 'other'
+    source = u'''dgettext('mydomain', 'word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 0
+    options.domain = 'mydomain'
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
