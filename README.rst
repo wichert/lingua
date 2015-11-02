@@ -173,8 +173,8 @@ Lingua includes a number of extractors:
    expression language is `TALES
    <https://chameleon.readthedocs.org/en/latest/reference.html#expressions-tales>`_
    instead of Python.
-* `xml`: old name for the `chameleon` extractor. This should not be used
-   anymore.
+* `xml`: old name for the `chameleon` extractor. This name should not be used
+  anymore and is only supported for backwards compatibility.
 
 Babel extractors
 ----------------
