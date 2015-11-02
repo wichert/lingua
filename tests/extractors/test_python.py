@@ -95,3 +95,47 @@ def test_use_lineno_parameter():
     messages = list(python_extractor('filename', options, lineno=5))
     assert len(messages) == 1
     assert messages[0].location[1] == 6
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_skip_comments():
+    global source
+    options = mock.Mock()
+    options.comment_tag = None
+    source = u'''# source comment\n_(u'word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == ''
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_include_all_comments():
+    global source
+    options = mock.Mock()
+    options.comment_tag = True
+    source = u'''# source comment\n_(u'word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == 'source comment'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_tagged_comment_on_previous_line():
+    global source
+    options = mock.Mock()
+    options.comment_tag = 'I18N:'
+    source = u'''# I18N: source comment\n_(u'word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == 'source comment'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_tagged_multiline_comment():
+    global source
+    options = mock.Mock()
+    options.comment_tag = 'I18N:'
+    source = u'''# I18N: one\n# I18N: two\n_(u'word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == 'one two'

@@ -205,7 +205,7 @@ def main():
     parser.add_argument('-w', '--width', metavar='NUMBER',
             default=79,
             help='Output width')
-    parser.add_argument('-s', '--sort-output', # babel compatibility
+    parser.add_argument('-s', '--sort-output',  # babel compatibility
             action='store_const', const='msgid', dest='sort',
             help='Order messages by their msgid')
     parser.add_argument('-F', '--sort-by-file',
@@ -217,6 +217,9 @@ def main():
     parser.add_argument('-k', '--keyword', metavar='WORD',
             dest='keywords', action='append', default=[], nargs='?',
             help='Look for WORD as additional keyword')
+    parser.add_argument('-C', '--add-comments', metavar='TAG',
+            dest='comment_tag', const=True, nargs='?',
+            help='Add comments prefixed by TAG to messages, or all if no tag is given')
     # POT metadata
     parser.add_argument('--copyright-holder', metavar='STRING',
             help='Specifies the copyright holder for the texts')

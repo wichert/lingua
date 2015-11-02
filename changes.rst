@@ -1,6 +1,16 @@
 Changelog
 =========
 
+4.0 - Unreleased
+-----------------------
+
+- Rewrite the Python extractor again. Lingua will now parse Python code itself
+  instead of using the Python ``ast`` module.
+
+- Support message comments in Python code. These can be put in lines immediately
+  before a line containing a message, and must be prefixed with a special marker.
+
+
 3.12 - October 10, 2015
 -----------------------
 

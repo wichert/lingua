@@ -149,6 +149,14 @@ class PythonParser(object):
 
     def __call__(self, token_stream, options, filename, firstline):
         self.options = options
+        if options.comment_tag is True:
+            self.include_comments = 'all'
+        elif options.comment_tag is None:
+            self.include_comments = 'none'
+        else:
+            self.include_comments = 'tagged'
+            self.comment_marker = options.comment_tag
+        self.comment_tag = options.comment_tag
         self.filename = filename
         self.firstline = firstline
         self.messages = []
@@ -172,11 +180,14 @@ class PythonParser(object):
             self.handler(token_type, token, location, token_stream)
 
     def process_comment(self, token, location):
-        token = token[1:].strip()  # Remove leading hash
-        if token.startswith(self.comment_marker):
-            comment = token[len(self.comment_marker):].strip()
-            if self.last_command[0] == location[0]:
-                comment = self.last_commend[1] + ' ' + comment
+        if self.include_comments == 'none':
+            return
+        comment = token[1:].strip()  # Remove leading hash
+        if self.include_comments == 'all' or comment.startswith(self.comment_marker):
+            if self.include_comments == 'tagged':
+                comment = comment[len(self.comment_marker):].strip()
+            if self.last_comment[0] == location[0] - 1:
+                comment = self.last_comment[1] + ' ' + comment
             self.last_comment = (location[0], comment)
 
     def state_skip(self, token_type, token, location, token_stream):
@@ -286,10 +297,15 @@ class PythonParser(object):
         if self.options.domain is not None and msg[0] and msg[0] != self.options.domain:
             return
 
+        if self.last_comment[0] == (self.lineno - 1):
+            comment = self.last_comment[1]
+        else:
+            comment = u''
+
         flags = []
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
-        self.messages.append(Message(msg[1], msg[2], msg[3], flags, msg[4], u'', (self.filename, self.firstline + self.lineno)))
+        self.messages.append(Message(msg[1], msg[2], msg[3], flags, msg[4] or comment, u'', (self.filename, self.firstline + self.lineno)))
 
 
 def _extract_python(filename, source, options, firstline=0):
