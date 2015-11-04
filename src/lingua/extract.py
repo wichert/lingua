@@ -119,6 +119,17 @@ def find_file(filename, search_path=[]):
     return None
 
 
+def strip_linenumbers(entry):
+    seen = set()
+    occurrences = []
+    for location, line in entry.occurrences:
+        if location in seen:
+            continue
+        occurrences.append((location, None))
+        seen.add(location)
+    entry.occurrences = occurrences
+
+
 def create_catalog(options):
     catalog = POFile(wrapwidth=options.width)
     catalog.copyright_holder = options.copyright_holder
@@ -293,14 +304,7 @@ def main():
 
     if not options.nolinenumbers:
         for entry in catalog:
-            seen = set()
-            occurrences = []
-            for location, line in entry.occurrences:
-                if location in seen:
-                    continue
-                occurrences.append((location, -1))
-                seen.add(location)
-            entry.occurrences = occurrences
+            strip_linenumbers(entry)
 
     catalog.save(options.output)
 
