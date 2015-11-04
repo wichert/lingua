@@ -152,3 +152,13 @@ def test_domain_filter():
     options.domain = 'mydomain'
     messages = list(python_extractor('filename', options))
     assert len(messages) == 1
+
+
+def test_dynamic_argument():
+    global source
+    options = mock.Mock()
+    options.comment_tag = 'I18N:'
+    source = u'''_('word', mapping={'foo': 2})'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].msgid == 'word'

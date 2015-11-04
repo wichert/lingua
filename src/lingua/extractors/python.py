@@ -273,7 +273,7 @@ class PythonParser(object):
 
     def skip_iterable(self, start_token, end_token, token_stream):
         depth = 1
-        for (token_type, token, loc_start, loc_end, line) in token_stream:
+        for (token_type, token, loc, _) in token_stream:
             if token_type == tokenize.OP:
                 if token == start_token:
                     depth += 1
@@ -282,9 +282,9 @@ class PythonParser(object):
                     if depth == 0:
                         return
             elif token_type == tokenize.ENDMARKER:
-                raise ParseError('Unexpected end of file', loc_end[0])
+                raise ParseError('Unexpected end of file', loc[0])
             elif token_type == tokenize.DEDENT:
-                raise ParseError('Unexpected dedent', loc_start[0])
+                raise ParseError('Unexpected dedent', loc[0])
 
     def process_keyword(self):
         if self.keyword is not None:
