@@ -52,8 +52,9 @@ class POEntry(polib.POEntry):
     def tcomment(self, value):
         pass
 
-    def update(self, message):
-        self.occurrences.append(message.location)
+    def update(self, message, add_occurrences=True):
+        if add_occurrences:
+            self.occurrences.append(message.location)
         self.flags.extend(f for f in message.flags if f not in self.flags)
         if message.comment not in self._comments:
             self._comments.append(message.comment)
@@ -272,7 +273,7 @@ def main():
                     entry.msgstr_plural[0] = ''
                     entry.msgstr_plural[1] = ''
                 catalog.append(entry)
-            entry.update(message)
+            entry.update(message, add_occurrences=options.location)
         scanned += 1
     if not scanned:
         print('No files scanned, aborting', file=sys.stderr)

@@ -13,6 +13,8 @@ Changelog
 - Use domain filtering for Python expressions where possible (i.e. when using
   translaction functions that take a domain parameter, such as ``dgettext``.
 
+- Fix --no-location option to actually work.
+
 
 3.12 - October 10, 2015
 -----------------------
