@@ -154,11 +154,22 @@ def test_domain_filter():
     assert len(messages) == 1
 
 
-def test_dynamic_argument():
+def test_dict_argument():
     global source
     options = mock.Mock()
     options.comment_tag = 'I18N:'
     source = u'''_('word', mapping={'foo': 2})'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].msgid == 'word'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_function_argument():
+    global source
+    options = mock.Mock()
+    options.comment_tag = 'I18N:'
+    source = u'''_('word', func('foo', 2'))'''
     messages = list(python_extractor('filename', options))
     assert len(messages) == 1
     assert messages[0].msgid == 'word'

@@ -256,6 +256,7 @@ class PythonParser(object):
                 self.add_argument(DYNAMIC, location[0])
             elif next_token_type == tokenize.OP and next_token == '(':
                 # Function call
+                next(token_stream)  # Make sure skip_iterable does not see ( again
                 self.skip_iterable('(', ')', token_stream)
                 self.add_argument(DYNAMIC, location[0])
             elif next_token_type == tokenize.OP and next_token == '=':
