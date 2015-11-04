@@ -145,7 +145,6 @@ class TokenStreamer(object):
 
 class PythonParser(object):
     last_comment = (-2, None)
-    comment_marker = 'I18N:'
 
     def __call__(self, token_stream, options, filename, firstline):
         self.options = options
