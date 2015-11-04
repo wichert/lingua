@@ -302,12 +302,12 @@ class PythonParser(object):
         if self.options.domain is not None and msg[0] and msg[0] != self.options.domain:
             return
 
-        if self.last_comment[0] == (self.lineno - 1):
-            comment = self.last_comment[1]
-        else:
-            comment = u''
+        comments = []
         if msg[4]:
-            comment = u'%s\n%s' % (msg[4], comment)
+            comments.append(msg[4])
+        if self.last_comment[0] == (self.lineno - 1):
+            comments.append(self.last_comment[1])
+        comment = u'\n'.join(comments)
 
         flags = []
         check_c_format(msg[2], flags)

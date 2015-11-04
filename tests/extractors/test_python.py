@@ -142,6 +142,17 @@ def test_tagged_multiline_comment():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_comment_and_default_value():
+    global source
+    options = mock.Mock()
+    options.comment_tag = True
+    source = u'''# source comment\n_(u'key', default='word')'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == 'Default: word\nsource comment'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_domain_filter():
     global source
     options = mock.Mock()
