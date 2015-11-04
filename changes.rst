@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.1 - Unreleased
+4.1 - November 4, 2015
 ----------------------
 
 - Correctly handle messages that have both a translation comment, and use Zope-style
