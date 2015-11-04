@@ -212,8 +212,8 @@ def main():
             action='store_false', dest='location',
             help='Do not include location information')
     parser.add_argument('--no-linenumbers',
-            action='store_false', dest='nolinenumbers',
-            help='Replace linenumbers with -1 and only include each file once to reduce differences')
+            action='store_true', dest='no_linenumbers',
+            help='Do not include line numbers in location information')
     parser.add_argument('-n', '--add-location',
             action='store_true', dest='location', default=True,
             help='Include location information (default)')
@@ -302,7 +302,7 @@ def main():
         # Order the occurrences themselves, so the output is consistent
         catalog.sort(key=lambda m: m.occurrences.sort() or m.occurrences)
 
-    if not options.nolinenumbers:
+    if options.no_linenumbers:
         for entry in catalog:
             strip_linenumbers(entry)
 
