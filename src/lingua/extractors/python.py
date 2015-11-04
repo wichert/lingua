@@ -163,10 +163,15 @@ class PythonParser(object):
         try:
             for (token_type, token, location, _) in token_stream:
                 self.process_token(token_type, token, location, token_stream)
+        except tokenize.TokenError as e:
+            print('Aborting due to parse error in %s[%d]: %s' %
+                    (filename, firstline + e.args[1][0], e.args[0]),
+                    file=sys.stderr)
+            sys.exit(1)
         except ParseError as e:
             print('Aborting due to parse error in %s[%d]: %s' %
-                            (filename, firstline + e.lineno, e.args[0]),
-                            file=sys.stderr)
+                    (filename, firstline + e.lineno, e.args[0]),
+                    file=sys.stderr)
             sys.exit(1)
         return self.messages
 

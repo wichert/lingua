@@ -4,7 +4,7 @@ Changelog
 4.1 - Unreleased
 ----------------------
 
-- ..
+- Catch and properly report errors during tokenisation of Python code.
 
 
 4.0 - November 4, 2015 
