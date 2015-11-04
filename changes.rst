@@ -15,6 +15,8 @@ Changelog
 
 - Fix --no-location option to actually work.
 
+- Add --no-linenumbers option.
+
 
 3.12 - October 10, 2015
 -----------------------
