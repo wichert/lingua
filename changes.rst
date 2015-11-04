@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.0 - Unreleased
------------------------
+4.0 - November 4, 2015 
+----------------------
 
 - Rewrite the Python extractor again. Lingua will now parse Python code itself
   instead of using the Python ``ast`` module.

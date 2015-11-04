@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import sys
 
-version = '3.12'
+version = '4.0'
 
 install_requires = [
         'setuptools',
@@ -48,6 +48,7 @@ setup(name='lingua',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.3',
           'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
           'Topic :: Software Development :: Libraries :: Python Modules',
       ],
       keywords='translation po gettext Babel',
