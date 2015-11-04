@@ -154,6 +154,7 @@ def test_domain_filter():
     assert len(messages) == 1
 
 
+@pytest.mark.usefixtures('fake_source')
 def test_dict_argument():
     global source
     options = mock.Mock()
