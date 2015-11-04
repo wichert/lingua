@@ -39,7 +39,7 @@ There are three ways to tell lingua which files you want it to scan:
    files to scan. Lines starting with ``#`` and empty lines will be ignored.
 
    ::
-   
+
        $ pot-create --files-from=POTFILES.in
 
 You can also use the ``--directory=PATH`` parameter to add the given path to the
@@ -123,6 +123,46 @@ The first hello-message does not specify its domain and will always be
 included. The second line uses `dgettext
 <http://docs.python.org/2/library/gettext#gettext.dgettext>`_ to explicitly
 specify the domain. Lingua will use this information when filtering domains.
+
+
+Including comments
+------------------
+
+You can add comments to messages to help translators, for example to explain
+how a text is used, or provide hints on how it should be translated. For
+chameleon templates this can be done using the ``i18n:comment`` attribute:
+
+::
+
+   <label i18n:comment="This is a form label" i18n:translate="">Password</label>
+
+Comments are inherited, so you can put them on a parent element as well.
+
+::
+
+   <form i18n:comment="This is used in the password reset form">
+     <label i18n:translate="">Password</label>
+     <button i18n:translate="">Change</button>
+   </form>
+
+
+For Python code you can tell lingua to include comments by using the
+``--add-comments`` option. This will make Linua include all comments on the
+line(s) *immediately preceeding* (there may be no empty line in between) a
+translation call.
+
+::
+
+    # This text should address the user directly.
+    return _('Thank you for using our service.')
+
+If you do not want all comments to be included but only specific ones you can
+add a keyword to the ``--add-comments`` option, for example ``--add-comments=I18N``.
+
+::
+
+    # I18N This text should address the user directly, and use formal addressing.
+    return _('Thank you for using our service')
 
 
 Specifying keywords
