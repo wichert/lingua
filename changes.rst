@@ -4,6 +4,9 @@ Changelog
 4.1 - Unreleased
 ----------------------
 
+- Correctly handle messages that have both a translation comment, and use Zope-style
+  message ids.
+
 - Catch and properly report errors during tokenisation of Python code.
 
 
