@@ -199,7 +199,7 @@ def test_function_argument():
 
 
 @pytest.mark.usefixtures('fake_source')
-def test_var_parameter():
+def test_dot_operator_in_parameter():
     global source
     options = mock.Mock()
     source = u'''self._[lang].gettext(item.name)'''
