@@ -156,6 +156,13 @@ translation call.
     # This text should address the user directly.
     return _('Thank you for using our service.')
 
+Alternatively you can also put a comment at the end of the line starting your
+translation function call.
+
+::
+
+    return _('Thank you for using our service.')  # Address the user directly
+
 If you do not want all comments to be included but only specific ones you can
 add a keyword to the ``--add-comments`` option, for example ``--add-comments=I18N``.
 

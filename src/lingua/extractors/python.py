@@ -190,9 +190,20 @@ class PythonParser(object):
         if self.include_comments == 'all' or comment.startswith(self.comment_marker):
             if self.include_comments == 'tagged':
                 comment = comment[len(self.comment_marker):].strip()
-            if self.last_comment[0] == location[0] - 1:
-                comment = self.last_comment[1] + ' ' + comment
-            self.last_comment = (location[0], comment)
+            if self.messages and self.messages[-1].location[1] == (self.firstline + location[0]):
+                last_message = self.messages[-1]
+                # Comment at the end of the line of a keyword call
+                new_comment = []
+                if self.messages[-1].comment:
+                    new_comment.append(last_message.comment)
+                new_comment.append(comment)
+                self.messages[-1] = Message(last_message.msgctxt, last_message.msgid,
+                    last_message.msgid_plural, last_message.flags, '\n'.join(new_comment),
+                    last_message.tcomment, last_message.location)
+            else:
+                if self.last_comment[0] == location[0] - 1:
+                    comment = self.last_comment[1] + ' ' + comment
+                self.last_comment = (location[0], comment)
 
     def state_skip(self, token_type, token, location, token_stream):
         """Ignore all input until we see one of our keywords.

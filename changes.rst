@@ -4,7 +4,7 @@ Changelog
 4.2 - Unreleased
 ----------------------
 
-- ...
+- Allow message comments on the same line as gettext calls in Python.
 
 
 4.1 - November 4, 2015

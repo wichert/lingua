@@ -131,6 +131,17 @@ def test_tagged_comment_on_previous_line():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_tagged_comment_on_same_line():
+    global source
+    options = mock.Mock()
+    options.comment_tag = 'I18N:'
+    source = u'''_('word')  # I18N: source comment'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+    assert messages[0].comment == 'source comment'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_tagged_multiline_comment():
     global source
     options = mock.Mock()
