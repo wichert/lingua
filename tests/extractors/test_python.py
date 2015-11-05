@@ -196,3 +196,12 @@ def test_function_argument():
     messages = list(python_extractor('filename', options))
     assert len(messages) == 1
     assert messages[0].msgid == 'word'
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_var_parameter():
+    global source
+    options = mock.Mock()
+    source = u'''self._[lang].gettext(item.name)'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 0

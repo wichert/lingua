@@ -248,8 +248,10 @@ class PythonParser(object):
                 self.in_argument = True
                 self.skip_iterable('[', ']', token_stream)
                 self.add_argument(DYNAMIC, location[0])
+            elif token == '.':
+                pass
             else:
-                raise ParseError('Unepextected token: %s' % token, location[0])
+                raise ParseError('Unexpected token: %s' % token, location[0])
         elif token_type == tokenize.STRING:
             if self.in_string:
                 token = safe_eval(token)
