@@ -1,6 +1,11 @@
 Changelog
 =========
 
+4.3.1 - November 5, 2015
+------------------------
+
+- Re-uplad with different version number to work around an earlir release error.
+
 4.3 - November 5, 2015
 ----------------------
 
