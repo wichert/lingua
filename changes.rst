@@ -1,10 +1,12 @@
 Changelog
 =========
 
-4.3 - Unreleased
+4.3 - November 5, 2015
 ----------------------
 
-- ...
+- Fix parsing of Python code using the dot operator in a keyword argument. 
+  `Patch #70 <https://github.com/wichert/lingua/pull/70>`_ from
+  Patrick Valsecchi.
 
 
 4.2 - November 5, 2015
