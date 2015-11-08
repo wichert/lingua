@@ -70,11 +70,12 @@ class Keyword(object):
 
     _comment_arg = re.compile(r'^"(.*)"$')
 
-    def __init__(self, function, msgid_param=1, msgid_plural_param=None, domain_param=None):
+    def __init__(self, function, msgid_param=1, msgid_plural_param=None, domain_param=None, msgctxt_param=None):
         self.function = function
         self.msgid_param = msgid_param
         self.msgid_plural_param = msgid_plural_param
         self.domain_param = domain_param
+        self.msgctxt_param = msgctxt_param
 
     @classmethod
     def from_spec(cls, spec):

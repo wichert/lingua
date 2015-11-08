@@ -4,8 +4,11 @@ Changelog
 4.3 - Unreleased
 ----------------------
 
+- Do full keyword processing for results from Babel extraction plugins.
+  This fixes `issue 71 <https://github.com/wichert/lingua/issues/71>`_
+
 - Fix Python 3 errors when processing Python files. This fixes `issue 74
-  <https://github.com/wichert/lingua/issues/74>`_
+  <https://github.com/wichert/lingua/issues/74>`_.
 
 
 4.3.1 - November 5, 2015
@@ -16,7 +19,7 @@ Changelog
 4.3 - November 5, 2015
 ----------------------
 
-- Fix parsing of Python code using the dot operator in a keyword argument. 
+- Fix parsing of Python code using the dot operator in a keyword argument.
   `Patch #70 <https://github.com/wichert/lingua/pull/70>`_ from
   Patrick Valsecchi.
 
@@ -36,7 +39,7 @@ Changelog
 - Catch and properly report errors during tokenisation of Python code.
 
 
-4.0 - November 4, 2015 
+4.0 - November 4, 2015
 ----------------------
 
 - Rewrite the Python extractor again. Lingua will now parse Python code itself

@@ -1,22 +1,12 @@
 from pkg_resources import working_set
+from .python import KEYWORDS
+from .python import parse_keyword
 from . import EXTRACTORS
 from . import Message
 from . import check_c_format
 from . import check_python_format
 from . import Extractor
-
-
-DEFAULT_KEYWORDS = {
-        '_': None,
-        'gettext': None,
-        'ngettext': (1, 2),
-        'ugettext': None,
-        'ungettext': (1, 2),
-        'dgettext': (2,),
-        'dngettext': (2, 3),
-        'N_': None,
-        'pgettext': ((1, 'c'), 2)
-        }
+from . import update_keywords
 
 
 class BabelExtractor(Extractor):
@@ -26,22 +16,33 @@ class BabelExtractor(Extractor):
             'comment-tags': '',
     }
 
-    def __call__(self, filename, options, fileobj=None, lineno=0):
+    def __call__(self, filename, options, fileobj=None, firstline=0):
+        self.keywords = KEYWORDS.copy()
+        update_keywords(self.keywords, options.keywords)
         if fileobj is None:
             fileobj = open(filename, 'rb')
         comment_tags = self.config['comment-tags'].split()
-
-        for (lineno, _, msgid, comment) in self.extractor(fileobj, DEFAULT_KEYWORDS.keys(),
-                comment_tags, self.config):
-            if isinstance(msgid, tuple):
-                (msgid, msgid_plural) = msgid[:2]
+        messages = self.extractor(fileobj, list(self.keywords.keys()),
+                comment_tags, self.config)
+        for (lineno, function, args, comment) in messages:
+            if not isinstance(args, (list, tuple)):
+                args = [args]
+            args = [(None, a, lineno) for a in args]
+            if function in self.keywords:
+                (domain, msgctxt, msgid, msgid_plural, c) = parse_keyword(args, self.keywords[function], filename, lineno)
+                if c:
+                    comment.append(c)
             else:
-                msgid_plural = u''
+                msgid = args[0]
+                domain = msgid_plural = None
+
+            if domain and self.options.domain and domain != self.options.domain:
+                continue
             comment = u' '.join(comment)
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
-            yield Message(None, msgid, msgid_plural, flags, comment, u'', (filename, lineno))
+            yield Message(msgctxt, msgid, msgid_plural, flags, comment, u'', (filename, firstline + lineno))
 
 
 def register_babel_plugins():
