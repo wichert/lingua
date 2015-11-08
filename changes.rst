@@ -4,6 +4,8 @@ Changelog
 4.3 - Unreleased
 ----------------------
 
+- Add `pgettext()` to the default keyword list.
+
 - Do full keyword processing for results from Babel extraction plugins.
   This fixes `issue 71 <https://github.com/wichert/lingua/issues/71>`_
 

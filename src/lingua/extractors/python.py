@@ -27,6 +27,7 @@ KEYWORDS = {
     'ungettext': Keyword('ungettext', 1, 2),
     'dngettext': Keyword('dngettext', 2, 3, domain_param=1),
     'ldngettext': Keyword('dngettext', 2, 3, domain_param=1),
+    'pgettext': Keyword('pgettext', 2, msgctxt_param=1),
 }
 
 
