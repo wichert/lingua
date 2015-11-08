@@ -4,7 +4,8 @@ Changelog
 4.3 - Unreleased
 ----------------------
 
-- ...
+- Fix Python 3 errors when processing Python files. This fixes `issue 74
+  <https://github.com/wichert/lingua/issues/74>`_
 
 
 4.3.1 - November 5, 2015

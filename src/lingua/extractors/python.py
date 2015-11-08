@@ -95,7 +95,7 @@ def parse_translationstring(arguments, filename, firstline):
 
 def _open(filename):
     """Injection point for tests."""
-    return open(filename, 'rb')
+    return open(filename, 'r')
 
 
 def safe_eval(s):
