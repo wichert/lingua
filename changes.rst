@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.3 - Unreleased
-----------------------
+4.4 - November 10, 2015
+-----------------------
 
 - Add `pgettext()` to the default keyword list.
 
