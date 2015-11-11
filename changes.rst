@@ -1,6 +1,12 @@
 Changelog
 =========
 
+4.5.1 - Unreleased
+-----------------------
+
+- Fix Python 3 compatibility.
+
+
 4.5 - November 11, 2015
 -----------------------
 
