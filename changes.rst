@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.5 - Unreleased
+4.5 - November 11, 2015
 -----------------------
 
 - Allow setting message flags in Python comments.
