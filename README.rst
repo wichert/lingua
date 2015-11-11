@@ -172,6 +172,22 @@ add a keyword to the ``--add-comments`` option, for example ``--add-comments=I18
     return _('Thank you for using our service')
 
 
+Setting message flags in comments
+---------------------------------
+
+Messages can have *flags*. These are to indicate what format a message has, and
+are typically used by validation tools to check if a translation does not break
+variable references or template syntax. Lingua does a reasonable job to detect
+strings using C and Python formatting, but sometimes you may need to set flags
+yourself. This can be done with a ``[flag, flag]`` marker in a comment.
+
+::
+
+    # I18N [markdown,c-format]
+    header =  _(u'# Hello *%s*')
+
+
+
 Specifying keywords
 -------------------
 

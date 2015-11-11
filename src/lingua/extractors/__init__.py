@@ -37,7 +37,7 @@ _C_FORMAT = re.compile(r'''
 
 
 def check_c_format(buf, flags):
-    if 'no-c-format' in flags:
+    if 'no-c-format' in flags or 'c-format' in flags:
         return
     formats = list(re.finditer('%(?!%)', buf))
     if formats and all(_C_FORMAT.match(buf[m.start():]) is not None
@@ -56,10 +56,18 @@ _PYTHON_FORMAT = re.compile(r'''
 
 
 def check_python_format(buf, flags):
-    if 'no-python-format' in flags:
+    if 'no-python-format' in flags or 'python-format' in flags:
         return
     if _PYTHON_FORMAT.search(buf) is not None:
         flags.append('python-format')
+
+
+def check_comment_flags(comment):
+    flags = re.match(ur'\[\s*(.*?)\s*\]', comment)
+    if flags is not None:
+        return re.split(r'\s*,\s*', flags.group(1))
+    else:
+        return []
 
 
 class Keyword(object):

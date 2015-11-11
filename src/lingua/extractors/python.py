@@ -5,6 +5,7 @@ import sys
 import tokenize
 from . import Extractor
 from . import Message
+from . import check_comment_flags
 from . import check_c_format
 from . import check_python_format
 from . import Keyword
@@ -191,6 +192,7 @@ class PythonParser(object):
         if self.include_comments == 'all' or comment.startswith(self.comment_marker):
             if self.include_comments == 'tagged':
                 comment = comment[len(self.comment_marker):].strip()
+            flags = check_comment_flags(comment)
             if self.messages and self.messages[-1].location[1] == (self.firstline + location[0]):
                 last_message = self.messages[-1]
                 # Comment at the end of the line of a keyword call
@@ -204,7 +206,8 @@ class PythonParser(object):
             else:
                 if self.last_comment[0] == location[0] - 1:
                     comment = self.last_comment[1] + ' ' + comment
-                self.last_comment = (location[0], comment)
+                    flags = self.last_comment[2] + self.last_comment[2]
+                self.last_comment = (location[0], comment, flags)
 
     def state_skip(self, token_type, token, location, token_stream):
         """Ignore all input until we see one of our keywords.
@@ -317,13 +320,16 @@ class PythonParser(object):
             return
 
         comments = []
+        flags = []
         if msg[4]:
             comments.append(msg[4])
         if self.last_comment[0] == (self.lineno - 1):
             comments.append(self.last_comment[1])
+            for f in self.last_comment[2]:
+                if f not in flags:
+                    flags.append(f)
         comment = u'\n'.join(comments)
 
-        flags = []
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
         self.messages.append(Message(msg[1], msg[2], msg[3], flags, comment, u'', (self.filename, self.firstline + self.lineno)))
