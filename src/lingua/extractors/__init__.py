@@ -63,11 +63,11 @@ def check_python_format(buf, flags):
 
 
 def check_comment_flags(comment):
-    flags = re.match(ur'\[\s*(.*?)\s*\]', comment)
+    flags = re.match(ur'\[\s*(.*?)\s*\]\s*(.*)', comment)
     if flags is not None:
-        return re.split(r'\s*,\s*', flags.group(1))
+        return (re.split(r'\s*,\s*', flags.group(1)), flags.group(2))
     else:
-        return []
+        return ([], comment)
 
 
 class Keyword(object):

@@ -160,6 +160,7 @@ def test_flags_in_comment():
     source = u'''# I18N: [markdown-format,fuzzy] Comment]\n_(u'word')'''
     messages = list(python_extractor('filename', options))
     assert messages[0].flags == ['markdown-format', 'fuzzy']
+    assert messages[0].comment == 'Comment'
 
 
 @pytest.mark.usefixtures('fake_source')
