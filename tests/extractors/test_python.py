@@ -77,6 +77,16 @@ def test_translationstring_context():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_keyword():
+    global source
+    options = mock.Mock()
+    options.keywords = ['other']
+    source = u'''other("Some message")'''
+    messages = list(python_extractor('filename', options))
+    assert len(messages) == 1
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_function_call_in_keyword():
     global source
     options = mock.Mock()
@@ -101,6 +111,7 @@ def test_use_lineno_parameter():
 def test_skip_comments():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = None
     source = u'''# source comment\n_(u'word')'''
     messages = list(python_extractor('filename', options))
@@ -112,6 +123,7 @@ def test_skip_comments():
 def test_include_all_comments():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = True
     source = u'''# source comment\n_(u'word')'''
     messages = list(python_extractor('filename', options))
@@ -123,6 +135,7 @@ def test_include_all_comments():
 def test_tagged_comment_on_previous_line():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''# I18N: source comment\n_(u'word')'''
     messages = list(python_extractor('filename', options))
@@ -134,6 +147,7 @@ def test_tagged_comment_on_previous_line():
 def test_tagged_comment_on_same_line():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''_('word')  # I18N: source comment'''
     messages = list(python_extractor('filename', options))
@@ -145,6 +159,7 @@ def test_tagged_comment_on_same_line():
 def test_tagged_multiline_comment():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''# I18N: one\n# I18N: two\n_(u'word')'''
     messages = list(python_extractor('filename', options))
@@ -156,6 +171,7 @@ def test_tagged_multiline_comment():
 def test_flags_in_comment():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''# I18N: [markdown-format,fuzzy] Comment\n_(u'word')'''
     messages = list(python_extractor('filename', options))
@@ -167,6 +183,7 @@ def test_flags_in_comment():
 def test_comment_and_default_value():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = True
     source = u'''# source comment\n_(u'key', default='word')'''
     messages = list(python_extractor('filename', options))
@@ -178,6 +195,7 @@ def test_comment_and_default_value():
 def test_domain_filter():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.domain = 'other'
     source = u'''dgettext('mydomain', 'word')'''
     messages = list(python_extractor('filename', options))
@@ -191,6 +209,7 @@ def test_domain_filter():
 def test_dict_argument():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''_('word', mapping={'foo': 2})'''
     messages = list(python_extractor('filename', options))
@@ -202,6 +221,7 @@ def test_dict_argument():
 def test_function_argument():
     global source
     options = mock.Mock()
+    options.keywords = []
     options.comment_tag = 'I18N:'
     source = u'''_('word', func('foo', 2'))'''
     messages = list(python_extractor('filename', options))
@@ -213,6 +233,7 @@ def test_function_argument():
 def test_dot_operator_in_parameter():
     global source
     options = mock.Mock()
+    options.keywords = []
     source = u'''self._[lang].gettext(item.name)'''
     messages = list(python_extractor('filename', options))
     assert len(messages) == 0

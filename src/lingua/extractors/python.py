@@ -339,7 +339,6 @@ def _extract_python(filename, source, options, firstline=0):
     if isinstance(source, bytes):
         source = source.decode('utf-8')
     fileobj = io.StringIO(source)
-    update_keywords(KEYWORDS, options.keywords)
     extractor = PythonExtractor()
     return extractor(filename, options, fileobj, firstline)
 
@@ -349,6 +348,7 @@ class PythonExtractor(Extractor):
     extensions = ['.py']
 
     def __call__(self, filename, options, fileobj=None, lineno=0):
+        update_keywords(KEYWORDS, options.keywords)
         if fileobj is None:
             fileobj = _open(filename)
         token_stream = TokenStreamer(fileobj.readline)
