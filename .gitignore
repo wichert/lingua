@@ -1,3 +1,4 @@
+/.cache
 /.Python
 /src/lingua.egg-info
 /bin/
@@ -6,6 +7,7 @@
 /include
 /lib
 /man
+/pip-selfcheck.json
 /pyvenv.cfg
 /.project
 /.pydevproject
@@ -14,3 +16,4 @@
 *.pyc
 *.egg
 *.swp
+
