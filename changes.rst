@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.6 - Unreleased
--------------------------
+4.6 - January 9, 2016
+---------------------
 
 - The Python extractor correctly handles the ``--keyword`` parameter now.
   `Patch #75 <https://github.com/wichert/lingua/pull/75>`_ from
