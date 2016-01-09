@@ -18,7 +18,7 @@ if sys.version_info < (2, 7):
     install_requires.append('argparse')
     install_requires.append('ordereddict')
 
-if (3. 0) < sys.version_info < (3, 3):
+if (3, 0) < sys.version_info < (3, 3):
     tests_require.append('mock')
 
 
