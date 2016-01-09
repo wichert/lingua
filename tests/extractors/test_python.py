@@ -1,5 +1,8 @@
 # coding=utf-8
-import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import pytest
 import io
 from lingua.extractors.python import PythonExtractor

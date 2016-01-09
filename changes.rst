@@ -4,6 +4,8 @@ Changelog
 4.6 - January 9, 2016
 ---------------------
 
+- Use unittest.mock on Python 3.3 and later.
+
 - The Python extractor correctly handles the ``--keyword`` parameter now.
   `Patch #75 <https://github.com/wichert/lingua/pull/75>`_ from
   Omar Kohl, fixing `issue 74 <https://github.com/wichert/lingua/issues/74>`_

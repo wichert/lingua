@@ -5,18 +5,21 @@ import sys
 version = '4.6'
 
 install_requires = [
-        'setuptools',
-        'polib',
-        'Chameleon',
-        ]
+    'setuptools',
+    'polib',
+    'Chameleon',
+]
+
+tests_require = [
+    'pytest',
+]
+
 if sys.version_info < (2, 7):
     install_requires.append('argparse')
     install_requires.append('ordereddict')
 
-tests_require = [
-        'pytest',
-        'mock',
-        ]
+if (3. 0) < sys.version_info < (3, 3):
+    tests_require.append('mock')
 
 
 class PyTest(TestCommand):
