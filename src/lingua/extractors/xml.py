@@ -115,8 +115,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
     extensions = ['.pt']
     DEFAULT_NAMESPACES = MacroProgram.DEFAULT_NAMESPACES
     default_config = {
-            'default-engine': 'python',
-            }
+        'default-engine': 'python',
+    }
 
     def __call__(self, filename, options, fileobj=None, lineno=0):
         self.options = options
@@ -327,8 +327,8 @@ class ZopeExtractor(ChameleonExtractor):
     '''Zope templates (defaults to TALES expressions)'''
     extensions = ['.zpt', '.cpt']
     default_config = {
-            'default-engine': 'tales',
-            }
+        'default-engine': 'tales',
+    }
 
 
 def is_valid_python(source):
