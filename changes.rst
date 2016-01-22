@@ -4,7 +4,9 @@ Changelog
 4.7 - Unreleased
 ---------------------
 
-- ...
+- Make i18n comments in HTML file inheritable. This was already documented, but
+  did not work.
+
 
 
 4.6 - January 9, 2016

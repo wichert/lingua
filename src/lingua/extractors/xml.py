@@ -123,7 +123,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
         self.filename = filename
         self.target_domain = options.domain
         self.messages = []
-        self.domainstack = collections.deque([(None, None)])
+        self.domainstack = collections.deque([(None, None, None)])
         self.translatestack = collections.deque([None])
         self.linenumber = 1
         if fileobj is None:
@@ -165,9 +165,13 @@ class ChameleonExtractor(Extractor, ElementProgram):
         old_domain = self.domainstack[-1][0] if self.domainstack else None
         new_context = attributes.get((I18N_NS, 'context'))
         old_context = self.domainstack[-1][1] if self.domainstack else None
-        comment = attributes.get((I18N_NS, 'comment'))
-        if new_domain or new_context:
-            self.domainstack.append((new_domain or old_domain, new_context or old_context))
+        new_comment = attributes.get((I18N_NS, 'comment'))
+        old_comment = self.domainstack[-1][2] if self.domainstack else None
+        if new_domain or new_context or new_comment:
+            self.domainstack.append((
+                new_domain or old_domain,
+                new_context or old_context,
+                new_comment or old_comment))
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])
 
@@ -179,7 +183,9 @@ class ChameleonExtractor(Extractor, ElementProgram):
             ctx = TranslateContext(
                 self.domainstack[-1][0] if self.domainstack else None,
                 self.domainstack[-1][1] if self.domainstack else None,
-                i18n_translate, comment, self.filename, childs_lineno)
+                i18n_translate,
+                self.domainstack[-1][2] if self.domainstack else None,
+                self.filename, childs_lineno)
             if self.translatestack:
                 ctx.parent = self.translatestack[-1]
                 if ctx.parent is not None:

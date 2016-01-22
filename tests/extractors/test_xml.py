@@ -680,6 +680,21 @@ def test_translation_comment_and_msgid():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_inherit_translation_comment():
+    global source
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <div i18n:comment="Form buttons">
+                    <button i18n:translate="">Save</button>
+                  </div>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert messages[0].msgid == u'Save'
+    assert messages[0].comment == u'Form buttons'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_linenumbers():
     global source
     source = u'''<!DOCTYPE html>
