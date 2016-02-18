@@ -1,10 +1,10 @@
 Changelog
 =========
 
-4.9 - Unreleased
------------------------
+4.8.1 - February 18, 2016
+-------------------------
 
-- ...
+- Fix breaking error introduced in 4.8 release.
 
 
 4.8 - February 18, 2016
