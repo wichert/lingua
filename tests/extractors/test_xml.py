@@ -667,6 +667,19 @@ def test_translation_comment():
 
 
 @pytest.mark.usefixtures('fake_source')
+def test_translation_comment_for_attribute():
+    global source
+    source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <input i18n:comment="Placeholder text" i18n:attributes="placeholder" placeholder="Email address">
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert messages[0].msgid == u'Email address'
+    assert messages[0].comment == u'Placeholder text'
+
+
+@pytest.mark.usefixtures('fake_source')
 def test_translation_comment_and_msgid():
     global source
     source = u'''<html xmlns:i18n="http://xml.zope.org/namespaces/i18n"

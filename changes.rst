@@ -4,7 +4,7 @@ Changelog
 4.8 - Unreleased
 ----------------------
 
-- ..
+- The XML extractor correctly handle i18n comments for attributes now.
 
 
 4.7 - January 23, 2016

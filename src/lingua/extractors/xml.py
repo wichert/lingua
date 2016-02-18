@@ -203,7 +203,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         if msgid not in plain_attrs:
                             continue
                         value, offset, post_offset = plain_attrs[msgid]
-                        self.add_message(value, offset=offset)
+                        self.add_message(value, self.domainstack[-1][2], offset=offset)
                     else:
                         try:
                             (attr, msgid) = msgid.split()
