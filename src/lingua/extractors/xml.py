@@ -91,7 +91,7 @@ class TranslateContext(object):
                     self.parent.full_text())
         return Message(self.msgctxt, self.msgid, None, [],
                 u'\n'.join(comments), u'',
-                (self.filename, self.lineno))
+                (self.filename, str(self.lineno)))
 
 
 def get_newline_count(s):

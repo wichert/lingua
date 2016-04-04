@@ -4,7 +4,9 @@ Changelog
 4.9 - 
 -----------------------
 
-- ..
+- Do not replace a POT file is the new version is exactly the same (ignoring
+  metadata changes). This fixes `issue 67
+  <https://github.com/wichert/lingua/issues/67>`_
 
 
 4.8.1 - February 18, 2016

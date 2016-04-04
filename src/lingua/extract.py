@@ -6,6 +6,7 @@ except ImportError:
     from ordereddict import OrderedDict
 from operator import attrgetter
 import os
+import re
 import sys
 import time
 try:
@@ -30,6 +31,12 @@ def po_timestamp():
         time.strftime('%H%M', time.gmtime(abs(offset))))
 
 
+def _same_text(a, b):
+    a = re.sub(r'\s+', u' ', a)
+    b = re.sub(r'\s+', u' ', b)
+    return a == b
+
+
 class POEntry(polib.POEntry):
     def __init__(self, *a, **kw):
         polib.POEntry.__init__(self, *a, **kw)
@@ -51,6 +58,13 @@ class POEntry(polib.POEntry):
     @tcomment.setter
     def tcomment(self, value):
         pass
+
+    def __eq__(self, other):
+        r = super(POEntry, self).__eq__(other)
+        if not r:
+            return False
+        return _same_text(other.comment, self.comment) and \
+            _same_text(other.tcomment, self.tcomment)
 
     def update(self, message, add_occurrences=True):
         if add_occurrences:
@@ -188,6 +202,36 @@ def read_config(filename):
             _register_extension(extension, plugin)
 
 
+def _summarise(catalog):
+    summary = {}
+    for entry in catalog:
+        if entry.obsolete:
+            continue
+        summary[(entry.msgid, entry.msgctxt)] = entry
+    return summary
+
+
+def identical(a, b):
+    """Check if two catalogs are identical, ignoring metadata.
+    """
+    a = _summarise(a)
+    b = _summarise(b)
+    return a == b
+
+
+def save_catalog(catalog, filename):
+    if os.path.exists(filename):
+        old_catalog = None
+        try:
+            old_catalog = polib.pofile(filename)
+        except (OSError, UnicodeDecodeError):
+            pass
+        if old_catalog is not None and identical(catalog, old_catalog):
+            print("No changes found - not replacing %s" % filename)
+            return
+    catalog.save(filename)
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='Extract translateable strings.')
@@ -306,7 +350,7 @@ def main():
         for entry in catalog:
             strip_linenumbers(entry)
 
-    catalog.save(options.output)
+    save_catalog(catalog, options.output)
 
 
 if __name__ == '__main__':
