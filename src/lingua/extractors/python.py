@@ -332,7 +332,7 @@ class PythonParser(object):
 
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
-        self.messages.append(Message(msg[1], msg[2], msg[3], flags, comment, u'', (self.filename, str(self.firstline + self.lineno))))
+        self.messages.append(Message(msg[1], msg[2], msg[3], flags, comment, u'', (self.filename, self.firstline + self.lineno)))
 
 
 def _extract_python(filename, source, options, firstline=0):

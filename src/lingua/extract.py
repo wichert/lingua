@@ -68,7 +68,7 @@ class POEntry(polib.POEntry):
 
     def update(self, message, add_occurrences=True):
         if add_occurrences:
-            self.occurrences.append(message.location)
+            self.occurrences.append((message.location[0], str(message.location[1])))
         self.flags.extend(f for f in message.flags if f not in self.flags)
         if message.comment not in self._comments:
             self._comments.append(message.comment)
