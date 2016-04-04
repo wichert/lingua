@@ -4,6 +4,9 @@ Changelog
 4.9 - 
 -----------------------
 
+- Handle calls to the Python extractor with bytes input. This fixes problems with
+  Lingua plugins build for Lingua < 4.
+
 - Atomically replace the POT file to guarantee no broken POT file will be created.
 
 - Do not replace a POT file is the new version is exactly the same (ignoring

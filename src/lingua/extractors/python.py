@@ -3,6 +3,7 @@ import ast
 import io
 import sys
 import tokenize
+import warnings
 from . import Extractor
 from . import Message
 from . import check_comment_flags
@@ -109,9 +110,24 @@ def safe_eval(s):
 DYNAMIC = []
 
 
+class _SafeReadline(object):
+    def __init__(self, readline):
+        self.readline = readline
+
+    def __call__(self):
+        line = self.readline()
+        if isinstance(line, bytes):
+            warnings.warn(
+                'Python extractor called with bytes input. '
+                'Please update your plugin to submit unicode instead.',
+                UnicodeWarning, stacklevel=6)
+            line = line.decode('utf-8')
+        return line
+
+
 class TokenStreamer(object):
     def __init__(self, readline):
-        self.queue = tokenize.generate_tokens(readline)
+        self.queue = tokenize.generate_tokens(_SafeReadline(readline))
         self.pushed = []
         self.complete = False
 

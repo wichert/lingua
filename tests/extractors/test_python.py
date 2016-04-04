@@ -240,3 +240,16 @@ def test_dot_operator_in_parameter():
     source = u'''self._[lang].gettext(item.name)'''
     messages = list(python_extractor('filename', options))
     assert len(messages) == 0
+
+
+def test_bytes_input():
+    # Backwards compatibility for plugins that call the Python extractor with
+    # bytes input.
+    input = b'_("word")'
+    options = mock.Mock()
+    options.keywords = []
+    with mock.patch('lingua.extractors.python._open',
+                side_effect=lambda *a: io.BytesIO(input)):
+        messages = list(python_extractor('filename', options))
+        assert len(messages) == 1
+        assert messages[0].msgid == 'word'
