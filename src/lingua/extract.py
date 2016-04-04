@@ -8,6 +8,7 @@ from operator import attrgetter
 import os
 import re
 import sys
+import tempfile
 import time
 try:
     from configparser import SafeConfigParser
@@ -229,7 +230,9 @@ def save_catalog(catalog, filename):
         if old_catalog is not None and identical(catalog, old_catalog):
             print("No changes found - not replacing %s" % filename)
             return
-    catalog.save(filename)
+    (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
+    catalog.save(tmpfile)
+    os.rename(tmpfile, filename)
 
 
 def main():

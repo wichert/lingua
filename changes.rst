@@ -4,6 +4,8 @@ Changelog
 4.9 - 
 -----------------------
 
+- Atomically replace the POT file to guarantee no broken POT file will be created.
+
 - Do not replace a POT file is the new version is exactly the same (ignoring
   metadata changes). This fixes `issue 67
   <https://github.com/wichert/lingua/issues/67>`_
