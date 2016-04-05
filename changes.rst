@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.9 - 
------------------------
+4.9 - April 5, 2016
+-------------------
 
 - Handle calls to the Python extractor with bytes input. This fixes problems with
   Lingua plugins build for Lingua < 4.
