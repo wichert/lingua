@@ -9,8 +9,8 @@ Changelog
 
 - Atomically replace the POT file to guarantee no broken POT file will be created.
 
-- Do not replace a POT file is the new version is exactly the same (ignoring
-  metadata changes). This fixes `issue 67
+- Do not replace a POT file if there are no changes (ignoring metadata
+  changes). This fixes `issue 67
   <https://github.com/wichert/lingua/issues/67>`_
 
 
