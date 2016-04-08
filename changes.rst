@@ -4,7 +4,9 @@ Changelog
 4.10 -
 -------------------
 
-- Gracefully handle syntax errors in Python expression in text in HTML/PT files.
+- Improve handling of expressions (``${..}``) in HTML/PT files:
+  - decode HTML entities before trying to parse Python code
+  - gracefully handle syntax errors.
 
 
 4.9 - April 5, 2016

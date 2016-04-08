@@ -241,6 +241,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
         if self.target_domain is None or self.target_domain == self.domainstack[-1][0]:
             default_engine = self.config['default-engine']
             for line in data.splitlines():
+                line = decode_htmlentities(line)
                 try:
                     for source in get_python_expressions(line, default_engine):
                         if UNDERSCORE_CALL.search(source):
