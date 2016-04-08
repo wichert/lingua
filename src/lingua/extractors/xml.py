@@ -241,9 +241,14 @@ class ChameleonExtractor(Extractor, ElementProgram):
         if self.target_domain is None or self.target_domain == self.domainstack[-1][0]:
             default_engine = self.config['default-engine']
             for line in data.splitlines():
-                for source in get_python_expressions(line, default_engine):
-                    if UNDERSCORE_CALL.search(source):
-                        self.parse_python(source)
+                try:
+                    for source in get_python_expressions(line, default_engine):
+                        if UNDERSCORE_CALL.search(source):
+                            self.parse_python(source)
+                except SyntaxError:
+                    print('Aborting due to Python syntax error in %s[%d]: %s' %
+                            (self.filename, self.linenumber, line))
+                    sys.exit(1)
             if self.translatestack[-1]:
                 self.translatestack[-1].add_text(data)
         self.linenumber += get_newline_count(data)

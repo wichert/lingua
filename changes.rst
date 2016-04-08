@@ -1,6 +1,12 @@
 Changelog
 =========
 
+4.10 -
+-------------------
+
+- Gracefully handle syntax errors in Python expression in text in HTML/PT files.
+
+
 4.9 - April 5, 2016
 -------------------
 
