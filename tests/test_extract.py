@@ -2,6 +2,14 @@ import polib
 from lingua.extract import POEntry
 from lingua.extract import POFile
 from lingua.extract import identical
+from lingua.extract import strip_linenumbers
+
+
+STRIPPED_LINENUMBERS_PO = """\
+#: file.txt
+msgid "A"
+msgstr ""
+"""
 
 
 class Test_identical:
@@ -50,4 +58,12 @@ class Test_identical:
         a[0]._comments.append(u'Comment one')
         b.append(polib.POEntry(msgid=u'id'))
         b[0].comment = u'Comment\none'
+        assert identical(a, b)
+
+    def test_strip_linenumbers(self):
+        a = POFile()
+        b = polib.pofile(STRIPPED_LINENUMBERS_PO)
+        a.append(POEntry(msgid=u'A', occurrences=[('file.txt', '1')]))
+        for entry in a:
+            strip_linenumbers(entry)
         assert identical(a, b)
