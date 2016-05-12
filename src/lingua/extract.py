@@ -140,7 +140,7 @@ def strip_linenumbers(entry):
     for location, line in entry.occurrences:
         if location in seen:
             continue
-        occurrences.append((location, None))
+        occurrences.append((location, ''))
         seen.add(location)
     entry.occurrences = occurrences
 
