@@ -231,7 +231,9 @@ def save_catalog(catalog, filename):
             print("No changes found - not replacing %s" % filename)
             return
     (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
-    catalog.save(tmpfile)
+    output = io.io.open(fd, 'wt', encoding=catalog.encoding)
+    output.write(unicode(catalog))
+    output.close()
     os.rename(tmpfile, filename)
 
 

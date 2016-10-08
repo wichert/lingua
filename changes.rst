@@ -4,6 +4,10 @@ Changelog
 4.10 -
 -------------------
 
+- Fix error saving POT files on Windows. This fixes `issue 81
+  <https://github.com/wichert/lingua/issues/81>`_
+
+
 - Improve handling of expressions (``${..}``) in HTML/PT files:
   - decode HTML entities before trying to parse Python code
   - gracefully handle syntax errors.
