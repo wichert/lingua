@@ -1,11 +1,15 @@
 Changelog
 =========
 
+4.11 -
+-----------------------
+
+
 4.10 - October 10, 2016
 -----------------------
 
 - Fix error saving POT files on Windows. This fixes `issue 81
-  <https://github.com/wichert/lingua/issues/81>`_
+  <https://github.com/wichert/lingua/issues/81>`_.
 
 - Fix incorrect handling of stripped line numbers.
   `Patch #79 <https://github.com/wichert/lingua/pull/79>`_ from sinoroc.
