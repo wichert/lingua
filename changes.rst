@@ -1,12 +1,14 @@
 Changelog
 =========
 
-4.10 -
--------------------
+4.10 - October 10, 2016
+-----------------------
 
 - Fix error saving POT files on Windows. This fixes `issue 81
   <https://github.com/wichert/lingua/issues/81>`_
 
+- Fix incorrect handling of stripped line numbers.
+  `Patch #79 <https://github.com/wichert/lingua/pull/79>`_ from sinoroc.
 
 - Improve handling of expressions (``${..}``) in HTML/PT files:
   - decode HTML entities before trying to parse Python code
