@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import io
 try:
     from collections import OrderedDict
 except ImportError:
@@ -231,7 +232,7 @@ def save_catalog(catalog, filename):
             print("No changes found - not replacing %s" % filename)
             return
     (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
-    output = io.io.open(fd, 'wt', encoding=catalog.encoding)
+    output = io.open(fd, 'wt', encoding=catalog.encoding)
     output.write(unicode(catalog))
     output.close()
     os.rename(tmpfile, filename)
