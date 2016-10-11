@@ -1,8 +1,11 @@
 Changelog
 =========
 
-4.11 -
+4.11 - October 11, 2016
 -----------------------
+
+- Correct a Python 3 compatibility error. This fixes `issue 82
+  <https://github.com/wichert/lingua/issues/82>`_.
 
 
 4.10 - October 10, 2016

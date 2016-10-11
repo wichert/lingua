@@ -233,7 +233,7 @@ def save_catalog(catalog, filename):
             return
     (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
     output = io.open(fd, 'wt', encoding=catalog.encoding)
-    output.write(unicode(catalog))
+    output.write(catalog.__unicode__())
     output.close()
     os.rename(tmpfile, filename)
 
