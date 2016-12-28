@@ -4,6 +4,8 @@ Changelog
 4.12 -
 -----------------------
 
+- Improve handling of Chameleon parse errors.
+
 - Correctly set the context for ``i18n:attributes`` in TAL templates.
 
 

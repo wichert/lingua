@@ -130,11 +130,15 @@ class ChameleonExtractor(Extractor, ElementProgram):
             fileobj = _open(filename)
         try:
             source = fileobj.read().decode('utf-8')
+            ElementProgram.__init__(self, source, filename=filename)
         except UnicodeDecodeError as e:
             print('Aborting due to parse error in %s: %s' %
                     (self.filename, e), file=sys.stderr)
             sys.exit(1)
-        ElementProgram.__init__(self, source, filename=filename)
+        except KeyError as e:  # Chameleon attribute error
+            print('Aborting due to parse error in %s: %s' %
+                    (self.filename, e.message), file=sys.stderr)
+            sys.exit(1)
         return [m.message() if isinstance(m, TranslateContext) else m
                 for m in self.messages]
 
