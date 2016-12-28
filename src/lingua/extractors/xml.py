@@ -203,7 +203,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         if msgid not in plain_attrs:
                             continue
                         value, offset, post_offset = plain_attrs[msgid]
-                        self.add_message(value, self.domainstack[-1][2] or '', offset=offset)
+                        self.add_message(self.domainstack[-1][1], value, self.domainstack[-1][2] or '', offset=offset)
                     else:
                         try:
                             (attr, msgid) = msgid.split()
@@ -212,7 +212,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         if attr not in plain_attrs:
                             continue
                         value, offset, post_offset = plain_attrs[attr]
-                        self.add_message(msgid, u'Default: %s' % value, offset=offset)
+                        self.add_message(self.domainstack[-1][1], msgid, u'Default: %s' % value, offset=offset)
 
             for (attribute, value) in attributes.items():
                 value = decode_htmlentities(value)
@@ -269,8 +269,8 @@ class ChameleonExtractor(Extractor, ElementProgram):
                     (self.filename, self.linenumber), file=sys.stderr)
         self.linenumber += get_newline_count(data)
 
-    def add_message(self, msgid, comment=u'', offset=0):
-        self.messages.append(Message(None, msgid, None, [], comment, u'',
+    def add_message(self, msgctxt, msgid, comment=u'', offset=0):
+        self.messages.append(Message(msgctxt, msgid, None, [], comment, u'',
             (self.filename, self.linenumber + offset)))
 
     def _assert_valid_python(self, value):

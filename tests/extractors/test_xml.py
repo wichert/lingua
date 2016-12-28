@@ -803,3 +803,17 @@ def test_domain_filter_for_expression():
                 </html>'''.encode('utf-8')
     messages = list(xml_extractor('filename', _options(domain='other')))
     assert len(messages) == 0
+
+
+@pytest.mark.usefixtures('fake_source')
+def test_context_for_attributes():
+    global source
+    source = u'''\
+                <html xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+                      i18n:domain="lingua">
+                  <span title="message" i18n:context="figure" i18n:attributes="title"></span>
+                </html>
+                '''.encode('utf-8')
+    messages = list(xml_extractor('filename', _options()))
+    assert len(messages) == 1
+    assert messages[0].msgctxt == 'figure'

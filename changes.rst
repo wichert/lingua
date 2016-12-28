@@ -4,6 +4,7 @@ Changelog
 4.12 -
 -----------------------
 
+- Correctly set the context for ``i18n:attributes`` in TAL templates.
 
 
 4.11 - October 11, 2016
