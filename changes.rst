@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.12 -
------------------------
+4.12 - December 28, 2016
+------------------------
 
 - Improve handling of Chameleon parse errors.
 
