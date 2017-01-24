@@ -238,6 +238,12 @@ def save_catalog(catalog, filename):
     os.rename(tmpfile, filename)
 
 
+def _location_sort_key(msg):
+    locations = [(fn, int(line)) for (fn, line) in msg.occurrences]
+    locations.sort()  # Sort so first occurence is always used.
+    return locations
+
+
 def main():
     parser = argparse.ArgumentParser(
             description='Extract translateable strings.')
@@ -349,8 +355,7 @@ def main():
     if options.sort == 'msgid':
         catalog.sort(key=attrgetter('msgid'))
     elif options.sort == 'location':
-        # Order the occurrences themselves, so the output is consistent
-        catalog.sort(key=lambda m: m.occurrences.sort() or m.occurrences)
+        catalog.sort(key=_location_sort_key)
 
     if options.no_linenumbers:
         for entry in catalog:

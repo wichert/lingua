@@ -1,8 +1,10 @@
 Changelog
 =========
 
-4.13 -
+4.13 - January 24, 2016
 ------------------------
+
+- Fix ``--sort-by-file`` to use a numeric ordering for line numbers.
 
 
 4.12 - December 28, 2016
