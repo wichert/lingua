@@ -35,6 +35,9 @@ if [ $# -eq 0 ]; then
 
     echo "Compile message catalogs"
     for po in "$LOCALES_PATH"/*/LC_MESSAGES/*.po; do
+        lg=${po##$LOCALES_PATH/}
+        lg=${lg%%/LC_MESSAGES/*}
+        echo -n "$lg: "
         msgfmt --statistics -o "${po%.*}.mo" "$po"
     done
 
