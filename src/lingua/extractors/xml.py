@@ -26,7 +26,7 @@ def _open(filename):
     return open(filename, 'rb')
 
 
-ENGINE_PREFIX = re.compile(r'^\s*([a-z\-_]+):\s*')
+ENGINE_PREFIX = re.compile(r'^\s*([a-z][a-z0-9\-_]+):\s*')
 STRUCTURE_PREFIX = re.compile(r'\s*(structure|text)\s+(.*)', re.DOTALL)
 WHITESPACE = re.compile(u"\s+")
 EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
