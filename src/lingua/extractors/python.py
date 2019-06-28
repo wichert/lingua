@@ -232,6 +232,11 @@ class PythonParser(object):
             self.handler = self.state_in_keyword
             self.keyword = KEYWORDS.get(token, None)
             self.lineno = location[0]
+        elif token_type == tokenize.NAME and token == 'def':
+            self.handler = self.state_skip_function_def
+
+    def state_skip_function_def(self, token_type, token, location, token_stream):
+        self.handler = self.state_skip
 
     def state_in_keyword(self, token_type, token, location, token_stream):
         """Check if the keyword is used in a proper function call."""
