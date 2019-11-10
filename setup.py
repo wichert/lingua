@@ -7,18 +7,14 @@ version = '4.14'
 install_requires = [
     'setuptools',
     'polib',
+    'click',
+    'ordereddict;python_version<"3.0"',
+    'mock;python_version<"3.3"',
 ]
 
 tests_require = [
     'pytest',
 ]
-
-if sys.version_info < (2, 7):
-    install_requires.append('argparse')
-    install_requires.append('ordereddict')
-
-if (3, 0) < sys.version_info < (3, 3):
-    tests_require.append('mock')
 
 
 class PyTest(TestCommand):

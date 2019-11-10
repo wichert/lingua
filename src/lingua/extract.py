@@ -1,5 +1,3 @@
-from __future__ import print_function
-import argparse
 import io
 try:
     from collections import OrderedDict
@@ -15,6 +13,7 @@ try:
     from configparser import SafeConfigParser
 except ImportError:
     from ConfigParser import SafeConfigParser
+import click
 import polib
 from lingua.extractors import get_extractor
 from lingua.extractors import register_extractors
@@ -105,13 +104,13 @@ def no_duplicates(iterator):
         yield item
 
 
-def list_files(options):
-    if options.files_from:
-        for filename in open(options.files_from, 'r'):
+def list_files(files_from, sources):
+    if files_from:
+        for filename in files_from:
             if filename.startswith('#') or not filename.strip():
                 continue
             yield filename
-    for file in options.file:
+    for file in sources:
         if os.path.isfile(file):
             yield file
         elif os.path.isdir(file):
@@ -120,7 +119,7 @@ def list_files(options):
                     if get_extractor(file) is not None:
                         yield os.path.join(dirpath, file)
         else:
-            print('Invalid file type for %s' % file, file=sys.stderr)
+            click.echo('Invalid file type for %s' % file, err=True)
             sys.exit(1)
 
 
@@ -146,16 +145,16 @@ def strip_linenumbers(entry):
     entry.occurrences = occurrences
 
 
-def create_catalog(options):
-    catalog = POFile(wrapwidth=options.width)
-    catalog.copyright_holder = options.copyright_holder
-    catalog.package_name = options.package_name
+def create_catalog(width, copyright_holder, package_name, package_version, msgid_bugs_address):
+    catalog = POFile(wrapwidth=width)
+    catalog.copyright_holder = copyright_holder
+    catalog.package_name = package_name
     catalog.metadata_is_fuzzy = True
     catalog.metadata = OrderedDict()
     catalog.metadata['Project-Id-Version'] = ' '.join(filter(
-        None, [options.package_name, options.package_version]))
-    if options.msgid_bugs_address:
-        catalog.metadata['Report-Msgid-Bugs-To'] = options.msgid_bugs_address
+        None, [package_name, package_version]))
+    if msgid_bugs_address:
+        catalog.metadata['Report-Msgid-Bugs-To'] = msgid_bugs_address
     catalog.metadata['POT-Creation-Date'] = po_timestamp()
     catalog.metadata['PO-Revision-Date'] = 'YEAR-MO-DA HO:MI+ZONE'
     catalog.metadata['Last-Translator'] = 'FULL NAME <EMAIL@ADDRESS'
@@ -170,15 +169,15 @@ def create_catalog(options):
 
 def _register_extension(extension, extractor):
     if extractor not in EXTRACTORS:
-        print('Unknown extractor %s. Check --list-extractors for available options' % extractor,
-                file=sys.stderr)
+        click.echo('Unknown extractor %s. Check --list-extractors for available options' % extractor,
+                err=True)
         sys.exit(1)
     EXTENSIONS[extension] = extractor
 
 
-def read_config(filename):
+def read_config(cfg_file):
     config = SafeConfigParser()
-    config.readfp(open(filename))
+    config.readfp(cfg_file)
     for section in config.sections():
         if section == 'extensions':
             for (extension, extractor) in config.items(section):
@@ -186,21 +185,21 @@ def read_config(filename):
         elif section.startswith('extractor:'):
             extractor = section[10:]
             if extractor not in EXTRACTORS:
-                print('Unknown extractor %s. '
+                click.echo('Unknown extractor %s. '
                       'Check --list-extractors for available options' % extractor,
-                        file=sys.stderr)
+                        err=True)
                 sys.exit(1)
             extractor_config = dict(config.items(section))
             EXTRACTORS[extractor].update_config(**extractor_config)
         elif section.startswith('extension'):
-            print('Use of %s section is obsolete. '
+            click.echo('Use of %s section is obsolete. '
                   'Please use the "extensions" section.' % section,
-                  file=sys.stderr)
+                  err=True)
             extension = section[10:]
             plugin = config.get(section, 'plugin')
             if not plugin:
-                print('No plugin defined for extension %s' % extension,
-                    file=sys.stderr)
+                click.echo('No plugin defined for extension %s' % extension,
+                    err=True)
             _register_extension(extension, plugin)
 
 
@@ -229,7 +228,7 @@ def save_catalog(catalog, filename):
         except (OSError, UnicodeDecodeError):
             pass
         if old_catalog is not None and identical(catalog, old_catalog):
-            print("No changes found - not replacing %s" % filename)
+            click.echo("No changes found - not replacing %s" % filename)
             return
     (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
     output = io.open(fd, 'wt', encoding=catalog.encoding)
@@ -244,96 +243,116 @@ def _location_sort_key(msg):
     return locations
 
 
-def main():
-    parser = argparse.ArgumentParser(
-            description='Extract translateable strings.')
+class ExtractorOptions:
+    def __init__(self, comment_tag, domain, keywords):
+        self.comment_tag = comment_tag
+        self.domain = domain
+        self.keywords = keywords
 
-    parser.add_argument('-c', '--config', metavar='CONFIG',
-            help='Read configuration from CONFIG file')
-    # Input options
-    parser.add_argument('-f', '--files-from', metavar='FILE',
-            help='Get list of files to process from FILE')
-    parser.add_argument('-D', '--directory', metavar='DIRECTORY',
-            action='append', default=[],
-            help='Add DIRECTORY to list of paths to check for input files')
-    parser.add_argument('file', nargs='*',
-            help='Source file to process')
-    parser.add_argument('--list-extractors', action='store_true',
-            help='List all known extraction plugins')
-    # Output options
-    parser.add_argument('-o', '--output', metavar='FILE',
-            default='messages.pot',
-            help='Filename for generated POT file')
-    parser.add_argument('--no-location',
-            action='store_false', dest='location',
-            help='Do not include location information')
-    parser.add_argument('--no-linenumbers',
-            action='store_true', dest='no_linenumbers',
-            help='Do not include line numbers in location information')
-    parser.add_argument('-n', '--add-location',
-            action='store_true', dest='location', default=True,
-            help='Include location information (default)')
-    parser.add_argument('-w', '--width', metavar='NUMBER',
-            default=79,
-            help='Output width')
-    parser.add_argument('-s', '--sort-output',  # babel compatibility
-            action='store_const', const='msgid', dest='sort',
-            help='Order messages by their msgid')
-    parser.add_argument('-F', '--sort-by-file',
-            action='store_const', const='location', dest='sort',
-            help='Order messages by file location')
-    # Extraction configuration
-    parser.add_argument('-d', '--domain',
-            help='Domain to extract')
-    parser.add_argument('-k', '--keyword', metavar='WORD',
-            dest='keywords', action='append', default=[], nargs='?',
-            help='Look for WORD as additional keyword')
-    parser.add_argument('-C', '--add-comments', metavar='TAG',
-            dest='comment_tag', const=True, nargs='?',
-            help='Add comments prefixed by TAG to messages, or all if no tag is given')
-    # POT metadata
-    parser.add_argument('--copyright-holder', metavar='STRING',
-            help='Specifies the copyright holder for the texts')
-    parser.add_argument('--package-name', metavar='NAME',
-            default=u'PACKAGE',
-            help='Package name to use in the generated POT file')
-    parser.add_argument('--package-version', metavar='Version',
-            default='1.0',
-            help='Package version to use in the generated POT file')
-    parser.add_argument('--msgid-bugs-address', metavar='EMAIL',
-            help='Email address bugs should be send to')
 
-    options = parser.parse_args()
+@click.command()
+@click.option('-c', '--config', 'cfg_file', metavar='CONFIG', help='Read configuration from CONFIG file', type=click.File())
+# Input options
+@click.option('-f', '--files-from', metavar='FILE', type=click.File(), help='Get list of files to process from FILE')
+@click.option('-D', '--directory', metavar='DIRECTORY', type=click.Path(exists=True, file_okay=False, dir_okay=True),
+        multiple=True,
+        help='Add DIRECTORY to list of paths to check for input files')
+@click.argument('sources', nargs=-1, type=click.Path(exists=True))
+@click.option('--list-extractors', is_flag=True,
+        help='List all known extraction plugins')
+# Output options
+@click.option('-o', '--output', metavar='FILE', type=click.Path(exists=False, dir_okay=False, writable=True),
+        default='messages.pot',
+        help='Filename for generated POT file')
+@click.option('--add-location/--no-location', 'location', default=True,
+        help='Include location information')
+@click.option('--linenumbers/--no-linenumbers', default=True,
+        help='Include line numbers in location information')
+@click.option('-w', '--width', metavar='NUMBER',
+        default=79,
+        help='Output width')
+@click.option('-s', '--sort-output', 'sort_order',  # babel compatibility
+        flag_value='msgid',
+        help='Order messages by their msgid')
+@click.option('-F', '--sort-by-file', 'sort_order',
+        flag_value='location',
+        help='Order messages by file location')
+# Extraction configuration
+@click.option('-d', '--domain',
+        help='Domain to extract')
+@click.option('-k', '--keyword', 'keywords', metavar='WORD',
+        multiple=True,
+        help='Look for WORD as additional keyword')
+@click.option('-C', '--add-comments', 'comment_tag', metavar='TAG',
+        help='Add comments prefixed by TAG to messages, or all if no tag is given')
+# POT metadata
+@click.option('--copyright-holder', metavar='STRING',
+        help='Specifies the copyright holder for the texts')
+@click.option('--package-name', metavar='NAME',
+        default=u'PACKAGE',
+        help='Package name to use in the generated POT file')
+@click.option('--package-version', metavar='Version',
+        default='1.0',
+        help='Package version to use in the generated POT file')
+@click.option('--msgid-bugs-address', metavar='EMAIL',
+        help='Email address bugs should be send to')
+def main(
+    cfg_file,
+    files_from,
+    directory,
+    sources, 
+    list_extractors, 
+    output, 
+    location,
+    linenumbers,
+    width, 
+    sort_order,
+    domain,
+    keywords,
+    comment_tag,
+    copyright_holder, 
+    package_name, 
+    package_version,
+     msgid_bugs_address):
+    'Extract translateable strings.'
+    directory = list(directory)
     register_extractors()
     register_babel_plugins()
 
-    if options.list_extractors:
+    if comment_tag is None:
+        comment_tag = True
+    if list_extractors:
         for extractor in sorted(EXTRACTORS):
-            print('%-17s %s' % (extractor, EXTRACTORS[extractor].__doc__ or ''))
+            click.echo('%-17s %s' % (extractor, EXTRACTORS[extractor].__doc__ or ''))
         return
 
-    if options.config:
-        read_config(options.config)
+    if cfg_file:
+        read_config(cfg_file)
     else:
         user_home = os.path.expanduser('~')
         global_config = os.path.join(user_home, '.config', 'lingua')
         if os.path.exists(global_config):
-            read_config(global_config)
+            read_config(open(global_config, 'r'))
 
-    catalog = create_catalog(options)
+    catalog = create_catalog(width, copyright_holder, package_name, package_version, msgid_bugs_address)
 
     scanned = 0
-    for filename in no_duplicates(list_files(options)):
-        real_filename = find_file(filename, options.directory)
+    for filename in no_duplicates(list_files(files_from, sources)):
+        real_filename = find_file(filename, directory)
         if real_filename is None:
-            print('Can not find file %s' % filename, file=sys.stderr)
+            click.echo('Can not find file %s' % filename, err=True)
             sys.exit(1)
         extractor = get_extractor(real_filename)
         if extractor is None:
-            print('No extractor available for file %s' % filename, file=sys.stderr)
+            click.echo('No extractor available for file %s' % filename, err=True)
             sys.exit(1)
 
-        for message in extractor(real_filename, options):
+        extractor_options = ExtractorOptions(
+            comment_tag=comment_tag,
+            domain=domain,
+            keywords=keywords,
+        )
+        for message in extractor(real_filename, extractor_options):
             entry = catalog.find(message.msgid, msgctxt=message.msgctxt)
             if entry is None:
                 entry = POEntry(msgctxt=message.msgctxt,
@@ -343,26 +362,25 @@ def main():
                     entry.msgstr_plural[0] = ''
                     entry.msgstr_plural[1] = ''
                 catalog.append(entry)
-            entry.update(message, add_occurrences=options.location)
+            entry.update(message, add_occurrences=location)
         scanned += 1
     if not scanned:
-        print('No files scanned, aborting', file=sys.stderr)
+        click.echo('No files scanned, aborting', err=True)
         sys.exit(1)
     if not catalog:
-        print('No translatable strings found, aborting', file=sys.stderr)
+        click.echo('No translatable strings found, aborting', err=True)
         sys.exit(2)
 
-    if options.sort == 'msgid':
+    if sort_order == 'msgid':
         catalog.sort(key=attrgetter('msgid'))
-    elif options.sort == 'location':
+    elif sort_order == 'location':
         catalog.sort(key=_location_sort_key)
 
-    if options.no_linenumbers:
+    if not linenumbers:
         for entry in catalog:
             strip_linenumbers(entry)
 
-    save_catalog(catalog, options.output)
-
+    save_catalog(catalog, output)
 
 if __name__ == '__main__':
     main()
