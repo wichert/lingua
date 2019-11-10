@@ -173,7 +173,6 @@ class PythonParser(object):
         else:
             self.include_comments = 'tagged'
             self.comment_marker = options.comment_tag
-        self.comment_tag = options.comment_tag
         self.filename = filename
         self.firstline = firstline
         self.messages = []
