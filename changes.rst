@@ -1,9 +1,42 @@
 Changelog
 =========
 
-4.14 -
+4.14 - November 10, 2019
 ------------------------
 
+- Allow comments to appear inside function arguments, instead of only before
+  the callable invocation.
+
+- Correct the combining of flags in i18n comments when multiple comments
+  are present for a single string.
+
+- Use Click for command-line parsing. This fixes `issue 76
+  <https://github.com/wichert/lingua/issues/76>`_.
+
+- Fix handling of non-keyword values from a Babel extractor. This fixes `issue 86
+  <https://github.com/wichert/lingua/issues/86>`_.
+
+- Allow running without Chameleon installed.
+  `Patch #97 <https://github.com/wichert/lingua/pull/97>`_ from sinoroc.
+
+- Skip function definitions in Python extractor.
+  `Patch #93 <https://github.com/wichert/lingua/pull/93>`_ from Alexandre Brault.
+
+- Skip extractor entry points if dependencies are missing.
+  `Patch #97 <https://github.com/wichert/lingua/pull/97>`_ from sinoroc.
+
+- Update TravisCI config to current Python versions.
+  `Patch #96 <https://github.com/wichert/lingua/pull/96>`_ from sinoroc.
+
+- Fix Pytest4.x compatibility error.
+  `Patch #92 <https://github.com/wichert/lingua/pull/92>`_ from Stanislav Levin.
+
+- Update the XML extractor to support for custom expressions engines containing
+  numbers.
+  `Patch #88 <https://github.com/wichert/lingua/pull/88>`_ from Thierry Florac.
+
+- Update `i18n.sh` to show language during the compilation process.
+  `Patch #83 <https://github.com/wichert/lingua/pull/83>`_ from Hans-Peter Jansen.
 
 4.13 - January 24, 2016
 ------------------------
