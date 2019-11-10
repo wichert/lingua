@@ -7,7 +7,6 @@ version = '4.14'
 install_requires = [
     'setuptools',
     'polib',
-    'Chameleon',
 ]
 
 tests_require = [
@@ -65,7 +64,10 @@ setup(name='lingua',
       zip_safe=True,
       install_requires=install_requires,
       tests_require=tests_require,
-      extras_require={'tests': tests_require},
+      extras_require={
+          'tests': tests_require,
+          'chameleonextractor': ['Chameleon'],
+      },
       cmdclass={'test': PyTest},
       entry_points='''
       [console_scripts]
@@ -74,9 +76,9 @@ setup(name='lingua',
 
       [lingua.extractors]
       python = lingua.extractors.python:PythonExtractor
-      chameleon = lingua.extractors.xml:ChameleonExtractor
-      xml = lingua.extractors.xml:ChameleonExtractor
-      zope = lingua.extractors.xml:ZopeExtractor
+      chameleon = lingua.extractors.xml:ChameleonExtractor [chameleonextractor]
+      xml = lingua.extractors.xml:ChameleonExtractor [chameleonextractor]
+      zope = lingua.extractors.xml:ZopeExtractor [chameleonextractor]
       zcml = lingua.extractors.zcml:ZCMLExtractor
       '''
       )

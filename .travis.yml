@@ -6,5 +6,5 @@ python:
   - "3.7"
   - pypy
 install:
-  - pip install -e '.[tests]'
+  - pip install -e '.[tests,chameleonextractor]'
 script: py.test tests

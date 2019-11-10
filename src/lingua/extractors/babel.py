@@ -1,3 +1,4 @@
+from pkg_resources import DistributionNotFound
 from pkg_resources import working_set
 from .python import KEYWORDS
 from .python import parse_keyword
@@ -48,9 +49,15 @@ class BabelExtractor(Extractor):
 def register_babel_plugins():
     for entry_point in working_set.iter_entry_points('babel.extractors'):
         name = entry_point.name
-        extractor = entry_point.load(require=True)
-        cls = type('BabelExtractor_%s' % name,
-                (BabelExtractor, object),
-                {'extractor': staticmethod(extractor),
-                 '__doc__': extractor.__doc__.splitlines()[0]})
-        EXTRACTORS['babel-%s' % name] = cls()
+        try:
+            extractor = entry_point.load(require=True)
+        except DistributionNotFound:
+            # skip this entry point since at least one required dependency can
+            # not be found
+            extractor = None
+        if extractor:
+            cls = type('BabelExtractor_%s' % name,
+                    (BabelExtractor, object),
+                    {'extractor': staticmethod(extractor),
+                     '__doc__': extractor.__doc__.splitlines()[0]})
+            EXTRACTORS['babel-%s' % name] = cls()
