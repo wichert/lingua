@@ -9,13 +9,14 @@ from . import Message
 
 def _open(filename):
     """Injection point for tests."""
-    return open(filename, 'rb')
+    return open(filename, "rb")
 
 
 class ZCMLExtractor(Extractor):
-    '''Zope Configuration Markup Language (ZCML)'''
-    extensions = ['.zcml']
-    ATTRIBUTES = set(['title', 'description'])
+    """Zope Configuration Markup Language (ZCML)"""
+
+    extensions = [".zcml"]
+    ATTRIBUTES = set(["title", "description"])
 
     def __call__(self, filename, options, fileobj=None, lineno=0):
         self.filename = filename
@@ -30,18 +31,27 @@ class ZCMLExtractor(Extractor):
         try:
             self.parser.ParseFile(fileobj)
         except expat.ExpatError as e:
-            print('Aborting due to parse error in %s: %s' %
-                            (filename, e), file=sys.stderr)
+            print(
+                "Aborting due to parse error in %s: %s" % (filename, e), file=sys.stderr
+            )
             sys.exit(1)
         return self.messages
 
     def add_message(self, msgid):
         self.messages.append(
-                Message(None, msgid, None, [], u'', u'',
-                    (self.filename, (self.parser.CurrentLineNumber))))
+            Message(
+                None,
+                msgid,
+                None,
+                [],
+                u"",
+                u"",
+                (self.filename, (self.parser.CurrentLineNumber)),
+            )
+        )
 
     def StartElementHandler(self, name, attributes):
-        if 'i18n_domain' in attributes:
+        if "i18n_domain" in attributes:
             self.domainstack.append(attributes["i18n_domain"])
         elif self.domainstack:
             self.domainstack.append(self.domainstack[-1])

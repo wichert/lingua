@@ -14,23 +14,26 @@ class BabelExtractor(Extractor):
     extensions = []
     extractor = None
     default_config = {
-            'comment-tags': '',
+        "comment-tags": "",
     }
 
     def __call__(self, filename, options, fileobj=None, firstline=0):
         self.keywords = KEYWORDS.copy()
         update_keywords(self.keywords, options.keywords)
         if fileobj is None:
-            fileobj = open(filename, 'rb')
-        comment_tags = self.config['comment-tags'].split()
-        messages = self.extractor(fileobj, list(self.keywords.keys()),
-                comment_tags, self.config)
+            fileobj = open(filename, "rb")
+        comment_tags = self.config["comment-tags"].split()
+        messages = self.extractor(
+            fileobj, list(self.keywords.keys()), comment_tags, self.config
+        )
         for (lineno, function, args, comment) in messages:
             if not isinstance(args, (list, tuple)):
                 args = [args]
             if function in self.keywords:
                 args = [(None, a, lineno) for a in args]
-                (domain, msgctxt, msgid, msgid_plural, c) = parse_keyword(args, self.keywords[function], filename, lineno)
+                (domain, msgctxt, msgid, msgid_plural, c) = parse_keyword(
+                    args, self.keywords[function], filename, lineno
+                )
                 if c:
                     comment.append(c)
             else:
@@ -39,15 +42,23 @@ class BabelExtractor(Extractor):
 
             if domain and self.options.domain and domain != self.options.domain:
                 continue
-            comment = u' '.join(comment)
+            comment = u" ".join(comment)
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
-            yield Message(msgctxt, msgid, msgid_plural, flags, comment, u'', (filename, firstline + lineno))
+            yield Message(
+                msgctxt,
+                msgid,
+                msgid_plural,
+                flags,
+                comment,
+                u"",
+                (filename, firstline + lineno),
+            )
 
 
 def register_babel_plugins():
-    for entry_point in working_set.iter_entry_points('babel.extractors'):
+    for entry_point in working_set.iter_entry_points("babel.extractors"):
         name = entry_point.name
         try:
             extractor = entry_point.load(require=True)
@@ -56,8 +67,12 @@ def register_babel_plugins():
             # not be found
             extractor = None
         if extractor:
-            cls = type('BabelExtractor_%s' % name,
-                    (BabelExtractor, object),
-                    {'extractor': staticmethod(extractor),
-                     '__doc__': extractor.__doc__.splitlines()[0]})
-            EXTRACTORS['babel-%s' % name] = cls()
+            cls = type(
+                "BabelExtractor_%s" % name,
+                (BabelExtractor, object),
+                {
+                    "extractor": staticmethod(extractor),
+                    "__doc__": extractor.__doc__.splitlines()[0],
+                },
+            )
+            EXTRACTORS["babel-%s" % name] = cls()

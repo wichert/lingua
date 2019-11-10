@@ -9,8 +9,9 @@ import sys
 from .compat import add_metaclass
 
 
-Message = collections.namedtuple('Message',
-        'msgctxt msgid msgid_plural flags comment tcomment location')
+Message = collections.namedtuple(
+    "Message", "msgctxt msgid msgid_plural flags comment tcomment location"
+)
 
 EXTRACTORS = {}
 EXTENSIONS = {}
@@ -27,46 +28,51 @@ def get_extractor(filename):
 # Based on http://www.cplusplus.com/reference/cstdio/printf/
 # Note that we skip the space-flag in this list, since this creates too
 # many false positives.
-_C_FORMAT = re.compile(r'''
+_C_FORMAT = re.compile(
+    r"""
         %
         [+#0-]?               # flags
         (\d+|\*)?             # width
         (\.(\d+|\*))?         # precision
         (hh?|ll?|j|z|t|L)?    # length
         [diuoxXfFeEgGaAcspn%] # specifier
-        ''', re.VERBOSE)
+        """,
+    re.VERBOSE,
+)
 
 
 def check_c_format(buf, flags):
-    if 'no-c-format' in flags or 'c-format' in flags:
+    if "no-c-format" in flags or "c-format" in flags:
         return
-    formats = list(re.finditer('%(?!%)', buf))
-    if formats and all(_C_FORMAT.match(buf[m.start():]) is not None
-            for m in formats):
-        flags.append('c-format')
+    formats = list(re.finditer("%(?!%)", buf))
+    if formats and all(_C_FORMAT.match(buf[m.start() :]) is not None for m in formats):
+        flags.append("c-format")
 
 
 # Based on http://docs.python.org/2/library/string.html#format-string-syntax
-_PYTHON_FORMAT = re.compile(r'''
+_PYTHON_FORMAT = re.compile(
+    r"""
         \{
             (([_A-Za-z](\w*)(\.[_a-z]\w*|\[\d+\])?)|\w+)?  # fieldname
             (![rs])?  # conversion
             (:\.?[<>=^]?[+ -]?\w*,?(\.\w+)?[bcdeEfFgGnosxX%]?)?  # format_spec
         \}
-        ''', re.VERBOSE)
+        """,
+    re.VERBOSE,
+)
 
 
 def check_python_format(buf, flags):
-    if 'no-python-format' in flags or 'python-format' in flags:
+    if "no-python-format" in flags or "python-format" in flags:
         return
     if _PYTHON_FORMAT.search(buf) is not None:
-        flags.append('python-format')
+        flags.append("python-format")
 
 
 def check_comment_flags(comment):
-    flags = re.match(u'\\[\\s*(.*?)\\s*\\]\s*(.*)', comment)
+    flags = re.match(u"\\[\\s*(.*?)\\s*\\]\s*(.*)", comment)
     if flags is not None:
-        return (re.split(u'\\s*,\\s*', flags.group(1)), flags.group(2))
+        return (re.split(u"\\s*,\\s*", flags.group(1)), flags.group(2))
     else:
         return ([], comment)
 
@@ -74,12 +80,19 @@ def check_comment_flags(comment):
 class Keyword(object):
     msgctxt_param = None
     domain_param = None
-    comment = u''
+    comment = u""
     required_arguments = None
 
     _comment_arg = re.compile(r'^"(.*)"$')
 
-    def __init__(self, function, msgid_param=1, msgid_plural_param=None, domain_param=None, msgctxt_param=None):
+    def __init__(
+        self,
+        function,
+        msgid_param=1,
+        msgid_plural_param=None,
+        domain_param=None,
+        msgctxt_param=None,
+    ):
         self.function = function
         self.msgid_param = msgid_param
         self.msgid_plural_param = msgid_plural_param
@@ -88,22 +101,22 @@ class Keyword(object):
 
     @classmethod
     def from_spec(cls, spec):
-        if ':' not in spec:
+        if ":" not in spec:
             return cls(spec)
         try:
-            (function, args) = spec.split(':', 1)
+            (function, args) = spec.split(":", 1)
             kw = cls(function)
             seen_msgid_param = False
             while args:
                 if cls._comment_arg.match(args) is not None:
                     kw.comment = args[1:-1]
                     break
-                (param, args) = args.split(',', 1) if ',' in args else (args, '')
-                if param.endswith('c'):
+                (param, args) = args.split(",", 1) if "," in args else (args, "")
+                if param.endswith("c"):
                     kw.msgctxt_param = int(param[:-1])
-                elif param.endswith('d'):
+                elif param.endswith("d"):
                     kw.domain_param = int(param[:-1])
-                elif param.endswith('t'):
+                elif param.endswith("t"):
                     kw.required_arguments = int(param[:-1])
                 elif not seen_msgid_param:
                     kw.msgid_param = int(param)
@@ -111,7 +124,7 @@ class Keyword(object):
                 else:
                     kw.msgid_plural_param = int(param)
         except SyntaxError:
-            raise ValueError('Invalid keyword spec: %s' % spec)
+            raise ValueError("Invalid keyword spec: %s" % spec)
         return kw
 
 
@@ -149,7 +162,7 @@ class Extractor(object):
 
 
 def register_extractors():
-    for entry_point in working_set.iter_entry_points('lingua.extractors'):
+    for entry_point in working_set.iter_entry_points("lingua.extractors"):
         try:
             extractor = entry_point.load(require=True)
         except DistributionNotFound:
@@ -158,8 +171,7 @@ def register_extractors():
             extractor = None
         if extractor:
             if not issubclass(extractor, Extractor):
-                raise ValueError(
-                    u'Registered extractor must derive from ``Extractor``')
+                raise ValueError(u"Registered extractor must derive from ``Extractor``")
             EXTRACTORS[entry_point.name] = extractor()
             for extension in extractor.extensions:
                 EXTENSIONS[extension] = entry_point.name
