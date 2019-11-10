@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 import sys
 
 version = '4.14'
@@ -15,19 +14,6 @@ install_requires = [
 tests_require = [
     'pytest',
 ]
-
-
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['tests']
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
 
 
 setup(name='lingua',
@@ -64,7 +50,6 @@ setup(name='lingua',
           'tests': tests_require,
           'chameleonextractor': ['Chameleon'],
       },
-      cmdclass={'test': PyTest},
       entry_points='''
       [console_scripts]
       polint = lingua.polint:main
