@@ -343,7 +343,7 @@ class PythonParser(object):
         flags = []
         if msg[4]:
             comments.append(msg[4])
-        if self.last_comment[0] == (self.lineno - 1):
+        if self.last_comment[0] >= (self.lineno - 1):
             comments.append(self.last_comment[1])
             for f in self.last_comment[2]:
                 if f not in flags:
