@@ -28,14 +28,14 @@ class BabelExtractor(Extractor):
         for (lineno, function, args, comment) in messages:
             if not isinstance(args, (list, tuple)):
                 args = [args]
-            args = [(None, a, lineno) for a in args]
             if function in self.keywords:
+                args = [(None, a, lineno) for a in args]
                 (domain, msgctxt, msgid, msgid_plural, c) = parse_keyword(args, self.keywords[function], filename, lineno)
                 if c:
                     comment.append(c)
             else:
                 msgid = args[0]
-                domain = msgid_plural = None
+                domain = msgctxt = msgid_plural = None
 
             if domain and self.options.domain and domain != self.options.domain:
                 continue
