@@ -221,7 +221,7 @@ class PythonParser(object):
             else:
                 if self.last_comment[0] == location[0] - 1:
                     comment = self.last_comment[1] + ' ' + comment
-                    flags = self.last_comment[2] + self.last_comment[2]
+                    flags = flags + self.last_comment[2]
                 self.last_comment = (location[0], comment, flags)
 
     def state_skip(self, token_type, token, location, token_stream):
