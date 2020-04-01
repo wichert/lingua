@@ -385,7 +385,7 @@ def main(
     package_version,
     msgid_bugs_address,
 ):
-    "Extract translateable strings."
+    "Extract translatable strings."
     directory = list(directory)
     register_extractors()
     register_babel_plugins()
