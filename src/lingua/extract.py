@@ -165,7 +165,7 @@ def create_catalog(
         catalog.metadata["Report-Msgid-Bugs-To"] = msgid_bugs_address
     catalog.metadata["POT-Creation-Date"] = po_timestamp()
     catalog.metadata["PO-Revision-Date"] = "YEAR-MO-DA HO:MI+ZONE"
-    catalog.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS"
+    catalog.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
     catalog.metadata["Language-Team"] = "LANGUAGE <LL@li.org>"
     catalog.metadata["Language"] = ""
     catalog.metadata["MIME-Version"] = "1.0"
