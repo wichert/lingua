@@ -114,7 +114,7 @@ def list_files(files_from, sources):
         for filename in files_from:
             if filename.startswith("#") or not filename.strip():
                 continue
-            yield filename
+            yield filename.rstrip()
     for file in sources:
         if os.path.isfile(file):
             yield file
