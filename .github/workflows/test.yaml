@@ -25,7 +25,8 @@ jobs:
         uses: py-actions/flake8@v2
 
       - name: Install
-        run: python -m venv .
+        run: |
+          python -m venv .
           source bin/activate
           pip install flit
           flit install --extras dev
