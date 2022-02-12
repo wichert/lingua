@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.15 - February 12, 2022
+------------------------
+
+- Fix file not found error with ``--list-files`` due to a ``\n`` appended 
+  to each filename.
+  `Patch #97 <https://github.com/wichert/lingua/pull/102>`_ from Johannes Raggam.
+
 4.14 - November 10, 2019
 ------------------------
 
