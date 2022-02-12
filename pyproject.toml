@@ -49,4 +49,9 @@ zcml = "lingua.extractors.zcml:ZCMLExtractor"
 
 
 [project.urls]
-Home = "https://github.com/wichert/lingua"
+homepage = "https://github.com/wichert/lingua"
+tracker = "https://github.com/wichert/lingua/issues"
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+norecursedirs = ".git tmp* .eggs bin build include lib share src"
