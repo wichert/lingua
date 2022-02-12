@@ -9,6 +9,7 @@
 /man
 /pip-selfcheck.json
 /pyvenv.cfg
+/.venv
 /.project
 /.pydevproject
 /.settings/
