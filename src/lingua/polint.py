@@ -27,9 +27,9 @@ def verify_po(path, show_path):
         click.echo("%sMessage repeated %d times:" % (leader, count))
         (context, msgid) = key
         if context:
-            msgid = u"[%s] %s" % (context, msgid)
+            msgid = "[%s] %s" % (context, msgid)
         click.echo(
-            textwrap.fill(msgid, initial_indent=u" " * 5, subsequent_indent=u" " * 8)
+            textwrap.fill(msgid, initial_indent=" " * 5, subsequent_indent=" " * 8)
         )
         click.echo()
 
@@ -39,13 +39,13 @@ def verify_po(path, show_path):
 
         click.echo("%sTranslation:" % leader)
         click.echo(
-            textwrap.fill(msgstr, initial_indent=u" " * 8, subsequent_indent=u" " * 8)
+            textwrap.fill(msgstr, initial_indent=" " * 8, subsequent_indent=" " * 8)
         )
         click.echo("Used for %d canonical texts:" % len(keys))
         for (idx, info) in enumerate(keys):
             (context, msgid) = info
             if context:
-                msgid = u"[%s] %s" % (context, msgid)
+                msgid = "[%s] %s" % (context, msgid)
             click.echo(
                 textwrap.fill(
                     msgid, initial_indent="%-8d" % (idx + 1), subsequent_indent=8 * " "

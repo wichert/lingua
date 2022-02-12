@@ -70,9 +70,9 @@ def check_python_format(buf, flags):
 
 
 def check_comment_flags(comment):
-    flags = re.match(u"\\[\\s*(.*?)\\s*\\]\s*(.*)", comment)
+    flags = re.match("\\[\\s*(.*?)\\s*\\]\\s*(.*)", comment)
     if flags is not None:
-        return (re.split(u"\\s*,\\s*", flags.group(1)), flags.group(2))
+        return (re.split("\\s*,\\s*", flags.group(1)), flags.group(2))
     else:
         return ([], comment)
 
@@ -80,7 +80,7 @@ def check_comment_flags(comment):
 class Keyword(object):
     msgctxt_param = None
     domain_param = None
-    comment = u""
+    comment = ""
     required_arguments = None
 
     _comment_arg = re.compile(r'^"(.*)"$')
@@ -154,11 +154,11 @@ class Extractor(object):
 
     @abc.abstractproperty
     def extensions(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def __call__(self, filename, options, fileobj=None, lineno=0):
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 def register_extractors():
@@ -171,7 +171,7 @@ def register_extractors():
             extractor = None
         if extractor:
             if not issubclass(extractor, Extractor):
-                raise ValueError(u"Registered extractor must derive from ``Extractor``")
+                raise ValueError("Registered extractor must derive from ``Extractor``")
             EXTRACTORS[entry_point.name] = extractor()
             for extension in extractor.extensions:
                 EXTENSIONS[extension] = entry_point.name

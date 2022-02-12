@@ -42,7 +42,7 @@ class BabelExtractor(Extractor):
 
             if domain and self.options.domain and domain != self.options.domain:
                 continue
-            comment = u" ".join(comment)
+            comment = " ".join(comment)
             flags = []
             check_c_format(msgid, flags)
             check_python_format(msgid, flags)
@@ -52,7 +52,7 @@ class BabelExtractor(Extractor):
                 msgid_plural,
                 flags,
                 comment,
-                u"",
+                "",
                 (filename, firstline + lineno),
             )
 

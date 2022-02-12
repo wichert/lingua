@@ -36,8 +36,8 @@ def po_timestamp():
 
 
 def _same_text(a, b):
-    a = re.sub(r"\s+", u" ", a)
-    b = re.sub(r"\s+", u" ", b)
+    a = re.sub(r"\s+", " ", a)
+    b = re.sub(r"\s+", " ", b)
     return a == b
 
 
@@ -49,7 +49,7 @@ class POEntry(polib.POEntry):
 
     @property
     def comment(self):
-        return u"\n".join(self._comments)
+        return "\n".join(self._comments)
 
     @comment.setter
     def comment(self, value):
@@ -57,7 +57,7 @@ class POEntry(polib.POEntry):
 
     @property
     def tcomment(self):
-        return u"\n".join(self._tcomments)
+        return "\n".join(self._tcomments)
 
     @tcomment.setter
     def tcomment(self, value):
@@ -88,15 +88,15 @@ class POFile(polib.POFile):
     def metadata_as_entry(self):
         entry = polib.POFile.metadata_as_entry(self)
         year = time.localtime().tm_year
-        header = [u"SOME DESCRIPTIVE TITLE"]
+        header = ["SOME DESCRIPTIVE TITLE"]
         if self.copyright_holder:
-            header.append(u"Copyright (C) %d %s" % (year, self.copyright_holder))
+            header.append("Copyright (C) %d %s" % (year, self.copyright_holder))
         header.append(
-            u"This file is distributed under the same license as the %s package."
+            "This file is distributed under the same license as the %s package."
             % self.package_name
         )
-        header.append(u"FIRST AUTHOR <EMAIL@ADDRESS>, %d." % year)
-        entry.tcomment = u"\n".join(header)
+        header.append("FIRST AUTHOR <EMAIL@ADDRESS>, %d." % year)
+        entry.tcomment = "\n".join(header)
         return entry
 
 
@@ -129,8 +129,7 @@ def list_files(files_from, sources):
 
 
 def find_file(filename, search_path=[]):
-    """Return the filename for a given file, checking search paths.
-    """
+    """Return the filename for a given file, checking search paths."""
     paths = [os.path.curdir] + search_path
     for path in paths:
         filename = os.path.join(path, filename)
@@ -227,8 +226,7 @@ def _summarise(catalog):
 
 
 def identical(a, b):
-    """Check if two catalogs are identical, ignoring metadata.
-    """
+    """Check if two catalogs are identical, ignoring metadata."""
     a = _summarise(a)
     b = _summarise(b)
     return a == b
@@ -354,7 +352,7 @@ class ExtractorOptions:
 @click.option(
     "--package-name",
     metavar="NAME",
-    default=u"PACKAGE",
+    default="PACKAGE",
     help="Package name to use in the generated POT file",
 )
 @click.option(
@@ -421,7 +419,9 @@ def main(
             sys.exit(1)
 
         extractor_options = ExtractorOptions(
-            comment_tag=comment_tag, domain=domain, keywords=keywords,
+            comment_tag=comment_tag,
+            domain=domain,
+            keywords=keywords,
         )
         for message in extractor(real_filename, extractor_options):
             entry = catalog.find(message.msgid, msgctxt=message.msgctxt)

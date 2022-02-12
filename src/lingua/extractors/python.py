@@ -76,7 +76,7 @@ def parse_translationstring(arguments, filename, firstline):
 
     msgid = None
     context = None
-    default = u""
+    default = ""
     args = [a[1] for a in arguments if a[0] is None]
     kwargs = dict((a[0], a[1]) for a in arguments if a[0] is not None)
 
@@ -96,7 +96,7 @@ def parse_translationstring(arguments, filename, firstline):
     if not msgid:
         return None
 
-    comment = u"Default: %s" % default if default else u""
+    comment = "Default: %s" % default if default else ""
     return (None, context, msgid, None, comment)
 
 
@@ -248,8 +248,7 @@ class PythonParser(object):
                 self.last_comment = (location[0], comment, flags)
 
     def state_skip(self, token_type, token, location, token_stream):
-        """Ignore all input until we see one of our keywords.
-        """
+        """Ignore all input until we see one of our keywords."""
         if token_type == tokenize.NAME and (token in KEYWORDS or token == "_"):
             self.handler = self.state_in_keyword
             self.keyword = KEYWORDS.get(token, None)
@@ -377,7 +376,7 @@ class PythonParser(object):
             for f in self.last_comment[2]:
                 if f not in flags:
                     flags.append(f)
-        comment = u"\n".join(comments)
+        comment = "\n".join(comments)
 
         check_c_format(msg[2], flags)
         check_python_format(msg[2], flags)
@@ -388,7 +387,7 @@ class PythonParser(object):
                 msg[3],
                 flags,
                 comment,
-                u"",
+                "",
                 (self.filename, self.firstline + self.lineno),
             )
         )

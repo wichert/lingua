@@ -44,8 +44,8 @@ class ZCMLExtractor(Extractor):
                 msgid,
                 None,
                 [],
-                u"",
-                u"",
+                "",
+                "",
                 (self.filename, (self.parser.CurrentLineNumber)),
             )
         )

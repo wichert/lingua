@@ -29,9 +29,9 @@ def _open(filename):
 
 ENGINE_PREFIX = re.compile(r"^\s*([a-z][a-z0-9\-_]+):\s*")
 STRUCTURE_PREFIX = re.compile(r"\s*(structure|text)\s+(.*)", re.DOTALL)
-WHITESPACE = re.compile(u"\s+")
-EXPRESSION = re.compile(u"\s*\${(.*?)}\s*")
-UNDERSCORE_CALL = re.compile("_\(.*\)")
+WHITESPACE = re.compile(r"\s+")
+EXPRESSION = re.compile(r"\s*\${(.*?)}\s*")
+UNDERSCORE_CALL = re.compile(r"_\(.*\)")
 
 
 class TranslateContext(object):
@@ -53,9 +53,9 @@ class TranslateContext(object):
         attributes = element["ns_attrs"]
         name = attributes.get((I18N_NS, "name"))
         if name:
-            self.text.append(u"${%s}" % name)
+            self.text.append("${%s}" % name)
         else:
-            self.text.append(u"<dynamic element>")
+            self.text.append("<dynamic element>")
 
     def register_child(self, element, context):
         attributes = element["ns_attrs"]
@@ -64,39 +64,39 @@ class TranslateContext(object):
             self.children[name] = context
 
     def ignore(self):
-        text = u"".join(self.text).strip()
-        text = WHITESPACE.sub(u" ", text)
-        text = EXPRESSION.sub(u"", text)
+        text = "".join(self.text).strip()
+        text = WHITESPACE.sub(" ", text)
+        text = EXPRESSION.sub("", text)
         return not text
 
     def full_text(self):
-        text = u"".join(self.text).strip()
-        text = WHITESPACE.sub(u" ", text)
+        text = "".join(self.text).strip()
+        text = WHITESPACE.sub(" ", text)
         return text
 
     def message(self):
         text = self.full_text()
         if not self.msgid:
             self.msgid = text
-            text = u""
+            text = ""
         comments = []
         if self.comment:
             comments.append(self.comment)
         if text:
-            comments.append(u"Default: %s" % text)
+            comments.append("Default: %s" % text)
         for (name, context) in self.children.items():
             comments.append(
-                u'Canonical text for ${%s} is: "%s"' % (name, context.full_text())
+                'Canonical text for ${%s} is: "%s"' % (name, context.full_text())
             )
         if self.parent:
-            comments.append(u'Used in sentence: "%s"' % self.parent.full_text())
+            comments.append('Used in sentence: "%s"' % self.parent.full_text())
         return Message(
             self.msgctxt,
             self.msgid,
             None,
             [],
-            u"\n".join(comments),
-            u"",
+            "\n".join(comments),
+            "",
             (self.filename, self.lineno),
         )
 
@@ -249,7 +249,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                         self.add_message(
                             self.domainstack[-1][1],
                             msgid,
-                            u"Default: %s" % value,
+                            "Default: %s" % value,
                             offset=offset,
                         )
 
@@ -313,7 +313,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
             )
         self.linenumber += get_newline_count(data)
 
-    def add_message(self, msgctxt, msgid, comment=u"", offset=0):
+    def add_message(self, msgctxt, msgid, comment="", offset=0):
         self.messages.append(
             Message(
                 msgctxt,
@@ -321,7 +321,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                 None,
                 [],
                 comment,
-                u"",
+                "",
                 (self.filename, self.linenumber + offset),
             )
         )
@@ -382,7 +382,7 @@ class ChameleonExtractor(Extractor, ElementProgram):
                 sys.exit(1)
 
     def parse_python(self, source):
-        assert isinstance(source, type(u""))
+        assert isinstance(source, type(""))
         for message in _extract_python(
             self.filename, source, self.options, self.linenumber
         ):
