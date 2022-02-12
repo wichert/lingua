@@ -1,0 +1,37 @@
+name: Build and publish Python 🐍 distributions
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  test:
+    name: Run al ltests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: ["3.7", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: flake8
+        uses: py-actions/flake8@v2
+
+      - name: Install
+        run: python -m venv .
+          source bin/activate
+          pip install flit
+          flit install --extras dev
+
+      - name: Run tests
+        run: bin/pytest -v
