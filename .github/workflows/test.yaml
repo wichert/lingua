@@ -1,9 +1,6 @@
 name: Build and publish Python 🐍 distributions
 
-on:
-  push:
-    tags:
-      - "*"
+on: push
 
 jobs:
   test:
