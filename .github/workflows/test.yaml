@@ -1,10 +1,10 @@
-name: Build and publish Python 🐍 distributions
+name: Test and publish
 
 on: push
 
 jobs:
   test:
-    name: Run al ltests
+    name: Run tests
     runs-on: ubuntu-latest
 
     strategy:
@@ -33,3 +33,38 @@ jobs:
 
       - name: Run tests
         run: bin/pytest -v
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.10"
+
+      - name: Insert version number
+        run: |
+          version=$(echo $GITHUB_REF | cut -d/ -f3)
+          sed -iE "/__version/s/[0-9.]+/$version/" src/lingua/__init__.py
+
+      - name: Build wheel
+        run: |
+          python -m venv .
+          source bin/activate
+          pip install flit
+          flit build
+
+      - name: Publish to PyPI
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
