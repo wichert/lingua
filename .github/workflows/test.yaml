@@ -53,12 +53,12 @@ jobs:
       - name: Insert version number
         run: |
           version=$(echo $GITHUB_REF | cut -d/ -f3)
-          sed -i "" -E "/__version/s/[0-9.]+/$version/" src/lingua/__init__.py
+          sed -i -Ee "/__version/s/[0-9.]+/$version/" src/lingua/__init__.py
 
       - name: Build wheel
         run: |
-          python -m venv .
-          source bin/activate
+          python -m venv .venv
+          source .venv/bin/activate
           pip install flit
           flit build
 
