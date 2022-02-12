@@ -22,7 +22,7 @@ from lingua.extractors import register_extractors
 from lingua.extractors.babel import register_babel_plugins
 from lingua.extractors import EXTRACTORS
 from lingua.extractors import EXTENSIONS
-from lingua import lingua_version
+from lingua import __version__
 
 
 def po_timestamp():
@@ -171,7 +171,7 @@ def create_catalog(
     catalog.metadata["MIME-Version"] = "1.0"
     catalog.metadata["Content-Type"] = "text/plain; charset=UTF-8"
     catalog.metadata["Content-Transfer-Encoding"] = "8bit"
-    catalog.metadata["Generated-By"] = "Lingua %s" % lingua_version()
+    catalog.metadata["Generated-By"] = "Lingua %s" % __version__
     return catalog
 
 

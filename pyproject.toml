@@ -1,0 +1,52 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "lingua"
+authors = [
+    {name = "Wichert Akkerman", email = "wichert@wiggy.net"},
+]
+readme = "README.rst"
+dynamic = ["version", "description"]
+license = {file = "LICENSE"}
+keywords = ["translation", "po", "gettext", "Babel"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: DFSG approved",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.6",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "polib >= 1.1.1",
+    "click >= 8.0.3",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest >=7.0.1",
+]
+chameleonextractor = ["Chameleon"]
+
+[project.scripts]
+polint = "lingua.polint:main"
+pot-create = "lingua.extract:main"
+
+[project.entry-points."lingua.extractors"]
+python = "lingua.extractors.python:PythonExtractor"
+chameleon = "lingua.extractors.xml:ChameleonExtractor"
+xml = "lingua.extractors.xml:ChameleonExtractor"
+zope = "lingua.extractors.xml:ZopeExtractor"
+zcml = "lingua.extractors.zcml:ZCMLExtractor"
+
+
+[project.urls]
+Home = "https://github.com/wichert/lingua"

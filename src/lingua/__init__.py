@@ -1,6 +1,3 @@
-import pkg_resources
+"""Translation toolset"""
 
-
-def lingua_version():
-    pkg = pkg_resources.get_distribution("lingua")
-    return pkg.version
+__version__ = "4.14.0"
