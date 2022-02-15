@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.??
+------------------------
+
+- Update supported Python versions in pyproject.toml. This fixes `issue 104
+  <https://github.com/wichert/lingua/issues/104>`_.
+
+
 4.15 - February 12, 2022
 ------------------------
 
