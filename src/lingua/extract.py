@@ -166,7 +166,7 @@ def create_catalog(
     catalog.metadata["PO-Revision-Date"] = "YEAR-MO-DA HO:MI+ZONE"
     catalog.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
     catalog.metadata["Language-Team"] = "LANGUAGE <LL@li.org>"
-    catalog.metadata["Language"] = ""
+    catalog.metadata["Language"] = "LANGUAGE"
     catalog.metadata["MIME-Version"] = "1.0"
     catalog.metadata["Content-Type"] = "text/plain; charset=UTF-8"
     catalog.metadata["Content-Transfer-Encoding"] = "8bit"
