@@ -12,7 +12,7 @@ import tempfile
 import time
 
 try:
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser as SafeConfigParser
 except ImportError:
     from ConfigParser import SafeConfigParser
 import click
