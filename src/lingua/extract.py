@@ -12,9 +12,9 @@ import tempfile
 import time
 
 try:
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser
 except ImportError:
-    from ConfigParser import SafeConfigParser
+    from ConfigParser import ConfigParser
 import click
 import polib
 from lingua.extractors import get_extractor
