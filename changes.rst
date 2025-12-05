@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.??
-------------------------
+4.16 - Unreleased
+-----------------
 
 - Add entry point loading compat code for Python >= 3.12.
 
