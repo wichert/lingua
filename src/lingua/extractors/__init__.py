@@ -1,12 +1,13 @@
 from __future__ import print_function
-from pkg_resources import DistributionNotFound
-from pkg_resources import working_set
 import abc
 import collections
 import os
 import re
 import sys
 from .compat import add_metaclass
+from .compat import EntryPointLoadError
+from .compat import iter_entry_points
+from .compat import load_entry_point
 
 
 Message = collections.namedtuple(
@@ -162,10 +163,10 @@ class Extractor(object):
 
 
 def register_extractors():
-    for entry_point in working_set.iter_entry_points("lingua.extractors"):
+    for entry_point in iter_entry_points("lingua.extractors"):
         try:
-            extractor = entry_point.load(require=True)
-        except DistributionNotFound:
+            extractor = load_entry_point(entry_point)
+        except EntryPointLoadError:
             # skip this entry point since at least one required dependency can
             # not be found
             extractor = None

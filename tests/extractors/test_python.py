@@ -227,7 +227,7 @@ def test_function_argument():
     options = mock.Mock()
     options.keywords = []
     options.comment_tag = "I18N:"
-    source = u"""_('word', func('foo', 2'))"""
+    source = u"""_('word', func('foo', 2))"""
     messages = list(python_extractor("filename", options))
     assert len(messages) == 1
     assert messages[0].msgid == "word"
