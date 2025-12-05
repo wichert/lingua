@@ -14,7 +14,10 @@ import time
 try:
     from configparser import SafeConfigParser
 except ImportError:
-    from ConfigParser import SafeConfigParser
+    try:
+        from configparser import ConfigParser as SafeConfigParser
+    except ImportError:
+        from ConfigParser import SafeConfigParser
 import click
 import polib
 from lingua.extractors import get_extractor
