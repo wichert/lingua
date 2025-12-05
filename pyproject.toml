@@ -46,7 +46,6 @@ xml = "lingua.extractors.xml:ChameleonExtractor"
 zope = "lingua.extractors.xml:ZopeExtractor"
 zcml = "lingua.extractors.zcml:ZCMLExtractor"
 
-
 [project.urls]
 homepage = "https://github.com/wichert/lingua"
 tracker = "https://github.com/wichert/lingua/issues"

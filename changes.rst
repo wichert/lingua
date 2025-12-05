@@ -4,6 +4,10 @@ Changelog
 4.??
 ------------------------
 
+- Add entry point loading compat code for Python >= 3.12.
+
+- Fix SafeConfigParser import for Python >= 3.12.
+
 - Update supported Python versions in pyproject.toml. This fixes `issue 104
   <https://github.com/wichert/lingua/issues/104>`_.
 
@@ -14,6 +18,7 @@ Changelog
 - Fix file not found error with ``--list-files`` due to a ``\n`` appended 
   to each filename.
   `Patch #97 <https://github.com/wichert/lingua/pull/102>`_ from Johannes Raggam.
+
 
 4.14 - November 10, 2019
 ------------------------
@@ -51,6 +56,7 @@ Changelog
 
 - Update `i18n.sh` to show language during the compilation process.
   `Patch #83 <https://github.com/wichert/lingua/pull/83>`_ from Hans-Peter Jansen.
+
 
 4.13 - January 24, 2016
 ------------------------
