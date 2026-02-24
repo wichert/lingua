@@ -57,9 +57,8 @@ jobs:
 
       - name: Insert version number
         run: |
-          version=$(echo $GITHUB_REF | sed -e 's#refs/tags/v##')
-          sed -i -Ee "/0\.0\.0/$version/" src/lingua/__init__.py
-          sed -i -Ee "/0\.0\.0/$version/" pyproject.toml
+          version="${GITHUB_REF#*tags/v}"
+          sed -i -e "s/0\.0\.0/$version/" src/lingua/__init__.py pyproject.toml
 
       - name: Build wheel
         run: uv build --wheel
