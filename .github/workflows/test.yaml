@@ -23,23 +23,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Install uv with Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: flake8
-        uses: py-actions/flake8@v2
-
-      - name: Install
-        run: |
-          python -m venv .
-          source bin/activate
-          pip install flit
-          flit install --extras dev
+      - name: Lint with ruff
+        uses: astral-sh/ruff-action@v3
 
       - name: Run tests
-        run: bin/pytest -v
+        run: uv run --all-groups pytest -v
 
   publish:
     name: Publish to PyPI
@@ -48,30 +41,28 @@ jobs:
 
     needs: test
 
+    environment:
+      name: pypi
+      url: https://pypi.org/p/lingua
+    permissions:
+      id-token: write
+
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Insert version number
         run: |
           version=$(echo $GITHUB_REF | sed -e 's#refs/tags/v##')
-          sed -i -Ee "/__version/s/[0-9.]+/$version/" src/lingua/__init__.py
+          sed -i -Ee "/0\.0\.0/$version/" src/lingua/__init__.py
+          sed -i -Ee "/0\.0\.0/$version/" pyproject.toml
 
       - name: Build wheel
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install flit
-          flit build
+        run: uv build --wheel
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
