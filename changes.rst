@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.16 - Unreleased
------------------
+4.16 - February 24, 2026
+------------------------
 
 - Add entry point loading compat code for Python >= 3.12.
 
