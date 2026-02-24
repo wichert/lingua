@@ -148,7 +148,7 @@ Comments are inherited, so you can put them on a parent element as well.
 
 For Python code you can tell lingua to include comments by using the
 ``--add-comments`` option. This will make Linua include all comments on the
-line(s) *immediately preceeding* (there may be no empty line in between) a
+line(s) *immediately preceding* (there may be no empty line in between) a
 translation call.
 
 ::
