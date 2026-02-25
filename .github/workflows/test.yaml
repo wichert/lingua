@@ -61,7 +61,7 @@ jobs:
           sed -i -e "s/0\.0\.0/$version/" src/lingua/__init__.py pyproject.toml
 
       - name: Build wheel
-        run: uv build --wheel
+        run: uv build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
