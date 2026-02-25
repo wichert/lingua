@@ -32,7 +32,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
 
       - name: Run tests
-        run: uv run --all-groups pytest -v
+        run: uv run --locked --all-groups --all-extras pytest -v
 
   publish:
     name: Publish to PyPI

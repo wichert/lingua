@@ -361,11 +361,13 @@ dependencies = [
     { name = "polib" },
 ]
 
-[package.dev-dependencies]
+[package.optional-dependencies]
 chameleonextractor = [
     { name = "chameleon", version = "4.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "chameleon", version = "4.6.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
+
+[package.dev-dependencies]
 dev = [
     { name = "black", version = "24.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "black", version = "25.11.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
@@ -380,12 +382,13 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "chameleon", marker = "extra == 'chameleonextractor'" },
     { name = "click", specifier = ">=8.0.3" },
     { name = "polib", specifier = ">=1.1.1" },
 ]
+provides-extras = ["chameleonextractor"]
 
 [package.metadata.requires-dev]
-chameleonextractor = [{ name = "chameleon" }]
 dev = [
     { name = "black", specifier = ">=22.1.0" },
     { name = "flake8", specifier = ">=4.0.1" },
