@@ -4,6 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "lingua"
+description = "Translation toolset"
 version = "0.0.0"
 authors = [{ name = "Wichert Akkerman", email = "wichert@wiggy.net" }]
 readme = "README.rst"
