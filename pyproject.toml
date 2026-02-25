@@ -28,9 +28,11 @@ classifiers = [
 requires-python = ">= 3.8"
 dependencies = ["polib >= 1.1.1", "click >= 8.0.3"]
 
+[project.optional-dependencies]
+chameleonextractor = ["Chameleon"]
+
 [dependency-groups]
 dev = ["pytest >=7.0.1", "black >= 22.1.0", "flake8 >= 4.0.1"]
-chameleonextractor = ["Chameleon"]
 
 [project.scripts]
 polint = "lingua.polint:main"
