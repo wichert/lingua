@@ -52,3 +52,6 @@ tracker = "https://github.com/wichert/lingua/issues"
 [tool.pytest.ini_options]
 testpaths = "tests"
 norecursedirs = ".git tmp* .eggs bin build include lib share src"
+
+[tool.uv.build-backend]
+source-include = [ "tests/**/*.py" ]
