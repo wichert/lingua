@@ -8,7 +8,7 @@ description = "Translation toolset"
 version = "0.0.0"
 authors = [{ name = "Wichert Akkerman", email = "wichert@wiggy.net" }]
 readme = "README.rst"
-license = { file = "LICENSE" }
+license-files = [ "LICENSE" ]
 keywords = ["translation", "po", "gettext", "Babel"]
 classifiers = [
     "Intended Audience :: Developers",
