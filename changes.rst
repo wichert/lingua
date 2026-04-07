@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.17 - Unreleased
+-----------------
+
+- pot_extract: Fix config parser usage.
+  Replace `ConfigParser.readfp` (deprecated since Python 3.2) with
+  `ConfigParser.read_file`.
+
 4.16 - February 24, 2026
 ------------------------
 

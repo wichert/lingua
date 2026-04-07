@@ -4,12 +4,13 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-from operator import attrgetter
+
 import os
 import re
 import sys
 import tempfile
 import time
+from operator import attrgetter
 
 try:
     from configparser import SafeConfigParser
@@ -18,14 +19,13 @@ except ImportError:
         from configparser import ConfigParser as SafeConfigParser
     except ImportError:
         from ConfigParser import SafeConfigParser
+
 import click
 import polib
-from lingua.extractors import get_extractor
-from lingua.extractors import register_extractors
-from lingua.extractors.babel import register_babel_plugins
-from lingua.extractors import EXTRACTORS
-from lingua.extractors import EXTENSIONS
+
 from lingua import __version__
+from lingua.extractors import EXTENSIONS, EXTRACTORS, get_extractor, register_extractors
+from lingua.extractors.babel import register_babel_plugins
 
 
 def po_timestamp():
@@ -122,7 +122,7 @@ def list_files(files_from, sources):
         if os.path.isfile(file):
             yield file
         elif os.path.isdir(file):
-            for (dirpath, dirnames, filenames) in os.walk(file):
+            for dirpath, dirnames, filenames in os.walk(file):
                 for file in filenames:
                     if get_extractor(file) is not None:
                         yield os.path.join(dirpath, file)
@@ -190,10 +190,10 @@ def _register_extension(extension, extractor):
 
 def read_config(cfg_file):
     config = SafeConfigParser()
-    config.readfp(cfg_file)
+    config.read_file(cfg_file)
     for section in config.sections():
         if section == "extensions":
-            for (extension, extractor) in config.items(section):
+            for extension, extractor in config.items(section):
                 _register_extension(extension, extractor)
         elif section.startswith("extractor:"):
             extractor = section[10:]
@@ -245,7 +245,7 @@ def save_catalog(catalog, filename):
         if old_catalog is not None and identical(catalog, old_catalog):
             click.echo("No changes found - not replacing %s" % filename)
             return
-    (fd, tmpfile) = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
+    fd, tmpfile = tempfile.mkstemp(dir=os.path.dirname(filename), text=True)
     output = io.open(fd, "wt", encoding=catalog.encoding)
     output.write(catalog.__unicode__())
     output.close()
