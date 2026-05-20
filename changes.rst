@@ -1,6 +1,15 @@
 Changelog
 =========
 
+4.17 - unreleased
+-----------------
+
+- Replace removed ``ConfigParser.readfp()`` with ``read_file()`` in
+  ``read_config()``. ``readfp()`` was deprecated since Python 3.2 and
+  removed in Python 3.12, causing ``pot-create -c <config>`` to fail with
+  ``AttributeError`` on Python 3.12+.
+
+
 4.16 - February 24, 2026
 ------------------------
 

@@ -190,7 +190,7 @@ def _register_extension(extension, extractor):
 
 def read_config(cfg_file):
     config = SafeConfigParser()
-    config.readfp(cfg_file)
+    config.read_file(cfg_file)
     for section in config.sections():
         if section == "extensions":
             for (extension, extractor) in config.items(section):
